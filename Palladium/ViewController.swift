@@ -76,14 +76,26 @@ class ViewController: UIViewController {
             alpha: 1.0
             ) // set the vertices untouched by shaders to this default value (i.e. "background")
         
+        let time = Date().timeIntervalSince1970.magnitude
+        let redValue   = Float(sin(1.0 * time) / 2.0 + 0.5)  // just a sin of the times i guess..
+        let greenValue = Float(sin(1.1 * time) / 2.0 + 0.5)
+        let blueValue  = Float(sin(1.2 * time) / 2.0 + 0.5)
+        // fragment shader params (make sure the corresponding struct definition in the shader is identical)
+        struct FragmentParams
+        {
+            let color: (Float, Float, Float, Float)  // just like a float4
+        }
+        var params = FragmentParams(color: (redValue, greenValue, blueValue, 1.0))
+        
         let commandBuffer = commandQueue.makeCommandBuffer() // holds one or more render commands
         // configure render command
         let renderEncoder = commandBuffer?.makeRenderCommandEncoder(descriptor: renderPassDescriptor)
         renderEncoder?.setRenderPipelineState(pipelineState)
         renderEncoder?.setVertexBuffer(vertexBuffer, offset: 0, index: 0)
+        renderEncoder?.setFragmentBytes(&params, length: MemoryLayout.size(ofValue: params), index: 0) // set*Bytes is convenient because you can pass a buffer to the shader without having to explicitly create it in Swift with device.makeBuffer(). probably saves system memory too
         renderEncoder?.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: 3, instanceCount: 1) // interpret as one instance of a .triangle with three vertices each (make a vertex object to abstract away magic numbers?)
         renderEncoder?.endEncoding()
-        commandBuffer?.present(drawable)
+        commandBuffer?.present(drawable) // render to scene color (output)
         commandBuffer?.commit()
     }
     

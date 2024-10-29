@@ -16,8 +16,12 @@ vertex float4 basic_vertex(
     return float4(vertex_array[vid], 1.0);
 }
 
-fragment half4 basic_fragment() {
-    return half4(1.0);  // make all fragments white for now
+struct FragmentParams {
+    float4 color;
+};
+
+fragment half4 basic_fragment(constant FragmentParams &params [[buffer(0)]]) {
+    return half4(params.color);  // make all fragments white for now
 }
                         
                            
