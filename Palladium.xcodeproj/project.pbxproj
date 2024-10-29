@@ -16,6 +16,7 @@
 		D5A513032CD18CDA0050E219 /* PalladiumTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A513022CD18CDA0050E219 /* PalladiumTests.swift */; };
 		D5A5130D2CD18CDA0050E219 /* PalladiumUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A5130C2CD18CDA0050E219 /* PalladiumUITests.swift */; };
 		D5A5130F2CD18CDA0050E219 /* PalladiumUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A5130E2CD18CDA0050E219 /* PalladiumUITestsLaunchTests.swift */; };
+		D5A5131C2CD190310050E219 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = D5A5131B2CD190310050E219 /* Shaders.metal */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,6 +50,7 @@
 		D5A513082CD18CDA0050E219 /* PalladiumUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PalladiumUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D5A5130C2CD18CDA0050E219 /* PalladiumUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PalladiumUITests.swift; sourceTree = "<group>"; };
 		D5A5130E2CD18CDA0050E219 /* PalladiumUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PalladiumUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		D5A5131B2CD190310050E219 /* Shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -102,6 +104,7 @@
 				D5A512EB2CD18CD90050E219 /* AppDelegate.swift */,
 				D5A512ED2CD18CD90050E219 /* SceneDelegate.swift */,
 				D5A512EF2CD18CD90050E219 /* ViewController.swift */,
+				D5A5131B2CD190310050E219 /* Shaders.metal */,
 				D5A512F12CD18CD90050E219 /* Main.storyboard */,
 				D5A512F42CD18CDA0050E219 /* Assets.xcassets */,
 				D5A512F62CD18CDA0050E219 /* LaunchScreen.storyboard */,
@@ -258,6 +261,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D5A5131C2CD190310050E219 /* Shaders.metal in Sources */,
 				D5A512F02CD18CD90050E219 /* ViewController.swift in Sources */,
 				D5A512EC2CD18CD90050E219 /* AppDelegate.swift in Sources */,
 				D5A512EE2CD18CD90050E219 /* SceneDelegate.swift in Sources */,
@@ -447,8 +451,7 @@
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -474,8 +477,7 @@
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
