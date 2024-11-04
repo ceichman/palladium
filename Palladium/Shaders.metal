@@ -104,11 +104,11 @@ vertex ProjectedVertex project_vertex(
                              unsigned int vid [[ vertex_id ]])
 {
     Vertex inVertex = vertex_array[vid];
-    // float4 rotated = rotation_matrix(EAST, params.time * 2.0) * float4(inVertex.position.xyz, 1.0);
-    float4 rotated = rotation_matrix(UP, params.time) * float4(inVertex.position.xyz, 1.0);
+    float4 prerotated = rotation_matrix(EAST, params.time * 2.0) * float4(inVertex.position.xyz, 1.0);
+    float4 rotated = rotation_matrix(UP, params.time) * prerotated;
+    // float4 rotated = float4(inVertex.position.xyz, 1.0);
     rotated.z += 3.0;
     rotated.y -= 0.5;
-    rotated.x -= 0.5;
     float4x4 projMatrix = projection_matrix(params.aspectRatio, params.fovRadians, params.nearZ, params.farZ);
     float4 projected = projMatrix * rotated;
     // then normalize in z
@@ -124,8 +124,7 @@ vertex ProjectedVertex project_vertex(
 
 fragment half4 basic_fragment(ProjectedVertex vert [[stage_in]],
                               constant FragmentParams &params [[buffer(0)]]) {
-    // return half4(vert.color);
-    return half4(0, 0, 0, 1);
+    return half4(vert.color);
 }
                         
                            

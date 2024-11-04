@@ -88,14 +88,15 @@ class ViewController: UIViewController {
         let fovDegrees = 40.0
         var projectionParams = ProjectionParams(aspectRatio: Float(aspectRatio),
                                                 fovRadians: Float(fovDegrees / 180.0 * Double.pi),
-                                                nearZ: 0.1,
+                                                nearZ: 1,
                                                 farZ: 1000.0,
                                                 time: Float(fmod(time, Double.pi * 2.0)))
         
         let commandBuffer = commandQueue.makeCommandBuffer() // holds one or more render commands
         // configure render command
         guard let renderEncoder = commandBuffer?.makeRenderCommandEncoder(descriptor: renderPassDescriptor) else { return }
-        renderEncoder.setTriangleFillMode(.lines)
+        renderEncoder.setTriangleFillMode(.fill)
+        renderEncoder.setCullMode(.back)
         renderEncoder.setRenderPipelineState(pipelineState)
         renderEncoder.setVertexBuffer(vertexBuffer, offset: 0, index: 0)
         renderEncoder.setVertexBytes(&projectionParams, length: MemoryLayout.size(ofValue: projectionParams), index: 1)
