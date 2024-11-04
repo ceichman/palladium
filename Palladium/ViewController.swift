@@ -19,15 +19,7 @@ class ViewController: UIViewController {
     
     let outputPixelFormat: MTLPixelFormat = .bgra8Unorm
 
-    // In Metal, the default coordinate system is the normalized coordinate system, which means that by default you’re looking at a 2x2x1 cube centered at (0, 0, 0.5).
-    // If you consider the Z=0 plane, then (-1, -1, 0) is the lower left, (0, 0, 0) is the center, and (1, 1, 0) is the upper right.
-    // Placeholder triangle:
-    let vertexData: [Float] = [
-       0.0,  1.0, 0.0,
-      -1.0, -1.0, 0.0,
-       1.0, -1.0, 0.0
-    ]
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -40,13 +32,13 @@ class ViewController: UIViewController {
         metalLayer.frame = view.layer.frame
         view.layer.addSublayer(metalLayer)
         
-        let dataSize = vertexData.count * MemoryLayout.size(ofValue: vertexData[0]) // size of entire vertex data buffer
-        vertexBuffer = device.makeBuffer(bytes: vertexData, length: dataSize, options: []) // options have to do with buffer storage and lifetime
+        let dataSize = cubeVertices.count * MemoryLayout.size(ofValue: vertexData[0]) // size of entire vertex data buffer
+        vertexBuffer = device.makeBuffer(bytes: cubeVertices, length: dataSize, options: []) // options have to do with buffer storage and lifetime
         
         // set up render pipeline
         let defaultLibrary = device.makeDefaultLibrary()!  // gets all shaders from Metal files included in project
         let fragmentShader = defaultLibrary.makeFunction(name: "basic_fragment")
-        let vertexShader = defaultLibrary.makeFunction(name: "basic_vertex")
+        let vertexShader = defaultLibrary.makeFunction(name: "project_vertex")
         
         let pipelineStateDescriptor = MTLRenderPipelineDescriptor()
         pipelineStateDescriptor.vertexFunction = vertexShader
@@ -65,7 +57,8 @@ class ViewController: UIViewController {
     }
     
     func render() {
-        guard let drawable = metalLayer.nextDrawable() else { return } // get the scene color texture
+        // Set up render target texture
+        guard let drawable = metalLayer.nextDrawable() else { return }
         let renderPassDescriptor = MTLRenderPassDescriptor()
         renderPassDescriptor.colorAttachments[0].texture = drawable.texture
         renderPassDescriptor.colorAttachments[0].loadAction = .clear
@@ -76,6 +69,7 @@ class ViewController: UIViewController {
             alpha: 1.0
             ) // set the vertices untouched by shaders to this default value (i.e. "background")
         
+        // Draw some pretty colors
         let time = Date().timeIntervalSince1970.magnitude
         let redValue   = Float(sin(1.0 * time) / 2.0 + 0.5)  // just a sin of the times i guess..
         let greenValue = Float(sin(1.1 * time) / 2.0 + 0.5)
@@ -85,16 +79,25 @@ class ViewController: UIViewController {
         {
             let color: (Float, Float, Float, Float)  // just like a float4
         }
-        var params = FragmentParams(color: (redValue, greenValue, blueValue, 1.0))
+        var fragParams = FragmentParams(color: (redValue, greenValue, blueValue, 1.0))
+        
+        let aspectRatio = metalLayer.drawableSize.height / metalLayer.drawableSize.width
+        let fovDegrees = 70.0
+        var projectionParams = ProjectionParams(aspectRatio: Float(aspectRatio),
+                                                fovRadians: Float(fovDegrees / 180.0 * Double.pi),
+                                                nearZ: 0.1,
+                                                farZ: 1000.0)
         
         let commandBuffer = commandQueue.makeCommandBuffer() // holds one or more render commands
         // configure render command
-        let renderEncoder = commandBuffer?.makeRenderCommandEncoder(descriptor: renderPassDescriptor)
-        renderEncoder?.setRenderPipelineState(pipelineState)
-        renderEncoder?.setVertexBuffer(vertexBuffer, offset: 0, index: 0)
-        renderEncoder?.setFragmentBytes(&params, length: MemoryLayout.size(ofValue: params), index: 0) // set*Bytes is convenient because you can pass a buffer to the shader without having to explicitly create it in Swift with device.makeBuffer(). probably saves system memory too
-        renderEncoder?.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: 3, instanceCount: 1) // interpret as one instance of a .triangle with three vertices each (make a vertex object to abstract away magic numbers?)
-        renderEncoder?.endEncoding()
+        guard let renderEncoder = commandBuffer?.makeRenderCommandEncoder(descriptor: renderPassDescriptor) else { return }
+        renderEncoder.setRenderPipelineState(pipelineState)
+        renderEncoder.setVertexBuffer(vertexBuffer, offset: 0, index: 0)
+        renderEncoder.setVertexBytes(&projectionParams, length: MemoryLayout.size(ofValue: projectionParams), index: 1)
+        renderEncoder.setFragmentBytes(&fragParams, length: MemoryLayout.size(ofValue: fragParams), index: 0) // set*Bytes is convenient because you can pass a buffer to the shader without having to explicitly create it in Swift with device.makeBuffer(). probably saves system memory too
+        // interpret vertexCount vertices as instanceCount instances of type .triangle
+        renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: cubeVertices.count, instanceCount: cubeVertices.count / 3)
+        renderEncoder.endEncoding()
         commandBuffer?.present(drawable) // render to scene color (output)
         commandBuffer?.commit()
     }
