@@ -85,14 +85,14 @@ let blue = simd_float4(0, 0, 1, 1)
 
 var vertices: [ApplicationVertex] = // needs to be mutable so we can calculate normals when loaded
 [
-    ApplicationVertex(position: simd_float3(10, 0, 10), color: red, normal: simd_float4.zero), // southwest bottom
-    ApplicationVertex(position: simd_float3(10, 10, 10), color: green, normal: simd_float4.zero), // southwest top
-    ApplicationVertex(position: simd_float3(20, 10, 10), color: blue, normal: simd_float4.zero), // southeast top
-    ApplicationVertex(position: simd_float3(20, 0, 10), color: white, normal: simd_float4.zero), // southeast bottom
-    ApplicationVertex(position: simd_float3(10, 0, 20), color: red, normal: simd_float4.zero), // northwest bottom
-    ApplicationVertex(position: simd_float3(10, 10, 20), color: green, normal: simd_float4.zero), // northwest top
-    ApplicationVertex(position: simd_float3(20, 10, 20), color: blue, normal: simd_float4.zero), // northeast top
-    ApplicationVertex(position: simd_float3(20, 0, 20), color: white, normal: simd_float4.zero), // northeast bottom
+    ApplicationVertex(position: simd_float3(0, 0, 0), color: red, normal: simd_float4.zero), // southwest bottom
+    ApplicationVertex(position: simd_float3(0, 1, 0), color: green, normal: simd_float4.zero), // southwest top
+    ApplicationVertex(position: simd_float3(1, 1, 0), color: blue, normal: simd_float4.zero), // southeast top
+    ApplicationVertex(position: simd_float3(1, 0, 0), color: white, normal: simd_float4.zero), // southeast bottom
+    ApplicationVertex(position: simd_float3(0, 0, 1), color: red, normal: simd_float4.zero), // northwest bottom
+    ApplicationVertex(position: simd_float3(0, 1, 1), color: green, normal: simd_float4.zero), // northwest top
+    ApplicationVertex(position: simd_float3(1, 1, 1), color: blue, normal: simd_float4.zero), // northeast top
+    ApplicationVertex(position: simd_float3(1, 0, 1), color: white, normal: simd_float4.zero), // northeast bottom
 ]
 
 var triangles: [Triangle] =
