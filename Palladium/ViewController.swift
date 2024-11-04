@@ -32,8 +32,11 @@ class ViewController: UIViewController {
         metalLayer.frame = view.layer.frame
         view.layer.addSublayer(metalLayer)
         
-        let dataSize = cubeVertices.count * MemoryLayout.size(ofValue: vertexData[0]) // size of entire vertex data buffer
-        vertexBuffer = device.makeBuffer(bytes: cubeVertices, length: dataSize, options: []) // options have to do with buffer storage and lifetime
+        // load vertices
+        calculateNormals(triangles: &triangles, vertices: vertices)
+        let vertexArray = assembleVertexArray(triangles: triangles)
+        let dataSize = vertexArray.count * MemoryLayout<Vertex>.stride // size of entire vertex data buffer
+        vertexBuffer = device.makeBuffer(bytes: vertexArray, length: dataSize, options: []) // options have to do with buffer storage and lifetime
         
         // set up render pipeline
         let defaultLibrary = device.makeDefaultLibrary()!  // gets all shaders from Metal files included in project
@@ -96,7 +99,7 @@ class ViewController: UIViewController {
         renderEncoder.setVertexBytes(&projectionParams, length: MemoryLayout.size(ofValue: projectionParams), index: 1)
         renderEncoder.setFragmentBytes(&fragParams, length: MemoryLayout.size(ofValue: fragParams), index: 0) // set*Bytes is convenient because you can pass a buffer to the shader without having to explicitly create it in Swift with device.makeBuffer(). probably saves system memory too
         // interpret vertexCount vertices as instanceCount instances of type .triangle
-        renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: cubeVertices.count, instanceCount: cubeVertices.count / 3)
+        renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: triangles.count * 3, instanceCount: triangles.count)
         renderEncoder.endEncoding()
         commandBuffer?.present(drawable) // render to scene color (output)
         commandBuffer?.commit()

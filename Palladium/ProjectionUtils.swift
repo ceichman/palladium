@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import simd
 
 struct ProjectionParams {
     var aspectRatio: Float
