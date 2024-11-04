@@ -19,6 +19,8 @@
 		D5A5131C2CD190310050E219 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = D5A5131B2CD190310050E219 /* Shaders.metal */; };
 		D5AEB37A2CD9398600C30959 /* LoadVertices.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5AEB3792CD9398600C30959 /* LoadVertices.swift */; };
 		D5AEB37C2CD939EE00C30959 /* ProjectionUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5AEB37B2CD939EE00C30959 /* ProjectionUtils.swift */; };
+		D5AEB3802CD9966C00C30959 /* teapot.obj in Resources */ = {isa = PBXBuildFile; fileRef = D5AEB37F2CD9966C00C30959 /* teapot.obj */; };
+		D5AEB3822CD996D200C30959 /* JFOBJParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5AEB3812CD996D200C30959 /* JFOBJParser.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -55,6 +57,8 @@
 		D5A5131B2CD190310050E219 /* Shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
 		D5AEB3792CD9398600C30959 /* LoadVertices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadVertices.swift; sourceTree = "<group>"; };
 		D5AEB37B2CD939EE00C30959 /* ProjectionUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectionUtils.swift; sourceTree = "<group>"; };
+		D5AEB37F2CD9966C00C30959 /* teapot.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = teapot.obj; sourceTree = "<group>"; };
+		D5AEB3812CD996D200C30959 /* JFOBJParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JFOBJParser.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -105,6 +109,8 @@
 		D5A512EA2CD18CD90050E219 /* Palladium */ = {
 			isa = PBXGroup;
 			children = (
+				D5AEB3812CD996D200C30959 /* JFOBJParser.swift */,
+				D5AEB37F2CD9966C00C30959 /* teapot.obj */,
 				D5A512EB2CD18CD90050E219 /* AppDelegate.swift */,
 				D5A512ED2CD18CD90050E219 /* SceneDelegate.swift */,
 				D5A512EF2CD18CD90050E219 /* ViewController.swift */,
@@ -240,6 +246,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D5AEB3802CD9966C00C30959 /* teapot.obj in Resources */,
 				D5A512F52CD18CDA0050E219 /* Assets.xcassets in Resources */,
 				D5A512F82CD18CDA0050E219 /* Base in Resources */,
 				D5A512F32CD18CD90050E219 /* Base in Resources */,
@@ -273,6 +280,7 @@
 				D5A512EC2CD18CD90050E219 /* AppDelegate.swift in Sources */,
 				D5AEB37C2CD939EE00C30959 /* ProjectionUtils.swift in Sources */,
 				D5A512EE2CD18CD90050E219 /* SceneDelegate.swift in Sources */,
+				D5AEB3822CD996D200C30959 /* JFOBJParser.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
