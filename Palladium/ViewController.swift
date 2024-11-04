@@ -85,15 +85,17 @@ class ViewController: UIViewController {
         var fragParams = FragmentParams(color: (redValue, greenValue, blueValue, 1.0))
         
         let aspectRatio = metalLayer.drawableSize.height / metalLayer.drawableSize.width
-        let fovDegrees = 70.0
+        let fovDegrees = 40.0
         var projectionParams = ProjectionParams(aspectRatio: Float(aspectRatio),
                                                 fovRadians: Float(fovDegrees / 180.0 * Double.pi),
                                                 nearZ: 0.1,
-                                                farZ: 1000.0)
+                                                farZ: 1000.0,
+                                                time: Float(fmod(time, Double.pi * 2.0)))
         
         let commandBuffer = commandQueue.makeCommandBuffer() // holds one or more render commands
         // configure render command
         guard let renderEncoder = commandBuffer?.makeRenderCommandEncoder(descriptor: renderPassDescriptor) else { return }
+        renderEncoder.setTriangleFillMode(.lines)
         renderEncoder.setRenderPipelineState(pipelineState)
         renderEncoder.setVertexBuffer(vertexBuffer, offset: 0, index: 0)
         renderEncoder.setVertexBytes(&projectionParams, length: MemoryLayout.size(ofValue: projectionParams), index: 1)
