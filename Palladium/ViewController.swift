@@ -33,9 +33,14 @@ class ViewController: UIViewController {
         view.layer.addSublayer(metalLayer)
         
         // load vertices
-        calculateNormals(triangles: &triangles, vertices: vertices)
-        let vertexArray = assembleVertexArray(triangles: triangles)
+        cubeMesh.calculateNormals()
+        let vertexArray = cubeMesh.vertexArray()
         let dataSize = vertexArray.count * MemoryLayout<Vertex>.stride // size of entire vertex data buffer
+        
+        let mainBundle = Bundle.main
+        let fileURL = mainBundle.url(forResource: "teapot", withExtension: "obj")!
+        // let mesh = Mesh.fromOBJ(url: fileURL)
+        
         vertexBuffer = device.makeBuffer(bytes: vertexArray, length: dataSize, options: []) // options have to do with buffer storage and lifetime
         
         // set up render pipeline
