@@ -1,8 +1,8 @@
 //
-//  JFOBJParser.swift
+//  OBJParser.swift
 //  Palladium
 //
-//  Source: https://github.com/jaz303/JFOBJParser.swift/blob/master/Sources/JFOBJParser.swift
+//  Modified from: https://github.com/jaz303/JFOBJParser.swift/blob/master/Sources/JFOBJParser.swift
 
 import Foundation
 
@@ -77,14 +77,15 @@ public class JFOBJParser<T: Sequence> where T.Iterator.Element == String {
             // also supports trailing r,g,b vertex colours
             // v 0.123 0.234 0.345 1.0
             if let vertexMatch = match(line, regex: vertexRegex) {
+                let count = vertexMatch.count
                 let x = Float(vertexMatch[0]!) ?? 0.0
                 let y = Float(vertexMatch[1]!) ?? 0.0
                 let z = Float(vertexMatch[2]!) ?? 0.0
                 // optional params
-                let w = Float(vertexMatch[3] ?? "1.0")!
-                let r = Float(vertexMatch[4] ?? "1.0")!
-                let g = Float(vertexMatch[5] ?? "1.0")!
-                let b = Float(vertexMatch[6] ?? "1.0")!
+                let w = vertexMatch.count > 3 ? Float(vertexMatch[3] ?? "1.0")! : 1.0
+                let r = vertexMatch.count > 4 ? Float(vertexMatch[4] ?? "1.0")! : 1.0
+                let g = vertexMatch.count > 5 ? Float(vertexMatch[5] ?? "1.0")! : 1.0
+                let b = vertexMatch.count > 6 ? Float(vertexMatch[6] ?? "1.0")! : 1.0
                 
                 onVertex(x, y, z, w, r, g, b)
             }
@@ -95,7 +96,7 @@ public class JFOBJParser<T: Sequence> where T.Iterator.Element == String {
                 let u = Float(textureMatch[0]!) ?? 0.0
                 let v = Float(textureMatch[1]!) ?? 0.0
                 // optional params
-                let w = Float(textureMatch[2] ?? "0.0")!
+                let w = textureMatch.count > 2 ? Float(textureMatch[2] ?? "0.0")! : 0.0
                 
                 onTextureCoord(u, v, w)
             }
@@ -125,17 +126,14 @@ public class JFOBJParser<T: Sequence> where T.Iterator.Element == String {
                 for element in faceElements {
                     count += 1
                     let components = element.split(separator: "/").map { String($0) }
-                    vertexIndices.append(Int(components[0])!)
-                    if let texIndex = Int(components[1]) { texCoordIndices.append(Int(texIndex)) }
-                    if let normalIndex = Int(components[2]) { normalIndices.append(Int(normalIndex)) }
+                    // subtract one because OBJ indices start from 1 for some reason
+                    vertexIndices.append(Int(components[0])! - 1)
+                    if components.count > 1 { texCoordIndices.append(Int(components[1])! - 1) }
+                    if components.count > 2 { normalIndices.append(Int(components[2])! - 1) }
                 }
                 onFace(count, vertexIndices, texCoordIndices, normalIndices)
             }
         }
-    }
-
-    private func getChar(_ s: Scanner) -> Character {
-        return s.scanCharacter()!
     }
 
     public var onVertex: (Float, Float, Float, Float, Float, Float, Float) -> Void

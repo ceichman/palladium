@@ -90,14 +90,15 @@ class Mesh {
         }
     }
     
-    func vertexArray() -> [Vertex] {
+    // Returns the array of shader-ready vertices and the size of the resulting buffer.
+    func vertexArray() -> ([Vertex], Int) {
         var result: [Vertex] = []
         for triangle in triangles {
             result.append(Vertex(triangle.a))
             result.append(Vertex(triangle.b))
             result.append(Vertex(triangle.c))
         }
-        return result
+        return (result, result.count * MemoryLayout<Vertex>.stride)
     }
     
     static func fromOBJ(url: URL) -> Mesh {
@@ -127,8 +128,8 @@ class Mesh {
         parser.onFace = { (count, vertexIndices, vertexTextureCoordIndices, vertexNormalIndices ) in
             if count != 3 { return }
             for i in 0..<count {
-                vertices[vertexIndices[i]].normal = normals[vertexNormalIndices[i]]
-                vertices[vertexIndices[i]].uvs = uvs[vertexTextureCoordIndices[i]]
+                if vertexNormalIndices.count > i { vertices[vertexIndices[i]].normal = normals[vertexNormalIndices[i]] }
+                if vertexTextureCoordIndices.count > i { vertices[vertexIndices[i]].uvs = uvs[vertexTextureCoordIndices[i]] }
             }
             triangles.append(Triangle(a: vertices[vertexIndices[0]], b: vertices[vertexIndices[1]], c: vertices[vertexIndices[2]]))
         }
