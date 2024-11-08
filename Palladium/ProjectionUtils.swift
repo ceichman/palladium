@@ -15,3 +15,9 @@ struct ProjectionParams {
     var farZ: Float
     var time: Float
 }
+
+struct TransformationParams {
+    var origin: simd_float3
+    var rotation: simd_float3
+    var scale: simd_float3
+}

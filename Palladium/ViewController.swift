@@ -7,6 +7,7 @@
 
 import UIKit
 import Metal
+import simd
 
 class ViewController: UIViewController {
     
@@ -16,6 +17,7 @@ class ViewController: UIViewController {
     var pipelineState: MTLRenderPipelineState!
     var commandQueue: MTLCommandQueue!
     var timer: CADisplayLink! // synchronize render call with display refresh rate
+    var mesh: Mesh!
     
     let outputPixelFormat: MTLPixelFormat = .bgra8Unorm
 
@@ -34,16 +36,13 @@ class ViewController: UIViewController {
         
         // load vertices
         cubeMesh.calculateNormals()
-        let (vertexArray, dataSize) = cubeMesh.vertexArray()
+        self.mesh = cubeMesh
         
-        /*
         let mainBundle = Bundle.main
         let fileURL = mainBundle.url(forResource: "teapot", withExtension: "obj")!
         let mesh = Mesh.fromOBJ(url: fileURL)
-        let (meshVertices, dataSize) = mesh.vertexArray()
-        vertexBuffer = device.makeBuffer(bytes: meshVertices, length: dataSize, options: [])
-         */
         
+        let (vertexArray, dataSize) = self.mesh.vertexArray()
         vertexBuffer = device.makeBuffer(bytes: vertexArray, length: dataSize, options: []) // options have to do with buffer storage and lifetime
         
         // set up render pipeline
@@ -96,10 +95,12 @@ class ViewController: UIViewController {
         let fovDegrees = 40.0
         var projectionParams = ProjectionParams(aspectRatio: Float(aspectRatio),
                                                 fovRadians: Float(fovDegrees / 180.0 * Double.pi),
-                                                nearZ: 1,
+                                                nearZ: 0.3,
                                                 farZ: 1000.0,
                                                 time: Float(fmod(time, Double.pi * 2.0)))
-        
+        let xPosition = Float(cos(time) * 2.5)
+        let yPosition = Float(sin(time) * 2.5)
+        var transformationParams = TransformationParams(origin: simd_float3(0.0, 1.0, 4.0), rotation: simd_float3(xPosition, yPosition, 0), scale: simd_float3(1, 0.4, 1))
         let commandBuffer = commandQueue.makeCommandBuffer() // holds one or more render commands
         // configure render command
         guard let renderEncoder = commandBuffer?.makeRenderCommandEncoder(descriptor: renderPassDescriptor) else { return }
@@ -108,6 +109,7 @@ class ViewController: UIViewController {
         renderEncoder.setRenderPipelineState(pipelineState)
         renderEncoder.setVertexBuffer(vertexBuffer, offset: 0, index: 0)
         renderEncoder.setVertexBytes(&projectionParams, length: MemoryLayout.size(ofValue: projectionParams), index: 1)
+        renderEncoder.setVertexBytes(&transformationParams, length: 48, index: 2)
         renderEncoder.setFragmentBytes(&fragParams, length: MemoryLayout.size(ofValue: fragParams), index: 0) // set*Bytes is convenient because you can pass a buffer to the shader without having to explicitly create it in Swift with device.makeBuffer(). probably saves system memory too
         // interpret vertexCount vertices as instanceCount instances of type .triangle
         renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: triangles.count * 3, instanceCount: triangles.count)
