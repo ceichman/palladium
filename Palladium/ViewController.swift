@@ -105,6 +105,7 @@ class ViewController: UIViewController {
         let commandBuffer = commandQueue.makeCommandBuffer() // holds one or more render commands
         // configure render command
         guard let renderEncoder = commandBuffer?.makeRenderCommandEncoder(descriptor: renderPassDescriptor) else { return }
+        renderEncoder.label = "Immediate render pass"
         renderEncoder.setTriangleFillMode(.fill)
         renderEncoder.setCullMode(.back)
         renderEncoder.setRenderPipelineState(pipelineState)
@@ -113,7 +114,7 @@ class ViewController: UIViewController {
         renderEncoder.setVertexBytes(&transformationParams, length: MemoryLayout.size(ofValue: transformationParams), index: 2)
         renderEncoder.setFragmentBytes(&fragParams, length: MemoryLayout.size(ofValue: fragParams), index: 0) // set*Bytes is convenient because you can pass a buffer to the shader without having to explicitly create it in Swift with device.makeBuffer(). probably saves system memory too
         // interpret vertexCount vertices as instanceCount instances of type .triangle
-        renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: mesh.triangles.count * 3, instanceCount: mesh.triangles.count)
+        renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: self.mesh.triangles.count * 3, instanceCount: self.mesh.triangles.count)
         renderEncoder.endEncoding()
         commandBuffer?.present(drawable) // render to scene color (output)
         commandBuffer?.commit()
