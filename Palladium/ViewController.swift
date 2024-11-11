@@ -41,6 +41,9 @@ class ViewController: UIViewController, MTKViewDelegate {
         let teapotMesh = Mesh.fromOBJ(url: fileURL)
         teapotMesh.calculateNormals()
         self.mesh = teapotMesh
+        // let fileURL = mainBundle.url(forResource: "cube-normal", withExtension: "obj")!
+        // let cubeMesh = Mesh.fromOBJ(url: fileURL)
+        // self.mesh = cubeMesh
         
         let (vertexArray, dataSize) = self.mesh.vertexArray()
         vertexBuffer = device.makeBuffer(bytes: vertexArray, length: dataSize, options: []) // options have to do with buffer storage and lifetime
@@ -129,15 +132,6 @@ class ViewController: UIViewController, MTKViewDelegate {
         }
     }
     
-
-    
-    @objc func mainLoop() {
-        autoreleasepool { // make sure render call doesn't leak memory
-            // self.render()
-        }
-    }
-    
-
 
 }
 

@@ -141,21 +141,29 @@ vertex ProjectedVertex project_vertex(
     float4 scaled = scalingMatrix * vert;
     float4 rotated = rotationMatrix * scaled;
     float4 translated = translationMatrix * rotated;
-    float4 projected = projMatrix * translated;
+    // float4 projected = projMatrix * translated;
+    float4 projectedPosition = projMatrix * translationMatrix * rotationMatrix * scalingMatrix * vert;
+    float4 projectedNormal = projMatrix * translationMatrix * rotationMatrix * scalingMatrix * inVertex.normal;
     // then normalize in z
-    float4 normalized = projected;
-    if (projected.w != 0.0) {
-        normalized.x /= projected.w;
-        normalized.y /= projected.w;
-        normalized.z /= projected.w;
+    float4 normalizedNormal = projectedNormal;
+    if (projectedNormal.w != 0.0) {
+        normalizedNormal.x /= projectedNormal.w;
+        normalizedNormal.y /= projectedNormal.w;
+        normalizedNormal.z /= projectedNormal.w;
     }
-    return { .position =  normalized, .color =  inVertex.color, .normal =  inVertex.normal };
+    float4 normalizedPosition = projectedPosition;
+    if (projectedPosition.w != 0.0) {
+        normalizedPosition.x /= projectedPosition.w;
+        normalizedPosition.y /= projectedPosition.w;
+        normalizedPosition.z /= projectedPosition.w;
+    }
+    return { .position = normalizedPosition, .color = inVertex.color, .normal = projectedNormal };
 }
 
 
 fragment half4 basic_fragment(ProjectedVertex vert [[stage_in]],
                               constant FragmentParams &params [[buffer(0)]]) {
-    float d = dot(vert.normal, simd_float4(0, 0, 1, 1));
+    float d = dot(vert.normal, simd_float4(1, 0, 0, 1));
     return half4(vert.color * d);
 }
                         

@@ -23,6 +23,9 @@ public class JFOBJParser<T: Sequence> where T.Iterator.Element == String {
     private let textureRegex = try! NSRegularExpression(pattern: "^vt\\s+([-+]?[0-9]*\\.?[0-9]+)\\s+([-+]?[0-9]*\\.?[0-9]+)$", options: [])
     private let normalRegex = try! NSRegularExpression(pattern: "^vn\\s+([-+]?[0-9]*\\.?[0-9]+)\\s+([-+]?[0-9]*\\.?[0-9]+)\\s+([-+]?[0-9]*\\.?[0-9]+)$", options: [])
     private let faceRegex = try! NSRegularExpression(pattern: "^f\\s+(.*)$", options: [])
+    // private let faceRegex = try! NSRegularExpression(pattern: "^f\\s+(\\d+)(//(\\d+))?(?:\\s+(\\d+)(//(\\d+))?)*$", options: [])
+    // private let faceRegex = try! NSRegularExpression(pattern: "^f\\s+((\\d+)(//(\\d+))?)(?:\\s+((\\d+)(//(\\d+))?))*$", options: [])
+
     
     public init(source: T) {
         self.source = source
