@@ -7,7 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1B16B3212CE29090008FB5B3 /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B16B3202CE29090008FB5B3 /* Renderer.swift */; };
+		1B16B3212CE29090008FB5B3 /* RendererDep.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B16B3202CE29090008FB5B3 /* RendererDep.swift */; };
+		1B9CEDBB2CE2C4CE0087C604 /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B9CEDBA2CE2C4CE0087C604 /* Renderer.swift */; };
 		D5A512EC2CD18CD90050E219 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A512EB2CD18CD90050E219 /* AppDelegate.swift */; };
 		D5A512EE2CD18CD90050E219 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A512ED2CD18CD90050E219 /* SceneDelegate.swift */; };
 		D5A512F02CD18CD90050E219 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A512EF2CD18CD90050E219 /* ViewController.swift */; };
@@ -43,7 +44,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		1B16B3202CE29090008FB5B3 /* Renderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Renderer.swift; sourceTree = "<group>"; };
+		1B16B3202CE29090008FB5B3 /* RendererDep.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RendererDep.swift; sourceTree = "<group>"; };
+		1B9CEDBA2CE2C4CE0087C604 /* Renderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Renderer.swift; sourceTree = "<group>"; };
 		D5A512E82CD18CD90050E219 /* Palladium.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Palladium.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D5A512EB2CD18CD90050E219 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		D5A512ED2CD18CD90050E219 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -126,7 +128,8 @@
 				D5A512F42CD18CDA0050E219 /* Assets.xcassets */,
 				D5A512F62CD18CDA0050E219 /* LaunchScreen.storyboard */,
 				D5A512F92CD18CDA0050E219 /* Info.plist */,
-				1B16B3202CE29090008FB5B3 /* Renderer.swift */,
+				1B16B3202CE29090008FB5B3 /* RendererDep.swift */,
+				1B9CEDBA2CE2C4CE0087C604 /* Renderer.swift */,
 			);
 			path = Palladium;
 			sourceTree = "<group>";
@@ -285,9 +288,10 @@
 				D5AEB37A2CD9398600C30959 /* Mesh.swift in Sources */,
 				D5A512F02CD18CD90050E219 /* ViewController.swift in Sources */,
 				D5A512EC2CD18CD90050E219 /* AppDelegate.swift in Sources */,
+				1B9CEDBB2CE2C4CE0087C604 /* Renderer.swift in Sources */,
 				D5AEB37C2CD939EE00C30959 /* ProjectionUtils.swift in Sources */,
 				D5A512EE2CD18CD90050E219 /* SceneDelegate.swift in Sources */,
-				1B16B3212CE29090008FB5B3 /* Renderer.swift in Sources */,
+				1B16B3212CE29090008FB5B3 /* RendererDep.swift in Sources */,
 				D5AEB3822CD996D200C30959 /* OBJParser.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

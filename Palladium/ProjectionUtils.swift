@@ -15,7 +15,7 @@ struct ProjectionParams {
     var farZ: Float
     var time: Float
     // temp
-    var projectionMatrix: simd_float4x4
+    // var projectionMatrix: simd_float4x4
 }
 
 struct TransformationParams {
