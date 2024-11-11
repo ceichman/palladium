@@ -36,11 +36,12 @@ class ViewController: UIViewController {
         
         // load vertices
         cubeMesh.calculateNormals()
-        self.mesh = cubeMesh
+        // self.mesh = cubeMesh
         
         let mainBundle = Bundle.main
         let fileURL = mainBundle.url(forResource: "teapot", withExtension: "obj")!
-        let mesh = Mesh.fromOBJ(url: fileURL)
+        let teapotMesh = Mesh.fromOBJ(url: fileURL)
+        self.mesh = teapotMesh
         
         let (vertexArray, dataSize) = self.mesh.vertexArray()
         vertexBuffer = device.makeBuffer(bytes: vertexArray, length: dataSize, options: []) // options have to do with buffer storage and lifetime
@@ -98,9 +99,9 @@ class ViewController: UIViewController {
                                                 nearZ: 0.3,
                                                 farZ: 1000.0,
                                                 time: Float(fmod(time, Double.pi * 2.0)))
-        let xPosition = Float(cos(time) * 2.5)
+        let xPosition = Float(cos(time) * 2.5) + 3.0
         let yPosition = Float(sin(time) * 2.5)
-        var transformationParams = TransformationParams(origin: simd_float3(0.0, 1.0, 4.0), rotation: simd_float3(xPosition, yPosition, 0), scale: simd_float3(1, 0.4, 1))
+        var transformationParams = TransformationParams(origin: simd_float3(0.0, -2.0, 8.0), rotation: simd_float3(0, yPosition, 0), scale: simd_float3(1, 1, 1))
         let commandBuffer = commandQueue.makeCommandBuffer() // holds one or more render commands
         // configure render command
         guard let renderEncoder = commandBuffer?.makeRenderCommandEncoder(descriptor: renderPassDescriptor) else { return }
@@ -109,10 +110,10 @@ class ViewController: UIViewController {
         renderEncoder.setRenderPipelineState(pipelineState)
         renderEncoder.setVertexBuffer(vertexBuffer, offset: 0, index: 0)
         renderEncoder.setVertexBytes(&projectionParams, length: MemoryLayout.size(ofValue: projectionParams), index: 1)
-        renderEncoder.setVertexBytes(&transformationParams, length: 48, index: 2)
+        renderEncoder.setVertexBytes(&transformationParams, length: MemoryLayout.size(ofValue: transformationParams), index: 2)
         renderEncoder.setFragmentBytes(&fragParams, length: MemoryLayout.size(ofValue: fragParams), index: 0) // set*Bytes is convenient because you can pass a buffer to the shader without having to explicitly create it in Swift with device.makeBuffer(). probably saves system memory too
         // interpret vertexCount vertices as instanceCount instances of type .triangle
-        renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: triangles.count * 3, instanceCount: triangles.count)
+        renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: mesh.triangles.count * 3, instanceCount: mesh.triangles.count)
         renderEncoder.endEncoding()
         commandBuffer?.present(drawable) // render to scene color (output)
         commandBuffer?.commit()

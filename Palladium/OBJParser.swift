@@ -67,17 +67,11 @@ public class JFOBJParser<T: Sequence> where T.Iterator.Element == String {
     }
     
     public func parse() {
-        var vertices = [Int]()
-        var textureCoords = [Int]()
-        var vertexNormals = [Int]()
-
         for line in source {
-            let scanner = Scanner(string: line)
             // # List of geometric vertices, with (x,y,z[,w]) coordinates, w is optional and defaults to 1.0.
             // also supports trailing r,g,b vertex colours
             // v 0.123 0.234 0.345 1.0
             if let vertexMatch = match(line, regex: vertexRegex) {
-                let count = vertexMatch.count
                 let x = Float(vertexMatch[0]!) ?? 0.0
                 let y = Float(vertexMatch[1]!) ?? 0.0
                 let z = Float(vertexMatch[2]!) ?? 0.0
