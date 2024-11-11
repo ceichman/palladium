@@ -12,6 +12,8 @@ import simd
 import UIKit
 
 class Renderer {
+    // fragment shader params
+    // TODO: ensure corresponding struct definition in the shader is identical
     struct FragmentParams
     {
         var color: (Float, Float, Float, Float)  // just like a float4
@@ -35,7 +37,12 @@ class Renderer {
         self.mesh = mesh
          // the 0001 is a temporary debug thing
         self.fragParams = FragmentParams(color: (0, 0, 0, 1))
-        self.projectionParams = ProjectionParams(aspectRatio: 1, fovRadians: 0, nearZ: 0.3, farZ: 1000, time: 0)
+        self.projectionParams = ProjectionParams(aspectRatio: 1,
+                                                 fovRadians: 0,
+                                                 nearZ: 0.3,
+                                                 farZ: 1000,
+                                                 time: 0,
+                                                 projectionMatrix: simd_float4x4(1))
         self.transformationParams = TransformationParams(origin: simd_float3(0, -2, 8), rotation: simd_float3(0, 0, 0), scale: simd_float3(1, 1, 1))
         
         setupMetalLayer(for: view)
@@ -46,12 +53,34 @@ class Renderer {
     
     // temp?
     func updateProjectionParameters() {
+//        let aspectRatio = Float(metalLayer.drawableSize.width / metalLayer.drawableSize.height)
+//        let fovRadians = Float(45 * (.pi / 180.0))  // 45 degrees field of view, adjust as needed
+//        projectionParams.aspectRatio = aspectRatio
+//        projectionParams.fovRadians = fovRadians
+//        projectionParams.nearZ = 0.3
+//        projectionParams.farZ = 1000
+        
         let aspectRatio = Float(metalLayer.drawableSize.width / metalLayer.drawableSize.height)
-        let fovRadians = Float(45 * (.pi / 180.0))  // 45 degrees field of view, adjust as needed
-        projectionParams.aspectRatio = aspectRatio
-        projectionParams.fovRadians = fovRadians
-        projectionParams.nearZ = 0.3
-        projectionParams.farZ = 1000
+            let fovRadians = Float(45 * (.pi / 180.0))  // 45 degrees field of view, adjust as needed
+            let nearZ: Float = 0.3
+            let farZ: Float = 1000.0
+            
+            // Perspective projection matrix
+            let f = 1.0 / tan(fovRadians / 2.0)
+            let projectionMatrix = simd_float4x4([
+                simd_float4(f / aspectRatio, 0, 0, 0),
+                simd_float4(0, f, 0, 0),
+                simd_float4(0, 0, (farZ + nearZ) / (nearZ - farZ), -1),
+                simd_float4(0, 0, (2 * farZ * nearZ) / (nearZ - farZ), 0)
+            ])
+            
+            // Pass the projection matrix along with other parameters
+            projectionParams.projectionMatrix = projectionMatrix
+            projectionParams.aspectRatio = aspectRatio
+            projectionParams.fovRadians = fovRadians
+            projectionParams.nearZ = nearZ
+            projectionParams.farZ = farZ
+        
     }
 
     
@@ -83,10 +112,11 @@ class Renderer {
     }
     
     func render() {
+        
         guard let drawable = metalLayer.nextDrawable() else { return }
         updateProjectionParameters()
                 
-        // Update colors (consider only if colors need to change)
+        /// Draw some pretty colors (should note that this gets called for every render() so it won't be ideal if we have multiple objects of different colors
         let time = Date().timeIntervalSince1970.magnitude
         fragParams.color = (
             Float(sin(1.0 * time) / 2.0 + 0.5),
@@ -95,12 +125,13 @@ class Renderer {
             1.0
         )
         
-        // Update transformation and projection parameters only when needed
+        /// Update transformation and projection parameters only when needed
         transformationParams.rotation.y = Float(sin(time) * 2.5)
         
-        // Create command buffer and encoder as before, and avoid reallocating structures
+        /// Creates a command buffer
         let commandBuffer = commandQueue.makeCommandBuffer()
         
+        /// Creates a render pass descriptor and sets up render target texture
         let renderPassDescriptor = MTLRenderPassDescriptor()
         renderPassDescriptor.colorAttachments[0].texture = drawable.texture
         renderPassDescriptor.colorAttachments[0].loadAction = .clear
@@ -112,22 +143,26 @@ class Renderer {
             ) // set the vertices untouched by shaders to this default value (i.e. "background")
         
         
-        
+        /// Configure render command
         guard let renderEncoder = commandBuffer?.makeRenderCommandEncoder(descriptor: renderPassDescriptor) else { return }
-        
         renderEncoder.setRenderPipelineState(pipelineState)
         renderEncoder.setVertexBuffer(vertexBuffer, offset: 0, index: 0)
+        
+        /// Passes the projection matrix and transformation matrix to the shader (renderer) here
         renderEncoder.setVertexBytes(&projectionParams, length: MemoryLayout.size(ofValue: projectionParams), index: 1)
         renderEncoder.setVertexBytes(&transformationParams, length: MemoryLayout.size(ofValue: transformationParams), index: 2)
         renderEncoder.setFragmentBytes(&fragParams, length: MemoryLayout.size(ofValue: fragParams), index: 0)
-        
+        // interpret vertexCount vertices as instanceCount instances of type .triangle
+        // removed instance count to avoid multiplicative calls that slowed runtime
         renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: mesh.triangles.count * 3)
         renderEncoder.endEncoding()
         
         commandBuffer?.present(drawable)
         commandBuffer?.commit()
+    }
+}
 
-        
+
 //        // Set up render target texture
 //        guard let drawable = metalLayer.nextDrawable() else { return }
 //        let renderPassDescriptor = MTLRenderPassDescriptor()
@@ -139,7 +174,7 @@ class Renderer {
 //            blue: 55.0/255.0,
 //            alpha: 1.0
 //            ) // set the vertices untouched by shaders to this default value (i.e. "background")
-//        
+//
 //        // Draw some pretty colors
 //        let time = Date().timeIntervalSince1970.magnitude
 //        let redValue   = Float(sin(1.0 * time) / 2.0 + 0.5)  // just a sin of the times i guess..
@@ -151,7 +186,7 @@ class Renderer {
 //            let color: (Float, Float, Float, Float)  // just like a float4
 //        }
 //        var fragParams = FragmentParams(color: (redValue, greenValue, blueValue, 1.0))
-//        
+//
 //        let aspectRatio = metalLayer.drawableSize.height / metalLayer.drawableSize.width
 //        let fovDegrees = 40.0
 //        var projectionParams = ProjectionParams(aspectRatio: Float(aspectRatio),
@@ -177,5 +212,3 @@ class Renderer {
 //        renderEncoder.endEncoding()
 //        commandBuffer?.present(drawable) // render to scene color (output)
 //        commandBuffer?.commit()
-    }
-}
