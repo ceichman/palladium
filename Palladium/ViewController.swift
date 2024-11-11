@@ -14,11 +14,9 @@ class ViewController: UIViewController, MTKViewDelegate {
     
     
     var device: MTLDevice!
-    var metalLayer: CAMetalLayer! // CALayers exist on all views
     var vertexBuffer: MTLBuffer!
     var pipelineState: MTLRenderPipelineState!
     var commandQueue: MTLCommandQueue!
-    var timer: CADisplayLink! // synchronize render call with display refresh rate
     var mesh: Mesh!
     
     let outputPixelFormat: MTLPixelFormat = .bgra8Unorm
@@ -28,17 +26,11 @@ class ViewController: UIViewController, MTKViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        metalView.device = MTLCreateSystemDefaultDevice()
+        // set up device and metalView
+        device = MTLCreateSystemDefaultDevice()
+        metalView.device = self.device
         metalView.delegate = self
         
-        // set up device and metalLayer
-        device = MTLCreateSystemDefaultDevice()
-        metalLayer = CAMetalLayer()
-        metalLayer.device = device
-        metalLayer.pixelFormat = outputPixelFormat
-        metalLayer.framebufferOnly = true // set true unless you need to sample intermediate textures for this layer (performance reasons)
-        metalLayer.frame = view.layer.frame
-        view.layer.addSublayer(metalLayer)
         
         // load vertices
         // cubeMesh.calculateNormals()
