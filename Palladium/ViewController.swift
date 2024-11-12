@@ -9,7 +9,7 @@ import UIKit
 import Metal
 import MetalKit
 
-class ViewController: UIViewController, MTKViewDelegate {
+class ViewController: UIViewController {
     
     var renderer: Renderer!
     
@@ -18,10 +18,6 @@ class ViewController: UIViewController, MTKViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        /// Set up device and metalView
-        let device = MTLCreateSystemDefaultDevice()
-        metalView.device = device
-        metalView.delegate = self
         
         /// Load mesh
         let mainBundle = Bundle.main
@@ -29,16 +25,14 @@ class ViewController: UIViewController, MTKViewDelegate {
         let teapotMesh = Mesh.fromOBJ(url: fileURL)
         teapotMesh.calculateNormals()
         
+        let device = MTLCreateSystemDefaultDevice()
+        metalView.device = device
+        
         /// Creates a Renderer object (from refactor). Only supports a single mesh atm
         renderer = Renderer(device: device!, mesh: teapotMesh)
-    }
-    
-    func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
-        // TODO
-    }
-    
-    func draw(in view: MTKView) {
-        renderer.render(in: view)
+        /// Set up device and metalView
+        metalView.delegate = renderer
+
     }
     
 }

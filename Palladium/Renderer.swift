@@ -4,13 +4,13 @@ import simd
 
 /// This class focuses solely on rendering logic.
 
-class Renderer: NSObject {
+class Renderer: NSObject, MTKViewDelegate {
+    
     var device: MTLDevice!                      // GPU device
     var vertexBuffer: MTLBuffer!                // buffer used to store vertex data
     var pipelineState: MTLRenderPipelineState!  // how to process vertex and fragment shaders during rendering
     var commandQueue: MTLCommandQueue!          // commands for the GPU
     var mesh: Mesh!
-    let outputPixelFormat: MTLPixelFormat = .bgra8Unorm
 
     /// Initializes the Renderer object (should be created in ViewController as Renderer(device: [ __ ] mesh: [ __ ]) and calls setup()
     init(device: MTLDevice, mesh: Mesh) {
@@ -42,7 +42,7 @@ class Renderer: NSObject {
         vertexBuffer = device.makeBuffer(bytes: vertexArray, length: dataSize, options: [])
     }
     
-    func render(in view: MTKView) {
+    func draw(in view: MTKView) {
         autoreleasepool { // ensures efficient memory management
             guard let drawable = view.currentDrawable else { return } // retrieves current frame of the mesh
             
@@ -111,4 +111,11 @@ class Renderer: NSObject {
             commandBuffer?.commit()
         }
     }
+    
+    // placeholder for now, come back and add dynamic buffer resizing
+    func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
+        //
+    }
+
+    
 }
