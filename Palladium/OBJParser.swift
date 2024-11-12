@@ -25,8 +25,12 @@ public class JFOBJParser<T: Sequence> where T.Iterator.Element == String {
     private let faceRegex = try! NSRegularExpression(pattern: "^f\\s+(.*)$", options: [])
     // private let faceRegex = try! NSRegularExpression(pattern: "^f\\s+(\\d+)(//(\\d+))?(?:\\s+(\\d+)(//(\\d+))?)*$", options: [])
     // private let faceRegex = try! NSRegularExpression(pattern: "^f\\s+((\\d+)(//(\\d+))?)(?:\\s+((\\d+)(//(\\d+))?))*$", options: [])
+    private let faceRegexVertexOnly = try! NSRegularExpression(pattern: "^f ([0-9]+) ([0-9]+) ([0-9]+)$")
+    private let faceRegexVertexTexture = try! NSRegularExpression(pattern: "^f ([0-9]+)/([0-9]+) ([0-9]+)/([0-9]+) ([0-9]+)/([0-9]+)[ ]*$")
+    private let faceRegexVertexNormal = try! NSRegularExpression(pattern: "^f ([0-9]+)//([0-9]+) ([0-9]+)//([0-9]+) ([0-9]+)//([0-9]+)[ ]*$")
+    private let faceRegexVertexTextureNormal = try! NSRegularExpression(pattern: "^f ([0-9]+)/([0-9]+)/([0-9]+) ([0-9]+)/([0-9]+)/([0-9]+) ([0-9]+)/([0-9]+)/([0-9]+)[ ]*$")
 
-    
+
     public init(source: T) {
         self.source = source
         self.onVertex = { (x, y, z, w, r, g, b) in }
@@ -113,6 +117,7 @@ public class JFOBJParser<T: Sequence> where T.Iterator.Element == String {
             // f 3/1 4/2 5/3
             // f 6/4/1 3/5/3 7/6/5
             // f 7//1 8//2 9//3
+            /*
             else if let faceMatch = match(line, regex: faceRegex) {
                 let faceData = faceMatch[0]!
                 var vertexIndices = [Int]()
@@ -130,6 +135,51 @@ public class JFOBJParser<T: Sequence> where T.Iterator.Element == String {
                 }
                 onFace(count, vertexIndices, texCoordIndices, normalIndices)
             }
+             */
+            
+            else if let faceVertexMatch = match(line, regex: faceRegexVertexOnly) {
+                var vertexIndices = [Int]()
+                for vertexIndex in faceVertexMatch {
+                    vertexIndices.append(Int(vertexIndex!)! - 1)
+                }
+                onFace(faceVertexMatch.count, vertexIndices, [], [])
+            }
+            
+            else if let faceVertexTextureMatch = match(line, regex: faceRegexVertexTexture) {
+                let count = faceVertexTextureMatch.count / 2  // matches one v and one vn for each vertex in the face
+                var vertexIndices = [Int]()
+                var texCoordIndices = [Int]()
+                for i in 0..<count {
+                    vertexIndices.append(Int(faceVertexTextureMatch[2 * i]!)!)
+                    texCoordIndices.append(Int(faceVertexTextureMatch[(2 * i) + 1]!)!)
+                }
+                onFace(count, vertexIndices, texCoordIndices, [])
+            }
+            
+            else if let faceVertexNormalMatch = match(line, regex: faceRegexVertexNormal) {
+                let count = faceVertexNormalMatch.count / 2
+                var vertexIndices = [Int]()
+                var normalIndices = [Int]()
+                for i in 0..<count / 2 {
+                    vertexIndices.append(Int(faceVertexNormalMatch[2 * i]!)!)
+                    normalIndices.append(Int(faceVertexNormalMatch[(2 * i) + 1]!)!)
+                }
+                onFace(count, vertexIndices, [], normalIndices)
+            }
+            
+            else if let faceVertexTextureNormalMatch = match(line, regex: faceRegexVertexTextureNormal) {
+                let count = faceVertexTextureNormalMatch.count / 3
+                var vertexIndices = [Int]()
+                var texCoordIndices = [Int]()
+                var normalIndices = [Int]()
+                for i in 0..<count / 3 {
+                    vertexIndices.append(Int(faceVertexTextureNormalMatch[3 * i]!)!)
+                    texCoordIndices.append(Int(faceVertexTextureNormalMatch[(3 * i) + 1]!)!)
+                    normalIndices.append(Int(faceVertexTextureNormalMatch[(3 * i) + 2]!)!)
+                }
+                onFace(count, vertexIndices, texCoordIndices, normalIndices)
+            }
+            
         }
     }
 
