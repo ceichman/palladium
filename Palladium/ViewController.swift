@@ -21,7 +21,7 @@ class ViewController: UIViewController {
         
         /// Load mesh
         let mainBundle = Bundle.main
-        let fileURL = mainBundle.url(forResource: "cat", withExtension: "obj", subdirectory: "meshes")!
+        let fileURL = mainBundle.url(forResource: "teapot", withExtension: "obj", subdirectory: "meshes")!
         let teapotMesh = Mesh.fromOBJ(url: fileURL)
         teapotMesh.calculateNormals()
         

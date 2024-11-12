@@ -120,13 +120,13 @@
 				D5A512ED2CD18CD90050E219 /* SceneDelegate.swift */,
 				D5A512EF2CD18CD90050E219 /* ViewController.swift */,
 				D5AEB37B2CD939EE00C30959 /* ProjectionUtils.swift */,
-				D5A5131B2CD190310050E219 /* Shaders.metal */,
+				1B9CEDBA2CE2C4CE0087C604 /* Renderer.swift */,
 				D5AEB3792CD9398600C30959 /* Mesh.swift */,
+				D5A5131B2CD190310050E219 /* Shaders.metal */,
 				D5A512F12CD18CD90050E219 /* Main.storyboard */,
 				D5A512F42CD18CDA0050E219 /* Assets.xcassets */,
 				D5A512F62CD18CDA0050E219 /* LaunchScreen.storyboard */,
 				D5A512F92CD18CDA0050E219 /* Info.plist */,
-				1B9CEDBA2CE2C4CE0087C604 /* Renderer.swift */,
 			);
 			path = Palladium;
 			sourceTree = "<group>";

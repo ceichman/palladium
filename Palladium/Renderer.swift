@@ -84,8 +84,8 @@ class Renderer: NSObject, MTKViewDelegate {
             let xPosition = Float(cos(time) * 2.5) + 4.0
             let yPosition = Float(sin(time) * 2.5)
             var transformationParams = TransformationParams(
-                origin: simd_float3(0.0, -2.0, 6.0),
-                rotation: simd_float3(0, yPosition, 0),
+                origin: simd_float3(0.0, -1.0, 6.0),
+                rotation: simd_float3(0.8, yPosition, 0),
                 scale: simd_float3(1, 1, 1)
             )
             

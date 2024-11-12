@@ -163,7 +163,7 @@ vertex ProjectedVertex project_vertex(
 
 fragment half4 basic_fragment(ProjectedVertex vert [[stage_in]],
                               constant FragmentParams &params [[buffer(0)]]) {
-    float d = dot(vert.normal, simd_float4(1, 0, 0, 1));
+    float d = dot(vert.normal, simd_float4(1, 1, 0, 1));
     return half4(vert.color * d);
 }
                         
