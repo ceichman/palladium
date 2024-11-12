@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		78B440672CE2BFF700FA9A7E /* Camera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78B440662CE2BFF700FA9A7E /* Camera.swift */; };
+		78B4406B2CE3091E00FA9A7E /* MatrixHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78B4406A2CE3091E00FA9A7E /* MatrixHelpers.swift */; };
 		D5A512EC2CD18CD90050E219 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A512EB2CD18CD90050E219 /* AppDelegate.swift */; };
 		D5A512EE2CD18CD90050E219 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A512ED2CD18CD90050E219 /* SceneDelegate.swift */; };
 		D5A512F02CD18CD90050E219 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A512EF2CD18CD90050E219 /* ViewController.swift */; };
@@ -42,6 +44,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		78B440662CE2BFF700FA9A7E /* Camera.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Camera.swift; sourceTree = "<group>"; };
+		78B4406A2CE3091E00FA9A7E /* MatrixHelpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MatrixHelpers.swift; sourceTree = "<group>"; };
 		D5A512E82CD18CD90050E219 /* Palladium.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Palladium.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D5A512EB2CD18CD90050E219 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		D5A512ED2CD18CD90050E219 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -117,6 +121,8 @@
 				D5A512EB2CD18CD90050E219 /* AppDelegate.swift */,
 				D5A512ED2CD18CD90050E219 /* SceneDelegate.swift */,
 				D5A512EF2CD18CD90050E219 /* ViewController.swift */,
+				78B440662CE2BFF700FA9A7E /* Camera.swift */,
+				78B4406A2CE3091E00FA9A7E /* MatrixHelpers.swift */,
 				D5AEB37B2CD939EE00C30959 /* ProjectionUtils.swift */,
 				D5A5131B2CD190310050E219 /* Shaders.metal */,
 				D5AEB3792CD9398600C30959 /* Mesh.swift */,
@@ -281,10 +287,12 @@
 				D5A5131C2CD190310050E219 /* Shaders.metal in Sources */,
 				D5AEB37A2CD9398600C30959 /* Mesh.swift in Sources */,
 				D5A512F02CD18CD90050E219 /* ViewController.swift in Sources */,
+				78B4406B2CE3091E00FA9A7E /* MatrixHelpers.swift in Sources */,
 				D5A512EC2CD18CD90050E219 /* AppDelegate.swift in Sources */,
 				D5AEB37C2CD939EE00C30959 /* ProjectionUtils.swift in Sources */,
 				D5A512EE2CD18CD90050E219 /* SceneDelegate.swift in Sources */,
 				D5AEB3822CD996D200C30959 /* OBJParser.swift in Sources */,
+				78B440672CE2BFF700FA9A7E /* Camera.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

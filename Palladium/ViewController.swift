@@ -20,9 +20,15 @@ class ViewController: UIViewController, MTKViewDelegate {
     var mesh: Mesh!
     
     let outputPixelFormat: MTLPixelFormat = .bgra8Unorm
+    
+    var camera: Camera!
 
     @IBOutlet weak var metalView: MTKView!
     
+    @IBOutlet weak var upButton: UIButton!
+    @IBOutlet weak var leftButton: UIButton!
+    @IBOutlet weak var rightButton: UIButton!
+    @IBOutlet weak var downButton: UIButton!
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -64,6 +70,9 @@ class ViewController: UIViewController, MTKViewDelegate {
         // timer = CADisplayLink(target: self, selector: #selector(mainLoop))
         // timer.add(to: RunLoop.main, forMode: .default)
         
+        //setup camera
+        camera = Camera(position: vec3d(x: 0, y: 0, z: 5), target: vec3d(x: 0, y: 0, z: 0))
+
         
     }
     
@@ -88,6 +97,8 @@ class ViewController: UIViewController, MTKViewDelegate {
                 alpha: 1.0
                 ) // set the vertices untouched by shaders to this default value (i.e. "background")
             
+            var viewMatrix = camera.getViewMatrix()
+            
             // Draw some pretty colors
             let time = Date().timeIntervalSince1970.magnitude
             let redValue   = Float(sin(1.0 * time) / 2.0 + 0.5)  // just a sin of the times i guess..
@@ -109,7 +120,7 @@ class ViewController: UIViewController, MTKViewDelegate {
                                                     time: Float(fmod(time, Double.pi * 2.0)))
             let xPosition = Float(cos(time) * 2.5) + 4.0
             let yPosition = Float(sin(time) * 2.5)
-            var transformationParams = TransformationParams(origin: simd_float3(0.0, -2.0, 6.0), rotation: simd_float3(0, yPosition, 0), scale: simd_float3(1, 1, 1))
+            var transformationParams = TransformationParams(origin: simd_float3(0.0, -1.0, 0.0), rotation: simd_float3(0, yPosition, 0), scale: simd_float3(1, 1, 1))
             let commandBuffer = commandQueue.makeCommandBuffer() // holds one or more render commands
             // configure render command
             guard let renderEncoder = commandBuffer?.makeRenderCommandEncoder(descriptor: renderPassDescriptor) else { return }
@@ -118,8 +129,11 @@ class ViewController: UIViewController, MTKViewDelegate {
             renderEncoder.setCullMode(.back)
             renderEncoder.setRenderPipelineState(pipelineState)
             renderEncoder.setVertexBuffer(vertexBuffer, offset: 0, index: 0)
+
             renderEncoder.setVertexBytes(&projectionParams, length: MemoryLayout.size(ofValue: projectionParams), index: 1)
             renderEncoder.setVertexBytes(&transformationParams, length: MemoryLayout.size(ofValue: transformationParams), index: 2)
+            renderEncoder.setVertexBytes(&viewMatrix, length: MemoryLayout<float4x4>.size, index: 3) // new set for the camera view
+
             renderEncoder.setFragmentBytes(&fragParams, length: MemoryLayout.size(ofValue: fragParams), index: 0) // set*Bytes is convenient because you can pass a buffer to the shader without having to explicitly create it in Swift with device.makeBuffer(). probably saves system memory too
             // interpret vertexCount vertices as instanceCount instances of type .triangle
             renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: self.mesh.triangles.count * 3) // triangles: 6319
@@ -137,7 +151,23 @@ class ViewController: UIViewController, MTKViewDelegate {
         }
     }
     
-
+    @IBAction func leftPressed(_ sender: Any) {
+        camera.moveLeft(0.3)
+        metalView.setNeedsDisplay()
+    }
+    @IBAction func upPressed(_ sender: Any) {
+        camera.moveUp(0.3)
+        metalView.setNeedsDisplay()
+    }
+    @IBAction func rightPressed(_ sender: Any) {
+        camera.moveRight(0.3)
+        metalView.setNeedsDisplay()
+    }
+    @IBAction func downPressed(_ sender: Any) {
+        camera.moveDown(0.3)
+        metalView.setNeedsDisplay()
+    }
+    
 
 }
 

@@ -120,36 +120,55 @@ constant vector_float3 NORTH = vector_float3(0, 0, 1);  // z
 // ---- END MATRIX UTILS ----
 
 vertex ProjectedVertex project_vertex(
-                             const device Vertex* vertex_array [[ buffer(0) ]],
-                             constant ProjectionParams &params [[ buffer(1) ]],
-                             constant TransformationParams &tparams [[ buffer(2) ]],
-                             unsigned int vid [[ vertex_id ]])
-{
+    const device Vertex* vertex_array [[ buffer(0) ]],
+    constant ProjectionParams &params [[ buffer(1) ]],
+    constant TransformationParams &tparams [[ buffer(2) ]],
+    constant float4x4 &viewMatrix [[ buffer(3) ]],
+    unsigned int vid [[ vertex_id ]]
+) {
     Vertex inVertex = vertex_array[vid];
     float4 vert = float4(inVertex.position.xyz, 1.0);
-    // float4 prerotated = rotation_matrix(EAST, params.time * 2.0) * float4(inVertex.position.xyz, 1.0);
-    // float4 rotated = rotation_matrix(UP, params.time) * prerotated;
-    // float4 rotated = float4(inVertex.position.xyz, 1.0);
-    // rotated.z += 3.0;
-    // rotated.y -= 0.5;
+
+    // Construct the transformation matrices
     float4x4 scalingMatrix = scaling_matrix(tparams.scale);
-    // TODO: following approach suffers from gimbal lock
-    // (loss of information from tparams.rotation: float3 -> rotation_matrix(float3, float4)
-    float4x4 rotationMatrix = rotation_matrix(EAST, tparams.rotation.x) * rotation_matrix(UP, tparams.rotation.y) * rotation_matrix(NORTH, tparams.rotation.z);
+    float4x4 rotationMatrix = rotation_matrix(EAST, tparams.rotation.x) *
+                              rotation_matrix(UP, tparams.rotation.y) *
+                              rotation_matrix(NORTH, tparams.rotation.z);
     float4x4 translationMatrix = translation_matrix(tparams.origin);
+
+    // Combine all transformations: model, view, and projection
+    float4x4 modelMatrix = translationMatrix * rotationMatrix * scalingMatrix;
+    float4x4 modelViewMatrix = viewMatrix * modelMatrix;
     float4x4 projMatrix = projection_matrix(params.aspectRatio, params.fovRadians, params.nearZ, params.farZ);
-    float4 scaled = scalingMatrix * vert;
-    float4 rotated = rotationMatrix * scaled;
-    float4 translated = translationMatrix * rotated;
-    float4 projected = projMatrix * translated;
-    // then normalize in z
-    float4 normalized = projected;
-    if (projected.w != 0.0) {
-        normalized.x /= projected.w;
-        normalized.y /= projected.w;
-        normalized.z /= projected.w;
+
+    // Transform the vertex position
+    float4 transformedPosition = modelViewMatrix * vert;
+    float4 projectedPosition = projMatrix * transformedPosition;
+
+    // Transform the normal
+    float4 transformedNormal = modelMatrix * inVertex.normal;
+    float4 projectedNormal = projMatrix * transformedNormal;
+
+    // Normalize the position
+    float4 normalizedPosition = projectedPosition;
+    if (projectedPosition.w != 0.0) {
+        normalizedPosition.x /= projectedPosition.w;
+        normalizedPosition.y /= projectedPosition.w;
+        normalizedPosition.z /= projectedPosition.w;
     }
-    return { .position =  normalized, .color =  inVertex.color, .normal =  inVertex.normal };
+
+    float4 normalizedNormal = projectedNormal;
+    if (projectedNormal.w != 0.0) {
+        normalizedNormal.x /= projectedNormal.w;
+        normalizedNormal.y /= projectedNormal.w;
+        normalizedNormal.z /= projectedNormal.w;
+    }
+
+    return {
+        .position = normalizedPosition,
+        .color = inVertex.color,
+        .normal = transformedNormal
+    };
 }
 
 
