@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		1B9CEDBB2CE2C4CE0087C604 /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B9CEDBA2CE2C4CE0087C604 /* Renderer.swift */; };
-		D5559C072CE2C0F700019348 /* cube-normal.obj in Resources */ = {isa = PBXBuildFile; fileRef = D5559C062CE2C0F700019348 /* cube-normal.obj */; };
+		D5559C162CE2E23800019348 /* meshes in Resources */ = {isa = PBXBuildFile; fileRef = D5559C152CE2E23800019348 /* meshes */; };
 		D5A512EC2CD18CD90050E219 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A512EB2CD18CD90050E219 /* AppDelegate.swift */; };
 		D5A512EE2CD18CD90050E219 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A512ED2CD18CD90050E219 /* SceneDelegate.swift */; };
 		D5A512F02CD18CD90050E219 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A512EF2CD18CD90050E219 /* ViewController.swift */; };
@@ -21,7 +21,6 @@
 		D5A5131C2CD190310050E219 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = D5A5131B2CD190310050E219 /* Shaders.metal */; };
 		D5AEB37A2CD9398600C30959 /* Mesh.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5AEB3792CD9398600C30959 /* Mesh.swift */; };
 		D5AEB37C2CD939EE00C30959 /* ProjectionUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5AEB37B2CD939EE00C30959 /* ProjectionUtils.swift */; };
-		D5AEB3802CD9966C00C30959 /* teapot.obj in Resources */ = {isa = PBXBuildFile; fileRef = D5AEB37F2CD9966C00C30959 /* teapot.obj */; };
 		D5AEB3822CD996D200C30959 /* OBJParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5AEB3812CD996D200C30959 /* OBJParser.swift */; };
 		D5F50ABA2CDAD12F00B27E0D /* LineReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5F50AB92CDAD12F00B27E0D /* LineReader.swift */; };
 /* End PBXBuildFile section */
@@ -45,7 +44,7 @@
 
 /* Begin PBXFileReference section */
 		1B9CEDBA2CE2C4CE0087C604 /* Renderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Renderer.swift; sourceTree = "<group>"; };
-		D5559C062CE2C0F700019348 /* cube-normal.obj */ = {isa = PBXFileReference; lastKnownFileType = text; path = "cube-normal.obj"; sourceTree = "<group>"; };
+		D5559C152CE2E23800019348 /* meshes */ = {isa = PBXFileReference; lastKnownFileType = folder; path = meshes; sourceTree = "<group>"; };
 		D5A512E82CD18CD90050E219 /* Palladium.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Palladium.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D5A512EB2CD18CD90050E219 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		D5A512ED2CD18CD90050E219 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -62,7 +61,6 @@
 		D5A5131B2CD190310050E219 /* Shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
 		D5AEB3792CD9398600C30959 /* Mesh.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mesh.swift; sourceTree = "<group>"; };
 		D5AEB37B2CD939EE00C30959 /* ProjectionUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectionUtils.swift; sourceTree = "<group>"; };
-		D5AEB37F2CD9966C00C30959 /* teapot.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = teapot.obj; sourceTree = "<group>"; };
 		D5AEB3812CD996D200C30959 /* OBJParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OBJParser.swift; sourceTree = "<group>"; };
 		D5F50AB92CDAD12F00B27E0D /* LineReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineReader.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -115,15 +113,14 @@
 		D5A512EA2CD18CD90050E219 /* Palladium */ = {
 			isa = PBXGroup;
 			children = (
+				D5559C152CE2E23800019348 /* meshes */,
 				D5AEB3812CD996D200C30959 /* OBJParser.swift */,
 				D5F50AB92CDAD12F00B27E0D /* LineReader.swift */,
-				D5AEB37F2CD9966C00C30959 /* teapot.obj */,
 				D5A512EB2CD18CD90050E219 /* AppDelegate.swift */,
 				D5A512ED2CD18CD90050E219 /* SceneDelegate.swift */,
 				D5A512EF2CD18CD90050E219 /* ViewController.swift */,
 				D5AEB37B2CD939EE00C30959 /* ProjectionUtils.swift */,
 				D5A5131B2CD190310050E219 /* Shaders.metal */,
-				D5559C062CE2C0F700019348 /* cube-normal.obj */,
 				D5AEB3792CD9398600C30959 /* Mesh.swift */,
 				D5A512F12CD18CD90050E219 /* Main.storyboard */,
 				D5A512F42CD18CDA0050E219 /* Assets.xcassets */,
@@ -255,11 +252,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D5AEB3802CD9966C00C30959 /* teapot.obj in Resources */,
 				D5A512F52CD18CDA0050E219 /* Assets.xcassets in Resources */,
-				D5559C072CE2C0F700019348 /* cube-normal.obj in Resources */,
 				D5A512F82CD18CDA0050E219 /* Base in Resources */,
 				D5A512F32CD18CD90050E219 /* Base in Resources */,
+				D5559C162CE2E23800019348 /* meshes in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
