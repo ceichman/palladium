@@ -9,7 +9,7 @@ import Foundation
 // https://en.wikipedia.org/wiki/Wavefront_.obj_file
 
 
-public struct JFOBJParserStats {
+public struct OBJParserStats {
     public var numberOfVertices: Int = 0
     public var numberOfTextureCoords: Int = 0
     public var numberOfVertexNormals: Int = 0
@@ -17,7 +17,7 @@ public struct JFOBJParserStats {
     public var numberOfFaces: Int = 0
 }
 
-public class JFOBJParser<T: Sequence> where T.Iterator.Element == String {
+public class OBJParser<T: Sequence> where T.Iterator.Element == String {
     
     private let vertexRegex = try! NSRegularExpression(pattern: "^v\\s+([-+]?[0-9]*\\.?[0-9]+)\\s+([-+]?[0-9]*\\.?[0-9]+)\\s+([-+]?[0-9]*\\.?[0-9]+)(\\s+([-+]?[0-9]*\\.?[0-9]+))?(\\s+([-+]?[0-9]*\\.?[0-9]+))?(\\s+([-+]?[0-9]*\\.?[0-9]+))?$", options: [])
     private let textureRegex = try! NSRegularExpression(pattern: "^vt\\s+([-+]?[0-9]*\\.?[0-9]+)\\s+([-+]?[0-9]*\\.?[0-9]+)$", options: [])
@@ -41,8 +41,8 @@ public class JFOBJParser<T: Sequence> where T.Iterator.Element == String {
         self.onUnknown = { (line) in }
     }
     
-    public func count() -> JFOBJParserStats {
-        var stats = JFOBJParserStats()
+    public func count() -> OBJParserStats {
+        var stats = OBJParserStats()
         for line in source {
             if line.hasPrefix("v ") {
                 stats.numberOfVertices += 1
@@ -150,8 +150,8 @@ public class JFOBJParser<T: Sequence> where T.Iterator.Element == String {
                 var vertexIndices = [Int]()
                 var texCoordIndices = [Int]()
                 for i in 0..<count {
-                    vertexIndices.append(Int(faceVertexTextureMatch[2 * i]!)!)
-                    texCoordIndices.append(Int(faceVertexTextureMatch[(2 * i) + 1]!)!)
+                    vertexIndices.append(Int(faceVertexTextureMatch[2 * i]!)! - 1)
+                    texCoordIndices.append(Int(faceVertexTextureMatch[(2 * i) + 1]!)! - 1)
                 }
                 onFace(count, vertexIndices, texCoordIndices, [])
             }
@@ -160,9 +160,9 @@ public class JFOBJParser<T: Sequence> where T.Iterator.Element == String {
                 let count = faceVertexNormalMatch.count / 2
                 var vertexIndices = [Int]()
                 var normalIndices = [Int]()
-                for i in 0..<count / 2 {
-                    vertexIndices.append(Int(faceVertexNormalMatch[2 * i]!)!)
-                    normalIndices.append(Int(faceVertexNormalMatch[(2 * i) + 1]!)!)
+                for i in 0..<count {
+                    vertexIndices.append(Int(faceVertexNormalMatch[2 * i]!)! - 1)
+                    normalIndices.append(Int(faceVertexNormalMatch[(2 * i) + 1]!)! - 1)
                 }
                 onFace(count, vertexIndices, [], normalIndices)
             }
@@ -172,10 +172,10 @@ public class JFOBJParser<T: Sequence> where T.Iterator.Element == String {
                 var vertexIndices = [Int]()
                 var texCoordIndices = [Int]()
                 var normalIndices = [Int]()
-                for i in 0..<count / 3 {
-                    vertexIndices.append(Int(faceVertexTextureNormalMatch[3 * i]!)!)
-                    texCoordIndices.append(Int(faceVertexTextureNormalMatch[(3 * i) + 1]!)!)
-                    normalIndices.append(Int(faceVertexTextureNormalMatch[(3 * i) + 2]!)!)
+                for i in 0..<count {
+                    vertexIndices.append(Int(faceVertexTextureNormalMatch[3 * i]!)! - 1)
+                    texCoordIndices.append(Int(faceVertexTextureNormalMatch[(3 * i) + 1]!)! - 1)
+                    normalIndices.append(Int(faceVertexTextureNormalMatch[(3 * i) + 2]!)! - 1)
                 }
                 onFace(count, vertexIndices, texCoordIndices, normalIndices)
             }

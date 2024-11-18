@@ -16,9 +16,9 @@ import simd
 // to take advantage of pass-by-reference so that multiple Triangle primitives can
 // reuse the same underlying vertex during normal calculation.
 class ApplicationVertex {
-    var position: simd_float3
-    var color: simd_float4
-    var normal: simd_float4
+    var position = simd_float3(0, 0, 0)
+    var color = simd_float4(0, 0, 0, 0)
+    var normal = simd_float4(0, 0, 0, 0)
     var uvs = simd_float2.zero
     
     init(position: simd_float3, color: simd_float4, normal: simd_float4) {
@@ -75,17 +75,22 @@ class Mesh {
     // Each vertex in each triangle should be a member of vertices.
     // Only needed upon loading new vertex data.
     func calculateNormals() {
-        for i in triangles.indices {
-            let lineA = triangles[i].b.position - triangles[i].a.position
-            let lineB = triangles[i].c.position - triangles[i].a.position
+        for i in self.triangles.indices {
+            let lineA = self.triangles[i].b.position - self.triangles[i].a.position
+            let lineB = self.triangles[i].c.position - self.triangles[i].a.position
             let cross3 = cross(lineA, lineB)
             let cross4 = simd_float4(cross3, 0.0)
-            triangles[i].a.normal += cross4
-            triangles[i].b.normal += cross4
-            triangles[i].c.normal += cross4
+            self.triangles[i].a.normal += cross4
+            self.triangles[i].b.normal += cross4
+            self.triangles[i].c.normal += cross4
         }
         // normalize all vertices
+        normalizeNormals()
+    }
+    
+    func normalizeNormals() {
         for i in vertices.indices {
+            if vertices[i].normal == simd_float4.zero { continue }
             vertices[i].normal = normalize(vertices[i].normal)
         }
     }
@@ -102,8 +107,8 @@ class Mesh {
     }
     
     static func fromOBJ(url: URL) -> Mesh {
-        let reader = JFLineReader(url: url)!
-        let parser = JFOBJParser(source: reader)
+        let reader = LineReader(url: url)!
+        let parser = OBJParser(source: reader)
         
         var vertices: [ApplicationVertex] = []
         var normals: [simd_float4] = []
@@ -128,7 +133,7 @@ class Mesh {
         parser.onFace = { (count, vertexIndices, vertexTextureCoordIndices, vertexNormalIndices ) in
             if count != 3 { return }
             for i in 0..<count {
-                if vertexNormalIndices.count > i { vertices[vertexIndices[i]].normal = normals[vertexNormalIndices[i]] }
+                if vertexNormalIndices.count > i { vertices[vertexIndices[i]].normal += normals[vertexNormalIndices[i]] } // accumulate and normalize later
                 if vertexTextureCoordIndices.count > i { vertices[vertexIndices[i]].uvs = uvs[vertexTextureCoordIndices[i]] }
             }
             triangles.append(Triangle(a: vertices[vertexIndices[0]], b: vertices[vertexIndices[1]], c: vertices[vertexIndices[2]]))
@@ -138,7 +143,10 @@ class Mesh {
         
         parser.parse() // populate arrays
         
-        return Mesh(triangles: triangles, vertices: vertices)
+        let mesh = Mesh(triangles: triangles, vertices: vertices)
+        mesh.normalizeNormals()
+        
+        return mesh
     }
         
 }

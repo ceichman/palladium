@@ -22,14 +22,16 @@ class ViewController: UIViewController {
         /// Load mesh
         let mainBundle = Bundle.main
         let fileURL = mainBundle.url(forResource: "teapot", withExtension: "obj", subdirectory: "meshes")!
-        let teapotMesh = Mesh.fromOBJ(url: fileURL)
-        teapotMesh.calculateNormals()
+        // let fileURL = mainBundle.url(forResource: "cat", withExtension: "obj", subdirectory: "meshes")!
+        // let fileURL = mainBundle.url(forResource: "cube-normal", withExtension: "obj", subdirectory: "meshes")!
+        let mesh = Mesh.fromOBJ(url: fileURL)
+        mesh.calculateNormals()  // only needed if original OBJ has no normals. Maybe detect this automatically?
         
         let device = MTLCreateSystemDefaultDevice()
         metalView.device = device
         
         /// Creates a Renderer object (from refactor). Only supports a single mesh atm
-        renderer = Renderer(device: device!, mesh: teapotMesh)
+        renderer = Renderer(device: device!, mesh: mesh)
         /// Set up device and metalView
         metalView.delegate = renderer
 

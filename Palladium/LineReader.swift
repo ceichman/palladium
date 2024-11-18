@@ -5,7 +5,7 @@
 
 import Foundation
 
-public class JFLineReader: Sequence, IteratorProtocol {
+public class LineReader: Sequence, IteratorProtocol {
     
     var lines: [String] = []
     var index = 0
