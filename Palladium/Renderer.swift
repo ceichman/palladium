@@ -9,6 +9,7 @@ class Renderer: NSObject, MTKViewDelegate {
     var device: MTLDevice!                      // GPU device
     private var vertexBuffer: MTLBuffer!                // buffer used to store vertex data
     private var pipelineState: MTLRenderPipelineState!  // how to process vertex and fragment shaders during rendering
+    private var depthStencilState: MTLDepthStencilState!
     private var commandQueue: MTLCommandQueue!          // commands for the GPU
     var mesh: Mesh!
     var delegate: RendererDelegate?
@@ -41,6 +42,12 @@ class Renderer: NSObject, MTKViewDelegate {
         /// Create vertex buffer
         let (vertexArray, dataSize) = mesh.vertexArray()
         vertexBuffer = device.makeBuffer(bytes: vertexArray, length: dataSize, options: [])
+        
+        /// Initialize depth stencil state
+        let depthStencilDescriptor = MTLDepthStencilDescriptor()
+        depthStencilDescriptor.depthCompareFunction = .less
+        depthStencilDescriptor.isDepthWriteEnabled = true
+        depthStencilState = device.makeDepthStencilState(descriptor: depthStencilDescriptor)
     }
     
     func draw(in view: MTKView) {
@@ -85,7 +92,9 @@ class Renderer: NSObject, MTKViewDelegate {
             renderEncoder.label = "Immediate render pass"
             renderEncoder.setTriangleFillMode(.fill)
             renderEncoder.setCullMode(.back)
+            renderEncoder.setFrontFacing(.clockwise)
             renderEncoder.setRenderPipelineState(pipelineState)
+            renderEncoder.setDepthStencilState(self.depthStencilState)
             renderEncoder.setVertexBuffer(vertexBuffer, offset: 0, index: 0)
             renderEncoder.setVertexBytes(&projectionParams, length: MemoryLayout.size(ofValue: projectionParams), index: 1)
             renderEncoder.setVertexBytes(&transformationParams, length: MemoryLayout.size(ofValue: transformationParams), index: 2)
