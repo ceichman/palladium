@@ -32,3 +32,35 @@ func matrixPointAt(pos: simd_float3, target: simd_float3) -> float4x4 {
 
     return float4x4(A, B, C, D)
 }
+
+func rotation_matrix(axis: vector_float3, theta: Float) -> matrix_float4x4
+{
+    let c = cos(theta);
+    let s = sin(theta);
+    
+    var X = vector_float4()
+    X.x = axis.x * axis.x + (1 - axis.x * axis.x) * c
+    X.y = axis.x * axis.y * (1 - c) - axis.z * s
+    X.z = axis.x * axis.z * (1 - c) + axis.y * s
+    X.w = 0.0;
+    
+    var Y = vector_float4()
+    Y.x = axis.x * axis.y * (1 - c) + axis.z * s
+    Y.y = axis.y * axis.y + (1 - axis.y * axis.y) * c
+    Y.z = axis.y * axis.z * (1 - c) - axis.x * s
+    Y.w = 0.0
+    
+    var Z = vector_float4()
+    Z.x = axis.x * axis.z * (1 - c) - axis.y * s
+    Z.y = axis.y * axis.z * (1 - c) + axis.x * s
+    Z.z = axis.z * axis.z + (1 - axis.z * axis.z) * c
+    Z.w = 0.0;
+    
+    var W = vector_float4()
+    W.x = 0.0;
+    W.y = 0.0;
+    W.z = 0.0;
+    W.w = 1.0;
+    
+    return matrix_float4x4(X, Y, Z, W);
+}

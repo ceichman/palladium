@@ -15,7 +15,7 @@ class ViewController: UIViewController, RendererDelegate {
     var mesh: Mesh!
     var camera: Camera!
     
-    let cameraVelocity: Float = 3.0
+    let cameraVelocity: Float = 5.0
     
     @IBOutlet weak var metalView: MTKView!
     
@@ -49,7 +49,7 @@ class ViewController: UIViewController, RendererDelegate {
         pumpkinMesh.calculateNormals()
         
         /// Set up camera
-        self.camera = Camera(position: simd_float3(0, 0, 0), target: simd_float3(0, 0, 1))
+        self.camera = Camera(position: simd_float3(0, 0, 0), lookDirection: simd_float3(0, 0, 1))
         
         let device = MTLCreateSystemDefaultDevice()
         metalView.device = device
@@ -63,7 +63,12 @@ class ViewController: UIViewController, RendererDelegate {
         metalView.clearDepth = 0.0
         metalView.delegate = renderer
         renderer.delegate = self
-
+        
+        let panRecognizer = UIPanGestureRecognizer(target: self, action: #selector(didPan))
+        panRecognizer.minimumNumberOfTouches = 1
+        panRecognizer.maximumNumberOfTouches = 1
+        metalView.addGestureRecognizer(panRecognizer)
+        
     }
     
     func preRenderUpdate(deltaTime: CFTimeInterval) {
@@ -97,5 +102,25 @@ class ViewController: UIViewController, RendererDelegate {
     @IBAction func resetVertical(_ sender: UIButton) {
         camera.velocityY = 0.0
     }
-
+    
+    var lastLocation = CGPoint()
+    let sensitivity: Double = 0.02
+    @IBAction func didPan(_ sender: UIPanGestureRecognizer) {
+        switch sender.state {
+        case .began:
+            lastLocation = sender.location(in: metalView)
+        case .changed:
+            guard lastLocation != CGPoint() else { break }
+            let location = sender.location(in: metalView)
+            let (dx, dy) = (location.x - lastLocation.x, location.y - lastLocation.y)
+            lastLocation = location
+            camera.yaw(dTheta: Double(-dx) * sensitivity)
+            camera.pitch(dTheta: Double(-dy) * sensitivity)
+            //camera.lookDirection = camera.lookDirection + simd_float3(Float(dx), Float(-dy), 0) * sensitivity
+            
+        default:
+            lastLocation = CGPoint()
+        }
+    }
+    
 }
