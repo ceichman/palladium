@@ -20,7 +20,7 @@ public struct OBJParserStats {
 public class OBJParser<T: Sequence> where T.Iterator.Element == String {
     
     private let vertexRegex = try! NSRegularExpression(pattern: "^v\\s+([-+]?[0-9]*\\.?[0-9]+)\\s+([-+]?[0-9]*\\.?[0-9]+)\\s+([-+]?[0-9]*\\.?[0-9]+)(\\s+([-+]?[0-9]*\\.?[0-9]+))?(\\s+([-+]?[0-9]*\\.?[0-9]+))?(\\s+([-+]?[0-9]*\\.?[0-9]+))?$", options: [])
-    private let textureRegex = try! NSRegularExpression(pattern: "^vt\\s+([-+]?[0-9]*\\.?[0-9]+)\\s+([-+]?[0-9]*\\.?[0-9]+)$", options: [])
+    private let textureRegex = try! NSRegularExpression(pattern: "^vt\\s(-?\\d\\.*\\d*) (-?\\d\\.*\\d*) *(-?\\d\\.*\\d*)*$")
     private let normalRegex = try! NSRegularExpression(pattern: "^vn\\s+([-+]?[0-9]*\\.?[0-9]+)\\s+([-+]?[0-9]*\\.?[0-9]+)\\s+([-+]?[0-9]*\\.?[0-9]+)$", options: [])
     private let faceRegex = try! NSRegularExpression(pattern: "^f\\s+(.*)$", options: [])
     // private let faceRegex = try! NSRegularExpression(pattern: "^f\\s+(\\d+)(//(\\d+))?(?:\\s+(\\d+)(//(\\d+))?)*$", options: [])
@@ -106,8 +106,8 @@ public class OBJParser<T: Sequence> where T.Iterator.Element == String {
             // vn 0.707 0.000 0.707
             else if let normalMatch = match(line, regex: normalRegex) {
                 let x = Float(normalMatch[0]!) ?? 0.0
-                let y = Float(normalMatch[0]!) ?? 0.0
-                let z = Float(normalMatch[0]!) ?? 0.0
+                let y = Float(normalMatch[1]!) ?? 0.0
+                let z = Float(normalMatch[2]!) ?? 0.0
                 
                 onVertexNormal(x, y, z)
             }
@@ -117,25 +117,6 @@ public class OBJParser<T: Sequence> where T.Iterator.Element == String {
             // f 3/1 4/2 5/3
             // f 6/4/1 3/5/3 7/6/5
             // f 7//1 8//2 9//3
-            /*
-            else if let faceMatch = match(line, regex: faceRegex) {
-                let faceData = faceMatch[0]!
-                var vertexIndices = [Int]()
-                var texCoordIndices = [Int]()
-                var normalIndices = [Int]()
-                let faceElements: [String] = faceData.split(separator: " ").map { String($0) }
-                var count = 0
-                for element in faceElements {
-                    count += 1
-                    let components = element.split(separator: "/").map { String($0) }
-                    // subtract one because OBJ indices start from 1 for some reason
-                    vertexIndices.append(Int(components[0])! - 1)
-                    if components.count > 1 { texCoordIndices.append(Int(components[1])! - 1) }
-                    if components.count > 2 { normalIndices.append(Int(components[2])! - 1) }
-                }
-                onFace(count, vertexIndices, texCoordIndices, normalIndices)
-            }
-             */
             
             else if let faceVertexMatch = match(line, regex: faceRegexVertexOnly) {
                 var vertexIndices = [Int]()

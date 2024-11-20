@@ -30,13 +30,13 @@ struct FragmentParams {
 struct Vertex {
     simd_float3 position;
     simd_float4 color;
-    simd_float4 normal;
+    simd_float3 normal;
 };
 
 struct ProjectedVertex {
     simd_float4 position [[position]];
     simd_float4 color;
-    simd_float4 normal;
+    simd_float3 normal;
 };
 
 // ---- MATRIX UTILS ----
@@ -143,7 +143,7 @@ vertex ProjectedVertex project_vertex(
     float4 translated = translationMatrix * rotated;
     // float4 projected = projMatrix * translated;
     float4 projectedPosition = projMatrix * translationMatrix * rotationMatrix * scalingMatrix * vert;
-    float4 projectedNormal = projMatrix * translationMatrix * rotationMatrix * scalingMatrix * inVertex.normal;
+    float4 projectedNormal = projMatrix * translationMatrix * rotationMatrix * float4(inVertex.normal, 1.0);
     // then normalize in z
     float4 normalizedNormal = projectedNormal;
     if (projectedNormal.w != 0.0) {
@@ -157,14 +157,14 @@ vertex ProjectedVertex project_vertex(
         normalizedPosition.y /= projectedPosition.w;
         normalizedPosition.z /= projectedPosition.w;
     }
-    return { .position = normalizedPosition, .color = inVertex.color, .normal = projectedNormal };
+    return { .position = normalizedPosition, .color = inVertex.color, .normal = projectedNormal.xyz };
 }
 
 
 fragment half4 basic_fragment(ProjectedVertex vert [[stage_in]],
                               constant FragmentParams &params [[buffer(0)]]) {
-    simd_float3 lightDirection = normalize(simd_float3(1, 0, -1));
-    float d = dot(vert.normal.xyz, lightDirection);
+    simd_float3 lightDirection = normalize(simd_float3(1, 0, 0));
+    float d = dot(vert.normal, lightDirection);
     return half4(vert.color * d);
 }
                         

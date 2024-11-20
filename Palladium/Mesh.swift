@@ -18,10 +18,10 @@ import simd
 class ApplicationVertex {
     var position = simd_float3(0, 0, 0)
     var color = simd_float4(0, 0, 0, 0)
-    var normal = simd_float4(0, 0, 0, 0)
+    var normal = simd_float3(0, 0, 0)
     var uvs = simd_float2.zero
     
-    init(position: simd_float3, color: simd_float4, normal: simd_float4) {
+    init(position: simd_float3, color: simd_float4, normal: simd_float3) {
         self.position = position
         self.color = color
         self.normal = normal
@@ -30,7 +30,7 @@ class ApplicationVertex {
     init(position: simd_float3, color: simd_float4) {
         self.position = position
         self.color = color
-        self.normal = simd_float4.zero
+        self.normal = simd_float3.zero
     }
 }
 
@@ -38,7 +38,7 @@ class ApplicationVertex {
 struct Vertex {
     var position: simd_float3
     var color: simd_float4
-    var normal: simd_float4
+    var normal: simd_float3
     
     init(_ applicationVertex: ApplicationVertex) {
         position = applicationVertex.position
@@ -55,6 +55,8 @@ struct Triangle {
 
 class Mesh {
     var origin: simd_float3
+    var rotation: simd_float3
+    var scale: simd_float3
     var triangles: [Triangle]
     var vertices: [ApplicationVertex]
     
@@ -62,12 +64,16 @@ class Mesh {
         self.origin = origin
         self.triangles = triangles
         self.vertices = vertices
+        self.rotation = simd_float3(repeating: 0)
+        self.scale = simd_float3.one
     }
     
     init(triangles: [Triangle], vertices: [ApplicationVertex]) {
         self.origin = simd_float3.zero
         self.triangles = triangles
         self.vertices = vertices
+        self.rotation = simd_float3.zero
+        self.scale = simd_float3.one
     }
     
     // Calculates the normal vectors for an array of triangles, updating values in-place.
@@ -78,11 +84,10 @@ class Mesh {
         for i in self.triangles.indices {
             let lineA = self.triangles[i].b.position - self.triangles[i].a.position
             let lineB = self.triangles[i].c.position - self.triangles[i].a.position
-            let cross3 = cross(lineA, lineB)
-            let cross4 = simd_float4(cross3, 0.0)
-            self.triangles[i].a.normal += cross4
-            self.triangles[i].b.normal += cross4
-            self.triangles[i].c.normal += cross4
+            let cross = cross(lineA, lineB)
+            self.triangles[i].a.normal += cross
+            self.triangles[i].b.normal += cross
+            self.triangles[i].c.normal += cross
         }
         // normalize all vertices
         normalizeNormals()
@@ -90,7 +95,7 @@ class Mesh {
     
     func normalizeNormals() {
         for i in vertices.indices {
-            if vertices[i].normal == simd_float4.zero { continue }
+            if vertices[i].normal == simd_float3.zero { continue }
             vertices[i].normal = normalize(vertices[i].normal)
         }
     }
@@ -111,7 +116,7 @@ class Mesh {
         let parser = OBJParser(source: reader)
         
         var vertices: [ApplicationVertex] = []
-        var normals: [simd_float4] = []
+        var normals: [simd_float3] = []
         var uvs: [simd_float2] = []
         var triangles: [Triangle] = []
         
@@ -123,7 +128,7 @@ class Mesh {
         }
         
         parser.onVertexNormal = { (x, y, z) in
-            normals.append(simd_float4(x: Float(x), y: Float(y), z: Float(z), w: 1.0))
+            normals.append(simd_float3(x: Float(x), y: Float(y), z: Float(z)))
         }
         
         parser.onTextureCoord = { (u, v, w) in
@@ -146,6 +151,14 @@ class Mesh {
         let mesh = Mesh(triangles: triangles, vertices: vertices)
         mesh.normalizeNormals()
         
+        return mesh
+    }
+    
+    static func fromOBJ(url: URL, origin: simd_float3, rotation: simd_float3, scale: simd_float3) -> Mesh {
+        let mesh = self.fromOBJ(url: url)
+        mesh.origin = origin
+        mesh.rotation = rotation
+        mesh.scale = scale
         return mesh
     }
         

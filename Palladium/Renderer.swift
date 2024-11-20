@@ -87,6 +87,11 @@ class Renderer: NSObject, MTKViewDelegate {
                 origin: simd_float3(0.0, -1.0, 6.0),
                 rotation: simd_float3(0.8, yPosition, 0),
                 scale: simd_float3(1, 1, 1)
+            /*
+                origin: mesh.origin,
+                rotation: mesh.rotation,
+                scale: mesh.scale
+             */
             )
             
             

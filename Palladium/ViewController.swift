@@ -24,7 +24,11 @@ class ViewController: UIViewController {
         let fileURL = mainBundle.url(forResource: "teapot", withExtension: "obj", subdirectory: "meshes")!
         // let fileURL = mainBundle.url(forResource: "cat", withExtension: "obj", subdirectory: "meshes")!
         // let fileURL = mainBundle.url(forResource: "cube-normal", withExtension: "obj", subdirectory: "meshes")!
-        let mesh = Mesh.fromOBJ(url: fileURL)
+        // let mesh = Mesh.fromOBJ(url: fileURL)
+        let mesh = Mesh.fromOBJ(url: fileURL,
+                                origin: simd_float3(0.0, -1.0, 6.0),
+                                rotation: simd_float3(0.8, 0, 0),
+                                scale: simd_float3(0.1, 0.1, 0.1))
         mesh.calculateNormals()  // only needed if original OBJ has no normals. Maybe detect this automatically?
         
         let device = MTLCreateSystemDefaultDevice()
