@@ -18,6 +18,7 @@ struct ProjectionParams {
 
 struct TransformationParams {
     simd_float3 origin;
+    simd_float3 position;
     simd_float3 rotation;  // gimbal lock central
     simd_float3 scale;
 };
@@ -121,12 +122,12 @@ vertex ProjectedVertex project_vertex(
                              unsigned int vid [[ vertex_id ]])
 {
     Vertex inVertex = vertex_array[vid];
-    float4 vert = float4(inVertex.position.xyz, 1.0);
+    float4 vert = float4(inVertex.position.xyz - tparams.origin, 1.0);
     float4x4 scalingMatrix = scaling_matrix(tparams.scale);
     // TODO: following approach suffers from gimbal lock
     // (loss of information from tparams.rotation: float3 -> rotation_matrix(float3, float4)
     float4x4 rotationMatrix = rotation_matrix(EAST, tparams.rotation.x) * rotation_matrix(UP, tparams.rotation.y) * rotation_matrix(NORTH, tparams.rotation.z);
-    float4x4 translationMatrix = translation_matrix(tparams.origin);
+    float4x4 translationMatrix = translation_matrix(tparams.position);
     float4x4 projMatrix = projection_matrix(params.aspectRatio, params.fovRadians, params.nearZ, params.farZ);
     float4 projectedPosition = projMatrix * translationMatrix * rotationMatrix * scalingMatrix * vert;
     float4 projectedNormal = projMatrix * translationMatrix * rotationMatrix * float4(inVertex.normal, 1.0);

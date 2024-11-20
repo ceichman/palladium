@@ -81,6 +81,7 @@ class Renderer: NSObject, MTKViewDelegate {
             
             var transformationParams = TransformationParams(
                 origin: mesh.origin,
+                position: mesh.position,
                 rotation: mesh.rotation,
                 scale: mesh.scale
             )

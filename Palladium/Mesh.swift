@@ -12,56 +12,17 @@ import simd
 // Eventually this file should contain routines to import data from .obj files
 // and populate an ApplicationVertex array. Right now it's just a dumping ground for raw vertex data.
 
-// Used to collect info before normals are calculated. Defined as a class
-// to take advantage of pass-by-reference so that multiple Triangle primitives can
-// reuse the same underlying vertex during normal calculation.
-class ApplicationVertex {
-    var position = simd_float3(0, 0, 0)
-    var color = simd_float4(0, 0, 0, 0)
-    var normal = simd_float3(0, 0, 0)
-    var uvs = simd_float2.zero
-    
-    init(position: simd_float3, color: simd_float4, normal: simd_float3) {
-        self.position = position
-        self.color = color
-        self.normal = normal
-    }
-    
-    init(position: simd_float3, color: simd_float4) {
-        self.position = position
-        self.color = color
-        self.normal = simd_float3.zero
-    }
-}
-
-// Used to actually pass vertex data to the GPU after normals are calculated.
-struct Vertex {
-    var position: simd_float3
-    var color: simd_float4
-    var normal: simd_float3
-    
-    init(_ applicationVertex: ApplicationVertex) {
-        position = applicationVertex.position
-        color = applicationVertex.color
-        normal = applicationVertex.normal
-    }
-}
-
-struct Triangle {
-    var a: ApplicationVertex
-    var b: ApplicationVertex
-    var c: ApplicationVertex
-}
-
 class Mesh {
-    var origin: simd_float3
-    var rotation: simd_float3
-    var scale: simd_float3
+    var origin: simd_float3   // Offset for transformations of the mesh
+    var position: simd_float3   // World-space position of the mesh
+    var rotation: simd_float3   // 3D rotation (subject to gimbal lock)
+    var scale: simd_float3   // Per-axis scaling
     var triangles: [Triangle]
     var vertices: [ApplicationVertex]
     
     init(origin: simd_float3, triangles: [Triangle], vertices: [ApplicationVertex]) {
         self.origin = origin
+        self.position = simd_float3.zero
         self.triangles = triangles
         self.vertices = vertices
         self.rotation = simd_float3(repeating: 0)
@@ -70,6 +31,7 @@ class Mesh {
     
     init(triangles: [Triangle], vertices: [ApplicationVertex]) {
         self.origin = simd_float3.zero
+        self.position = simd_float3.zero
         self.triangles = triangles
         self.vertices = vertices
         self.rotation = simd_float3.zero
@@ -120,11 +82,14 @@ class Mesh {
         var uvs: [simd_float2] = []
         var triangles: [Triangle] = []
         
+        var vertexAverage = simd_float3.zero
+        
         parser.onVertex = { (x, y, z, w, r, g, b) in
             vertices.append(ApplicationVertex(
                 position: simd_float3(x: Float(x), y: Float(y), z: Float(z)),
-                color: simd_float4(x: Float(r), y: Float(g), z: Float(b), w: 1.0)
+                color: simd_float4(x: r, y: g, z: b, w: 1.0)
             ))
+            vertexAverage += simd_float3(x, y, z)
         }
         
         parser.onVertexNormal = { (x, y, z) in
@@ -150,18 +115,24 @@ class Mesh {
         
         let mesh = Mesh(triangles: triangles, vertices: vertices)
         mesh.normalizeNormals()
+        mesh.origin = simd_float3(vertexAverage / Float(vertices.count))
         
         return mesh
     }
     
-    static func fromOBJ(url: URL, origin: simd_float3, rotation: simd_float3, scale: simd_float3) -> Mesh {
+    static func fromOBJ(url: URL, origin: simd_float3) -> Mesh {
         let mesh = self.fromOBJ(url: url)
         mesh.origin = origin
+        return mesh
+    }
+    
+    static func fromOBJ(url: URL, position: simd_float3, rotation: simd_float3, scale: simd_float3) -> Mesh {
+        let mesh = self.fromOBJ(url: url)
+        mesh.position = position
         mesh.rotation = rotation
         mesh.scale = scale
         return mesh
     }
-        
 }
 
 
