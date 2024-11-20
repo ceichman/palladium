@@ -22,6 +22,7 @@
 		D5AEB37A2CD9398600C30959 /* Mesh.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5AEB3792CD9398600C30959 /* Mesh.swift */; };
 		D5AEB37C2CD939EE00C30959 /* ProjectionUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5AEB37B2CD939EE00C30959 /* ProjectionUtils.swift */; };
 		D5AEB3822CD996D200C30959 /* OBJParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5AEB3812CD996D200C30959 /* OBJParser.swift */; };
+		D5B094A72CEE43D30035A28C /* RendererDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5B094A62CEE43D30035A28C /* RendererDelegate.swift */; };
 		D5F50ABA2CDAD12F00B27E0D /* LineReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5F50AB92CDAD12F00B27E0D /* LineReader.swift */; };
 /* End PBXBuildFile section */
 
@@ -62,6 +63,7 @@
 		D5AEB3792CD9398600C30959 /* Mesh.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mesh.swift; sourceTree = "<group>"; };
 		D5AEB37B2CD939EE00C30959 /* ProjectionUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectionUtils.swift; sourceTree = "<group>"; };
 		D5AEB3812CD996D200C30959 /* OBJParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OBJParser.swift; sourceTree = "<group>"; };
+		D5B094A62CEE43D30035A28C /* RendererDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RendererDelegate.swift; sourceTree = "<group>"; };
 		D5F50AB92CDAD12F00B27E0D /* LineReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineReader.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -119,6 +121,7 @@
 				D5A512EB2CD18CD90050E219 /* AppDelegate.swift */,
 				D5A512ED2CD18CD90050E219 /* SceneDelegate.swift */,
 				D5A512EF2CD18CD90050E219 /* ViewController.swift */,
+				D5B094A62CEE43D30035A28C /* RendererDelegate.swift */,
 				D5AEB37B2CD939EE00C30959 /* ProjectionUtils.swift */,
 				1B9CEDBA2CE2C4CE0087C604 /* Renderer.swift */,
 				D5AEB3792CD9398600C30959 /* Mesh.swift */,
@@ -283,6 +286,7 @@
 				D5F50ABA2CDAD12F00B27E0D /* LineReader.swift in Sources */,
 				D5A5131C2CD190310050E219 /* Shaders.metal in Sources */,
 				D5AEB37A2CD9398600C30959 /* Mesh.swift in Sources */,
+				D5B094A72CEE43D30035A28C /* RendererDelegate.swift in Sources */,
 				D5A512F02CD18CD90050E219 /* ViewController.swift in Sources */,
 				D5A512EC2CD18CD90050E219 /* AppDelegate.swift in Sources */,
 				1B9CEDBB2CE2C4CE0087C604 /* Renderer.swift in Sources */,

@@ -13,7 +13,6 @@ struct ProjectionParams {
     var fovRadians: Float
     var nearZ: Float
     var farZ: Float
-    var time: Float
     // temp
     // var projectionMatrix: simd_float4x4
 }
