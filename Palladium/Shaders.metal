@@ -119,6 +119,7 @@ vertex ProjectedVertex project_vertex(
                              const device Vertex* vertex_array [[ buffer(0) ]],
                              constant ProjectionParams &params [[ buffer(1) ]],
                              constant TransformationParams &tparams [[ buffer(2) ]],
+                             constant float4x4 &viewMatrix [[ buffer(3) ]],
                              unsigned int vid [[ vertex_id ]])
 {
     Vertex inVertex = vertex_array[vid];
@@ -129,7 +130,8 @@ vertex ProjectedVertex project_vertex(
     float4x4 rotationMatrix = rotation_matrix(EAST, tparams.rotation.x) * rotation_matrix(UP, tparams.rotation.y) * rotation_matrix(NORTH, tparams.rotation.z);
     float4x4 translationMatrix = translation_matrix(tparams.position);
     float4x4 projMatrix = projection_matrix(params.aspectRatio, params.fovRadians, params.nearZ, params.farZ);
-    float4 projectedPosition = projMatrix * translationMatrix * rotationMatrix * scalingMatrix * vert;
+    float4x4 modelMatrix = translationMatrix * rotationMatrix * scalingMatrix;
+    float4 projectedPosition = projMatrix * viewMatrix * modelMatrix * vert;
     float4 projectedNormal = projMatrix * translationMatrix * rotationMatrix * float4(inVertex.normal, 1.0);
     // then normalize in z
     float4 normalizedNormal = projectedNormal;

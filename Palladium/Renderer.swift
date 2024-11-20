@@ -12,13 +12,15 @@ class Renderer: NSObject, MTKViewDelegate {
     private var depthStencilState: MTLDepthStencilState!
     private var commandQueue: MTLCommandQueue!          // commands for the GPU
     var mesh: Mesh!
+    var camera: Camera!
     var delegate: RendererDelegate?
 
     /// Initializes the Renderer object (should be created in ViewController as Renderer(device: [ __ ] mesh: [ __ ]) and calls setup()
-    init(device: MTLDevice, mesh: Mesh) {
+    init(device: MTLDevice, mesh: Mesh, camera: Camera) {
         super.init()
         self.device = device
         self.mesh = mesh
+        self.camera = camera
         setup()
     }
     
@@ -86,6 +88,8 @@ class Renderer: NSObject, MTKViewDelegate {
                 scale: mesh.scale
             )
             
+            var viewMatrix = camera.getViewMatrix()
+            
             /// Command buffer and encoding (encoded rendering instructions for the GPU)
             let commandBuffer = commandQueue.makeCommandBuffer()
             /// Configure render command
@@ -99,6 +103,7 @@ class Renderer: NSObject, MTKViewDelegate {
             renderEncoder.setVertexBuffer(vertexBuffer, offset: 0, index: 0)
             renderEncoder.setVertexBytes(&projectionParams, length: MemoryLayout.size(ofValue: projectionParams), index: 1)
             renderEncoder.setVertexBytes(&transformationParams, length: MemoryLayout.size(ofValue: transformationParams), index: 2)
+            renderEncoder.setVertexBytes(&viewMatrix, length: MemoryLayout<float4x4>.size, index: 3) // new set for the camera view
             // set*Bytes is convenient because you can pass a buffer to the shader without having to explicitly create it in Swift with device.makeBuffer(). probably saves system memory too
             // interpret vertexCount vertices as instanceCount instances of type .triangle
             renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: mesh.triangles.count * 3)

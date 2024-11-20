@@ -12,6 +12,7 @@ import MetalKit
 class ViewController: UIViewController, RendererDelegate {
     
     var renderer: Renderer!
+    var camera: Camera!
     
     @IBOutlet weak var metalView: MTKView!
     
@@ -43,12 +44,15 @@ class ViewController: UIViewController, RendererDelegate {
                                        rotation: simd_float3(0, 0, 0),
                                        scale: simd_float3(0.1, 0.1, 0.1))
         pumpkinMesh.calculateNormals()
-
+        
+        /// Set up camera
+        self.camera = Camera(position: simd_float3(0, 0, 0), target: simd_float3(0, 0, 1))
+        
         let device = MTLCreateSystemDefaultDevice()
         metalView.device = device
         
         /// Creates a Renderer object (from refactor). Only supports a single mesh atm
-        renderer = Renderer(device: device!, mesh: pumpkinMesh)
+        renderer = Renderer(device: device!, mesh: pumpkinMesh, camera: camera)
         
         /// Set up device and metalView
         metalView.depthStencilPixelFormat = .depth32Float
