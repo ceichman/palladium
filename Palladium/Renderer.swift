@@ -14,6 +14,8 @@ class Renderer: NSObject, MTKViewDelegate {
     var mesh: Mesh!
     var camera: Camera!
     var delegate: RendererDelegate?
+    
+    private var currentFrameTime = CACurrentMediaTime()
 
     /// Initializes the Renderer object (should be created in ViewController as Renderer(device: [ __ ] mesh: [ __ ]) and calls setup()
     init(device: MTLDevice, mesh: Mesh, camera: Camera) {
@@ -54,9 +56,12 @@ class Renderer: NSObject, MTKViewDelegate {
     
     func draw(in view: MTKView) {
         autoreleasepool { // ensures efficient memory management
+            let now = CACurrentMediaTime()
+            let deltaTime = now - currentFrameTime
+            currentFrameTime = now
             
             if let delegate = self.delegate {
-                delegate.preRenderUpdate(mesh: self.mesh)
+                delegate.preRenderUpdate(deltaTime: deltaTime)
             }
             guard let drawable = view.currentDrawable else { return } // retrieves current frame of the mesh
             

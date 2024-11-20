@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
-    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <device id="retina6_12" orientation="landscape" appearance="light"/>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22685"/>
+        <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -13,12 +14,68 @@
             <objects>
                 <viewController id="BYZ-38-t0r" customClass="ViewController" customModule="Palladium" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
-                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <rect key="frame" x="0.0" y="0.0" width="852" height="393"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <mtkView contentMode="scaleToFill" colorPixelFormat="BGRA8Unorm" depthStencilPixelFormat="Depth32Float" translatesAutoresizingMaskIntoConstraints="NO" id="Nw4-FQ-qWd">
-                                <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                                <rect key="frame" x="0.0" y="0.0" width="852" height="393"/>
                             </mtkView>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eT7-jp-Cmt" userLabel="Up">
+                                <rect key="frame" x="147" y="222" width="60" height="59"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="tinted">
+                                    <imageReference key="image" image="arrowshape.up.circle.fill" catalog="system" symbolScale="default"/>
+                                </buttonConfiguration>
+                                <connections>
+                                    <action selector="resetVertical:" destination="BYZ-38-t0r" eventType="touchUpOutside" id="952-ML-yf6"/>
+                                    <action selector="resetVertical:" destination="BYZ-38-t0r" eventType="touchCancel" id="SbT-lv-CQw"/>
+                                    <action selector="resetVertical:" destination="BYZ-38-t0r" eventType="touchUpInside" id="TlL-Qi-7sk"/>
+                                    <action selector="upButtonPressed:" destination="BYZ-38-t0r" eventType="touchDown" id="KgP-HE-k6b"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="pQR-yz-l6g" userLabel="Down">
+                                <rect key="frame" x="147" y="304" width="60" height="59"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="tinted">
+                                    <imageReference key="image" image="arrowshape.down.circle.fill" catalog="system" symbolScale="default"/>
+                                </buttonConfiguration>
+                                <connections>
+                                    <action selector="downButtonPressed:" destination="BYZ-38-t0r" eventType="touchDown" id="fmv-K3-jN8"/>
+                                    <action selector="resetVertical:" destination="BYZ-38-t0r" eventType="touchUpOutside" id="MaB-un-hZN"/>
+                                    <action selector="resetVertical:" destination="BYZ-38-t0r" eventType="touchUpInside" id="cbI-PS-w8G"/>
+                                    <action selector="resetVertical:" destination="BYZ-38-t0r" eventType="touchCancel" id="uFR-zi-3cI"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1Mo-q2-zQ2" userLabel="Right">
+                                <rect key="frame" x="215" y="260" width="60" height="59"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="tinted">
+                                    <imageReference key="image" image="arrowshape.right.circle.fill" catalog="system" symbolScale="default"/>
+                                </buttonConfiguration>
+                                <connections>
+                                    <action selector="resetHorizontal:" destination="BYZ-38-t0r" eventType="touchUpOutside" id="jWL-cn-MkX"/>
+                                    <action selector="resetHorizontal:" destination="BYZ-38-t0r" eventType="touchUpInside" id="p4m-60-8GU"/>
+                                    <action selector="resetHorizontal:" destination="BYZ-38-t0r" eventType="touchCancel" id="yCX-4Y-LwQ"/>
+                                    <action selector="rightButtonPressed:" destination="BYZ-38-t0r" eventType="touchDown" id="oDC-VH-umD"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="VsD-cP-Xn7" userLabel="Left">
+                                <rect key="frame" x="79" y="260" width="60" height="59"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="tinted">
+                                    <imageReference key="image" image="arrowshape.left.circle.fill" catalog="system" symbolScale="default"/>
+                                </buttonConfiguration>
+                                <connections>
+                                    <action selector="leftButtonPressed:" destination="BYZ-38-t0r" eventType="touchDown" id="LwP-Zt-WrS"/>
+                                    <action selector="resetHorizontal:" destination="BYZ-38-t0r" eventType="touchCancel" id="CZK-3G-JRe"/>
+                                    <action selector="resetHorizontal:" destination="BYZ-38-t0r" eventType="touchUpOutside" id="GIQ-Od-PRo"/>
+                                    <action selector="resetHorizontal:" destination="BYZ-38-t0r" eventType="touchUpInside" id="NNR-26-9Sd"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -35,10 +92,14 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="55.725190839694655" y="-34.507042253521128"/>
+            <point key="canvasLocation" x="55.633802816901408" y="-35.877862595419849"/>
         </scene>
     </scenes>
     <resources>
+        <image name="arrowshape.down.circle.fill" catalog="system" width="128" height="123"/>
+        <image name="arrowshape.left.circle.fill" catalog="system" width="128" height="123"/>
+        <image name="arrowshape.right.circle.fill" catalog="system" width="128" height="123"/>
+        <image name="arrowshape.up.circle.fill" catalog="system" width="128" height="123"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

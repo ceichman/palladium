@@ -11,12 +11,19 @@ import simd
 class Camera {
     var position: simd_float3
     var target: simd_float3
+    var velocityX: Float = 0
+    var velocityY: Float = 0
+    var velocityZ: Float = 0
 
     init(position: simd_float3, target: simd_float3) {
         self.position = position
         self.target = target
     }
-
+    
+    func move(deltaTime: CFTimeInterval) {
+        self.position += simd_float3(self.velocityX, self.velocityY, self.velocityZ) * Float(deltaTime)
+    }
+    
     // Move camera up
     func moveUp(_ distance: Float) {
         position.y += distance

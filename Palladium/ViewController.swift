@@ -12,7 +12,10 @@ import MetalKit
 class ViewController: UIViewController, RendererDelegate {
     
     var renderer: Renderer!
+    var mesh: Mesh!
     var camera: Camera!
+    
+    let cameraVelocity: Float = 3.0
     
     @IBOutlet weak var metalView: MTKView!
     
@@ -52,7 +55,8 @@ class ViewController: UIViewController, RendererDelegate {
         metalView.device = device
         
         /// Creates a Renderer object (from refactor). Only supports a single mesh atm
-        renderer = Renderer(device: device!, mesh: pumpkinMesh, camera: camera)
+        self.mesh = pumpkinMesh
+        renderer = Renderer(device: device!, mesh: self.mesh, camera: camera)
         
         /// Set up device and metalView
         metalView.depthStencilPixelFormat = .depth32Float
@@ -62,11 +66,36 @@ class ViewController: UIViewController, RendererDelegate {
 
     }
     
-    func preRenderUpdate(mesh: Mesh) {
+    func preRenderUpdate(deltaTime: CFTimeInterval) {
         let time = Date().timeIntervalSince1970.magnitude
         // let xPosition = Float(cos(time) * 2.5) + 4.0
         let yPosition = Float(sin(time) * 2.5)
         mesh.rotation = simd_float3(0, yPosition, 0)
+        camera.move(deltaTime: deltaTime)
+    }
+
+    @IBAction func upButtonPressed(_ sender: UIButton) {
+        camera.velocityY = cameraVelocity
+    }
+    
+    @IBAction func downButtonPressed(_ sender: UIButton) {
+        camera.velocityY = -cameraVelocity
+    }
+    
+    @IBAction func leftButtonPressed(_ sender: UIButton) {
+        camera.velocityX = -cameraVelocity
+    }
+
+    @IBAction func rightButtonPressed(_ sender: UIButton) {
+        camera.velocityX = cameraVelocity
+    }
+    
+    @IBAction func resetHorizontal(_ sender: UIButton) {
+        camera.velocityX = 0.0
+    }
+
+    @IBAction func resetVertical(_ sender: UIButton) {
+        camera.velocityY = 0.0
     }
 
 }
