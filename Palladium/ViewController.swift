@@ -55,7 +55,7 @@ class ViewController: UIViewController, RendererDelegate {
         pumpkinMesh.calculateNormals()
         
         /// Set up camera
-        self.camera = Camera(position: simd_float3(0, 0, 0), lookDirection: simd_float3(0, 0, 1))
+        self.camera = Camera(position: simd_float3(0, 0, 0))
         
         let device = MTLCreateSystemDefaultDevice()
         metalView.device = device
@@ -120,8 +120,8 @@ class ViewController: UIViewController, RendererDelegate {
             let location = sender.location(in: metalView)
             let (dx, dy) = (location.x - lastLocation.x, location.y - lastLocation.y)
             lastLocation = location
-            camera.yaw(dTheta: -dx * sensitivity)
-            camera.pitch(dTheta: -dy * sensitivity)
+            camera.yaw -= dx * sensitivity
+            camera.pitch -= dy * sensitivity
             
         default:
             lastLocation = CGPoint()
