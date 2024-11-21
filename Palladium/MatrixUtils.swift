@@ -64,3 +64,7 @@ func rotation_matrix(axis: vector_float3, theta: Float) -> matrix_float4x4
     
     return matrix_float4x4(X, Y, Z, W);
 }
+
+func magnitude(_ vec: simd_float3) -> Float {
+    return sqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
+}

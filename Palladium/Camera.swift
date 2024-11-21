@@ -19,13 +19,26 @@ class Camera {
     var pitch = 0.0  // radians, 0 == +z
     var lookDirection: simd_float3 {
         get {
-            let yawMatrix = rotation_matrix(axis: YAWAXIS, theta: Float(yaw))
-            let pitchMatrix = rotation_matrix(axis: PITCHAXIS, theta: Float(pitch))
-            let yawed = yawMatrix * vector_float4(ROLLAXIS, 1.0)
-            let pitched = pitchMatrix * yawed
-            return simd_float3(pitched.x, pitched.y, pitched.z)
+            print(yaw, pitch)
+            let yawMod = yaw.remainder(dividingBy: Double.pi * 2)
+            let pitchMod = pitch.remainder(dividingBy: Double.pi * 2)
+            // this should get rid of gimbal lock
+            let axis = normalize(simd_float3(Float(pitchMod), Float(yawMod), 0))
+            let rotMatrix = rotation_matrix(axis: axis, theta: magnitude(simd_float3(Float(pitchMod), Float(yawMod), 0)))
+            let rotated = rotMatrix * vector_float4(ROLLAXIS, 1.0)
+            return simd_float3(rotated.x, rotated.y, rotated.z)
         }
     }
+    // Normalized direction vectors for strafing.
+    var relativeLeft: simd_float3 {
+        let cross = cross(YAWAXIS * -1.0, lookDirection)
+        return normalize(simd_float3(cross.x, 0, cross.z))
+    }
+    var relativeRight: simd_float3 {
+        let cross = cross(YAWAXIS, lookDirection)
+        return normalize(simd_float3(cross.x, 0, cross.z))
+    }
+    
     var velocityX: Float = 0
     var velocityY: Float = 0
     var velocityZ: Float = 0

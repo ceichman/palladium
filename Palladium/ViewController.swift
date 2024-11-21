@@ -54,6 +54,13 @@ class ViewController: UIViewController, RendererDelegate {
                                        scale: simd_float3(0.1, 0.1, 0.1))
         pumpkinMesh.calculateNormals()
         
+        let axisURL = mainBundle.url(forResource: "axis", withExtension: "obj", subdirectory: "meshes")!
+        let axisMesh = Mesh.fromOBJ(url: axisURL,
+                                    position: simd_float3(5.0, 5.0, 4.0),
+                                    rotation: .zero,
+                                    scale: .one)
+        axisMesh.calculateNormals()
+        
         /// Set up camera
         self.camera = Camera(position: simd_float3(0, 0, 0))
         
@@ -61,7 +68,7 @@ class ViewController: UIViewController, RendererDelegate {
         metalView.device = device
         
         /// Creates a Renderer object (from refactor). Only supports a single mesh atm
-        self.mesh = cubeNormalMesh
+        self.mesh = axisMesh
         renderer = Renderer(device: device!, mesh: self.mesh, camera: camera)
         
         /// Set up device and metalView
@@ -81,7 +88,7 @@ class ViewController: UIViewController, RendererDelegate {
         let time = Date().timeIntervalSince1970.magnitude
         // let xPosition = Float(cos(time) * 2.5) + 4.0
         let yPosition = Float(sin(time) * 2.5)
-        mesh.rotation = simd_float3(0, yPosition, 0)
+        // mesh.rotation = simd_float3(0, yPosition, 0)
         camera.move(deltaTime: deltaTime)
     }
 
@@ -94,15 +101,20 @@ class ViewController: UIViewController, RendererDelegate {
     }
     
     @IBAction func leftButtonPressed(_ sender: UIButton) {
-        camera.velocityX = -cameraVelocity
+        let relativeLeft = camera.relativeLeft
+        camera.velocityX += relativeLeft.x * cameraVelocity
+        camera.velocityZ += relativeLeft.z * cameraVelocity
     }
 
     @IBAction func rightButtonPressed(_ sender: UIButton) {
-        camera.velocityX = cameraVelocity
+        let relativeRight = camera.relativeRight
+        camera.velocityX += relativeRight.x * cameraVelocity
+        camera.velocityZ += relativeRight.z * cameraVelocity
     }
     
     @IBAction func resetHorizontal(_ sender: UIButton) {
         camera.velocityX = 0.0
+        camera.velocityZ = 0.0
     }
 
     @IBAction func resetVertical(_ sender: UIButton) {

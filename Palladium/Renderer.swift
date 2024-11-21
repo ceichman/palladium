@@ -77,7 +77,7 @@ class Renderer: NSObject, MTKViewDelegate {
             )
             
             /// Projection and transformation parameters
-            let aspectRatio = Float(view.bounds.height / view.bounds.width)
+            let aspectRatio: Float = Float(view.bounds.height / view.bounds.width)
             let fovDegrees = 40.0 // converted to radians later
             var projectionParams = ProjectionParams(
                 aspectRatio: aspectRatio,

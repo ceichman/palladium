@@ -9,7 +9,6 @@ import Foundation
 
 protocol RendererDelegate : NSObjectProtocol {
     
-    
     /**
      @method preRenderUpdate
      @abstract Called whenever the renderer is about to draw a new frame.
