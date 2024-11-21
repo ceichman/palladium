@@ -26,6 +26,12 @@ class ViewController: UIViewController, RendererDelegate {
         /// Load meshes
         let mainBundle = Bundle.main
         
+        let cubeNormalURL = mainBundle.url(forResource: "cube-normal", withExtension: "obj", subdirectory: "meshes")!
+        let cubeNormalMesh = Mesh.fromOBJ(url: cubeNormalURL,
+                                          position: simd_float3(0.0, 0.0, 3.0),
+                                          rotation: simd_float3(0.8, 0, 0),
+                                          scale: simd_float3.one)
+        
         let teapotURL = mainBundle.url(forResource: "teapot", withExtension: "obj", subdirectory: "meshes")!
         let teapotMesh = Mesh.fromOBJ(url: teapotURL,
                                 position: simd_float3(0.0, -1.0, 6.0),
@@ -55,7 +61,7 @@ class ViewController: UIViewController, RendererDelegate {
         metalView.device = device
         
         /// Creates a Renderer object (from refactor). Only supports a single mesh atm
-        self.mesh = pumpkinMesh
+        self.mesh = cubeNormalMesh
         renderer = Renderer(device: device!, mesh: self.mesh, camera: camera)
         
         /// Set up device and metalView
@@ -114,9 +120,8 @@ class ViewController: UIViewController, RendererDelegate {
             let location = sender.location(in: metalView)
             let (dx, dy) = (location.x - lastLocation.x, location.y - lastLocation.y)
             lastLocation = location
-            camera.yaw(dTheta: Double(-dx) * sensitivity)
-            camera.pitch(dTheta: Double(-dy) * sensitivity)
-            //camera.lookDirection = camera.lookDirection + simd_float3(Float(dx), Float(-dy), 0) * sensitivity
+            camera.yaw(dTheta: -dx * sensitivity)
+            camera.pitch(dTheta: -dy * sensitivity)
             
         default:
             lastLocation = CGPoint()

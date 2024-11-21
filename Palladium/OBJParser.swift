@@ -19,16 +19,13 @@ public struct OBJParserStats {
 
 public class OBJParser<T: Sequence> where T.Iterator.Element == String {
     
-    private let vertexRegex = try! NSRegularExpression(pattern: "^v\\s+([-+]?[0-9]*\\.?[0-9]+)\\s+([-+]?[0-9]*\\.?[0-9]+)\\s+([-+]?[0-9]*\\.?[0-9]+)(\\s+([-+]?[0-9]*\\.?[0-9]+))?(\\s+([-+]?[0-9]*\\.?[0-9]+))?(\\s+([-+]?[0-9]*\\.?[0-9]+))?$", options: [])
-    private let textureRegex = try! NSRegularExpression(pattern: "^vt\\s(-?\\d\\.*\\d*) (-?\\d\\.*\\d*) *(-?\\d\\.*\\d*)*$")
-    private let normalRegex = try! NSRegularExpression(pattern: "^vn\\s+([-+]?[0-9]*\\.?[0-9]+)\\s+([-+]?[0-9]*\\.?[0-9]+)\\s+([-+]?[0-9]*\\.?[0-9]+)$", options: [])
-    private let faceRegex = try! NSRegularExpression(pattern: "^f\\s+(.*)$", options: [])
-    // private let faceRegex = try! NSRegularExpression(pattern: "^f\\s+(\\d+)(//(\\d+))?(?:\\s+(\\d+)(//(\\d+))?)*$", options: [])
-    // private let faceRegex = try! NSRegularExpression(pattern: "^f\\s+((\\d+)(//(\\d+))?)(?:\\s+((\\d+)(//(\\d+))?))*$", options: [])
-    private let faceRegexVertexOnly = try! NSRegularExpression(pattern: "^f ([0-9]+) ([0-9]+) ([0-9]+)$")
-    private let faceRegexVertexTexture = try! NSRegularExpression(pattern: "^f ([0-9]+)/([0-9]+) ([0-9]+)/([0-9]+) ([0-9]+)/([0-9]+)[ ]*$")
-    private let faceRegexVertexNormal = try! NSRegularExpression(pattern: "^f ([0-9]+)//([0-9]+) ([0-9]+)//([0-9]+) ([0-9]+)//([0-9]+)[ ]*$")
-    private let faceRegexVertexTextureNormal = try! NSRegularExpression(pattern: "^f ([0-9]+)/([0-9]+)/([0-9]+) ([0-9]+)/([0-9]+)/([0-9]+) ([0-9]+)/([0-9]+)/([0-9]+)[ ]*$")
+    private let vertexRegex = try! NSRegularExpression(pattern: "^v\\s+(-?\\d*\\.?\\d+)\\s+(-?\\d*\\.?\\d+)\\s+(-?\\d*\\.?\\d+)(\\s+(-?\\d*\\.?\\d+))?(\\s+(-?\\d*\\.?\\d+))?(\\s+(-?\\d*\\.?\\d+))?$")
+    private let textureRegex = try! NSRegularExpression(pattern: "^vt\\s+(-?\\d*\\.?\\d+)\\s+(-?\\d*\\.?\\d+)\\s+(-?\\d*\\.?\\d+)*$")
+    private let normalRegex = try! NSRegularExpression(pattern: "^vn\\s+(-?\\d*\\.?\\d+)\\s+(-?\\d*\\.?\\d+)\\s+(-?\\d*\\.?\\d+)$")
+    private let faceRegexVertexOnly = try! NSRegularExpression(pattern: "^f\\s(\\d+)\\s(\\d+)\\s(\\d+)$")
+    private let faceRegexVertexTexture = try! NSRegularExpression(pattern: "^f\\s+(\\d+)/(\\d+)\\s+(\\d+)/(\\d+)\\s+(\\d+)/(\\d+)\\s*$")
+    private let faceRegexVertexNormal = try! NSRegularExpression(pattern: "^f\\s+(\\d+)//(\\d+)\\s+(\\d+)//(\\d+)\\s+(\\d+)//(\\d+)\\s*$")
+    private let faceRegexVertexTextureNormal = try! NSRegularExpression(pattern: "^f\\s+(\\d+)/(\\d+)/(\\d+)\\s+(\\d+)/(\\d+)/(\\d+)\\s+(\\d+)/(\\d+)/(\\d+)\\s*$")
 
 
     public init(source: T) {
