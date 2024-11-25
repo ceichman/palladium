@@ -69,7 +69,7 @@ class ViewController: UIViewController, RendererDelegate {
         
         /// Creates a Renderer object (from refactor). Only supports a single mesh atm
         self.mesh = axisMesh
-        renderer = Renderer(device: device!, mesh: self.mesh, camera: camera)
+        renderer = Renderer(view: metalView, mesh: self.mesh, camera: camera)
         
         /// Set up device and metalView
         metalView.depthStencilPixelFormat = .depth32Float

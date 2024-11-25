@@ -2,14 +2,21 @@ import Metal
 import MetalKit
 import simd
 
+/// A struct used to expose configurable renderer parameters.
+struct RendererOptions {
+    var fov: Double
+    var shouldBlur: Bool
+}
+
 /// This class focuses solely on rendering logic.
 
 class Renderer: NSObject, MTKViewDelegate {
     
-    var device: MTLDevice!                      // GPU device
+    var view: MTKView
     private var vertexBuffer: MTLBuffer!                // buffer used to store vertex data
     private var pipelineState: MTLRenderPipelineState!  // how to process vertex and fragment shaders during rendering
     private var depthStencilState: MTLDepthStencilState!
+    private var postProcessPipelineState: MTLComputePipelineState!
     private var commandQueue: MTLCommandQueue!          // commands for the GPU
     var mesh: Mesh!
     var camera: Camera!
@@ -18,9 +25,9 @@ class Renderer: NSObject, MTKViewDelegate {
     private var currentFrameTime = CACurrentMediaTime()
 
     /// Initializes the Renderer object (should be created in ViewController as Renderer(device: [ __ ] mesh: [ __ ]) and calls setup()
-    init(device: MTLDevice, mesh: Mesh, camera: Camera) {
+    init(view: MTKView, mesh: Mesh, camera: Camera) {
+        self.view = view
         super.init()
-        self.device = device
         self.mesh = mesh
         self.camera = camera
         setup()
@@ -28,6 +35,8 @@ class Renderer: NSObject, MTKViewDelegate {
     
     /// Sets up shaders with which to configure the pipeline descriptor; also initializes command queue to tell GPU what to do
     private func setup() {
+        view.framebufferOnly = false
+        guard let device = view.device else { return }
         /// Set up render pipeline
         let defaultLibrary = device.makeDefaultLibrary()!
         let fragmentShader = defaultLibrary.makeFunction(name: "basic_fragment")
@@ -41,6 +50,11 @@ class Renderer: NSObject, MTKViewDelegate {
         
         pipelineState = try! device.makeRenderPipelineState(descriptor: pipelineStateDescriptor)
         
+        let blurEffectShader = defaultLibrary.makeFunction(name: "box_blur")!
+        
+        self.postProcessPipelineState = try! device.makeComputePipelineState(function: blurEffectShader)
+        
+
         commandQueue = device.makeCommandQueue()
 
         /// Create vertex buffer
@@ -96,9 +110,9 @@ class Renderer: NSObject, MTKViewDelegate {
             var viewMatrix = camera.getViewMatrix()
             
             /// Command buffer and encoding (encoded rendering instructions for the GPU)
-            let commandBuffer = commandQueue.makeCommandBuffer()
+            let commandBuffer = commandQueue.makeCommandBuffer()!
             /// Configure render command
-            guard let renderEncoder = commandBuffer?.makeRenderCommandEncoder(descriptor: renderPassDescriptor) else { return }
+            guard let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderPassDescriptor) else { return }
             renderEncoder.label = "Immediate render pass"
             renderEncoder.setTriangleFillMode(.fill)
             renderEncoder.setCullMode(.back)
@@ -114,14 +128,36 @@ class Renderer: NSObject, MTKViewDelegate {
             renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: mesh.triangles.count * 3)
             renderEncoder.endEncoding()
             
-            commandBuffer?.present(drawable) // render to scene color (output)
-            commandBuffer?.commit()
+            postProcess(commandBuffer: commandBuffer, inTexture: drawable.texture, outTexture: drawable.texture)
+            
+            commandBuffer.present(drawable) // render to scene color (output)
+            commandBuffer.commit()
         }
     }
     
     // placeholder for now, come back and add dynamic buffer resizing
     func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
         //
+    }
+    
+    func postProcess(commandBuffer: MTLCommandBuffer, inTexture: MTLTexture, outTexture: MTLTexture) {
+        guard let encoder = commandBuffer.makeComputeCommandEncoder() else { return }
+        encoder.label = "Post-processing pass"
+        encoder.setComputePipelineState(self.postProcessPipelineState)
+        encoder.setTexture(inTexture, index: 0)
+        encoder.setTexture(outTexture, index: 1)
+        
+        let threadsPerGrid = MTLSize(width: inTexture.width,
+                                     height: inTexture.height,
+                                     depth: 1)
+
+        let w = postProcessPipelineState.threadExecutionWidth
+        let h = postProcessPipelineState.maxTotalThreadsPerThreadgroup / w
+        let threadsPerThreadgroup = MTLSizeMake(w, h, 1)
+
+        // encoder.dispatchThreads(threadsPerGrid, threadsPerThreadgroup: threadsPerThreadgroup)
+        encoder.dispatchThreadgroups(threadsPerGrid, threadsPerThreadgroup: threadsPerThreadgroup)
+        encoder.endEncoding()
     }
 
     
