@@ -4,8 +4,9 @@ import simd
 
 /// A struct used to expose configurable renderer parameters.
 struct RendererOptions {
-    var fov: Double
+    var fovDegrees: Double
     var shouldBlur: Bool
+    var invertColors: Bool
 }
 
 /// This class focuses solely on rendering logic.
@@ -13,20 +14,22 @@ struct RendererOptions {
 class Renderer: NSObject, MTKViewDelegate {
     
     var view: MTKView
+    var mesh: Mesh!
+    var camera: Camera!
+    var delegate: RendererDelegate?
+    var options: RendererOptions
     private var vertexBuffer: MTLBuffer!                // buffer used to store vertex data
     private var pipelineState: MTLRenderPipelineState!  // how to process vertex and fragment shaders during rendering
     private var depthStencilState: MTLDepthStencilState!
     private var postProcessPipelineState: MTLComputePipelineState!
     private var commandQueue: MTLCommandQueue!          // commands for the GPU
-    var mesh: Mesh!
-    var camera: Camera!
-    var delegate: RendererDelegate?
     
     private var currentFrameTime = CACurrentMediaTime()
 
-    /// Initializes the Renderer object (should be created in ViewController as Renderer(device: [ __ ] mesh: [ __ ]) and calls setup()
+    /// Initializes the Renderer object and calls setup() routine
     init(view: MTKView, mesh: Mesh, camera: Camera) {
         self.view = view
+        self.options = RendererOptions(fovDegrees: 40.0, shouldBlur: true, invertColors: false)
         super.init()
         self.mesh = mesh
         self.camera = camera
@@ -50,7 +53,7 @@ class Renderer: NSObject, MTKViewDelegate {
         
         pipelineState = try! device.makeRenderPipelineState(descriptor: pipelineStateDescriptor)
         
-        let blurEffectShader = defaultLibrary.makeFunction(name: "box_blur")!
+        let blurEffectShader = defaultLibrary.makeFunction(name: "invert_color")!
         
         self.postProcessPipelineState = try! device.makeComputePipelineState(function: blurEffectShader)
         
@@ -92,10 +95,9 @@ class Renderer: NSObject, MTKViewDelegate {
             
             /// Projection and transformation parameters
             let aspectRatio: Float = Float(view.bounds.height / view.bounds.width)
-            let fovDegrees = 40.0 // converted to radians later
             var projectionParams = ProjectionParams(
                 aspectRatio: aspectRatio,
-                fovRadians: Float(fovDegrees / 180.0 * Double.pi),
+                fovRadians: Float(options.fovDegrees / 180.0 * Double.pi),
                 nearZ: 0.3,
                 farZ: 1000.0
             )
@@ -128,7 +130,9 @@ class Renderer: NSObject, MTKViewDelegate {
             renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: mesh.triangles.count * 3)
             renderEncoder.endEncoding()
             
-            postProcess(commandBuffer: commandBuffer, inTexture: drawable.texture, outTexture: drawable.texture)
+            if options.shouldBlur {
+                postProcess(commandBuffer: commandBuffer, inTexture: drawable.texture, outTexture: drawable.texture)
+            }
             
             commandBuffer.present(drawable) // render to scene color (output)
             commandBuffer.commit()
@@ -141,11 +145,13 @@ class Renderer: NSObject, MTKViewDelegate {
     }
     
     func postProcess(commandBuffer: MTLCommandBuffer, inTexture: MTLTexture, outTexture: MTLTexture) {
+        
         guard let encoder = commandBuffer.makeComputeCommandEncoder() else { return }
         encoder.label = "Post-processing pass"
         encoder.setComputePipelineState(self.postProcessPipelineState)
         encoder.setTexture(inTexture, index: 0)
         encoder.setTexture(outTexture, index: 1)
+        
         
         let threadsPerGrid = MTLSize(width: inTexture.width,
                                      height: inTexture.height,
@@ -155,7 +161,6 @@ class Renderer: NSObject, MTKViewDelegate {
         let h = postProcessPipelineState.maxTotalThreadsPerThreadgroup / w
         let threadsPerThreadgroup = MTLSizeMake(w, h, 1)
 
-        // encoder.dispatchThreads(threadsPerGrid, threadsPerThreadgroup: threadsPerThreadgroup)
         encoder.dispatchThreadgroups(threadsPerGrid, threadsPerThreadgroup: threadsPerThreadgroup)
         encoder.endEncoding()
     }

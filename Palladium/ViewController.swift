@@ -140,4 +140,11 @@ class ViewController: UIViewController, RendererDelegate {
         }
     }
     
+    @IBAction func boxBlurSwitchDidChange(_ sender: UISwitch) {
+        renderer.options.shouldBlur = sender.isOn
+    }
+
+    @IBAction func invertColorsSwitchDidChange(_ sender: UISwitch) {
+        renderer.options.invertColors = sender.isOn
+    }
 }
