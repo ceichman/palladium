@@ -81,7 +81,6 @@ class ViewController: UIViewController, RendererDelegate {
         panRecognizer.minimumNumberOfTouches = 1
         panRecognizer.maximumNumberOfTouches = 1
         metalView.addGestureRecognizer(panRecognizer)
-        
     }
     
     func preRenderUpdate(deltaTime: CFTimeInterval) {

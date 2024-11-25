@@ -23,12 +23,16 @@ class Camera {
             let yawMod = yaw.remainder(dividingBy: Double.pi * 2)
             let pitchMod = pitch.remainder(dividingBy: Double.pi * 2)
             // this should get rid of gimbal lock
+            
+            // TODO: this may not actually fix gimbal lock; consider quaternion rotation instead
             let axis = normalize(simd_float3(Float(pitchMod), Float(yawMod), 0))
             let rotMatrix = rotation_matrix(axis: axis, theta: magnitude(simd_float3(Float(pitchMod), Float(yawMod), 0)))
             let rotated = rotMatrix * vector_float4(ROLLAXIS, 1.0)
             return simd_float3(rotated.x, rotated.y, rotated.z)
         }
     }
+    
+    // debug the physics
     // Normalized direction vectors for strafing.
     var relativeLeft: simd_float3 {
         let cross = cross(YAWAXIS * -1.0, lookDirection)

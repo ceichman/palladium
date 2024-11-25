@@ -35,16 +35,20 @@ struct ProjectedVertex {
     simd_float3 normal;
 };
 
+
+// TODO: put all of MATRIX UTILS in a different file (so that the work is done on the CPU, not the GPU)
 // ---- MATRIX UTILS ----
 
+// TODO: make sure this is correct
 static inline float magnitude(simd_float3 vec) {
     return sqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
 }
 
+// TODO: eyebal
 static inline simd_float4x4 projection_matrix(float aspectRatio, float fovRadians, float nearZ, float farZ) {
-    float y = 1.0 / tan(fovRadians * 0.5);
-    float x = y * aspectRatio;
-    float z = farZ / (farZ - nearZ);
+    float y = 1.0 / tan(fovRadians * 0.5);  // y-scale based on FOV
+    float x = y * aspectRatio;              // x-scale which abides by aspect ratio
+    float z = farZ / (farZ - nearZ);        // z-scale for perspective divide
     
     float4 X = { x, 0, 0,           0};
     float4 Y = { 0, y, 0,           0};
@@ -54,6 +58,7 @@ static inline simd_float4x4 projection_matrix(float aspectRatio, float fovRadian
     return simd_float4x4 {{X, Y, Z, W}};
 }
 
+// TODO: eyebal
 matrix_float4x4 translation_matrix(vector_float3 t)
 {
     vector_float4 X = { 1, 0, 0, 0 };
@@ -65,6 +70,7 @@ matrix_float4x4 translation_matrix(vector_float3 t)
     return mat;
 }
 
+// TODO: eyebal
 matrix_float4x4 rotation_matrix(vector_float3 axis, float theta)
 {
     float c = cos(theta);
@@ -109,8 +115,8 @@ simd_float4x4 scaling_matrix(simd_float3 scale) {
     return mat;
 }
 
-constant vector_float3 EAST = vector_float3(1, 0, 0);  // x
-constant vector_float3 UP = vector_float3(0, 1, 0);  // y
+constant vector_float3 EAST = vector_float3(1, 0, 0);   // x
+constant vector_float3 UP = vector_float3(0, 1, 0);     // y
 constant vector_float3 NORTH = vector_float3(0, 0, 1);  // z
 
 // ---- END MATRIX UTILS ----
@@ -130,6 +136,10 @@ vertex ProjectedVertex project_vertex(
     float4x4 rotationMatrix = rotation_matrix(EAST, tparams.rotation.x) * rotation_matrix(UP, tparams.rotation.y) * rotation_matrix(NORTH, tparams.rotation.z);
     float4x4 translationMatrix = translation_matrix(tparams.position);
     float4x4 projMatrix = projection_matrix(params.aspectRatio, params.fovRadians, params.nearZ, params.farZ);
+    
+    // flipped order
+    // float4x4 modelMatrix = scalingMatrix * rotationMatrix * translationMatrix;
+    // REVERT: this is the original order
     float4x4 modelMatrix = translationMatrix * rotationMatrix * scalingMatrix;
     float4 projectedPosition = projMatrix * viewMatrix * modelMatrix * vert;
     float4 projectedNormal = projMatrix * translationMatrix * rotationMatrix * float4(inVertex.normal, 1.0);
