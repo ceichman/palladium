@@ -8,7 +8,6 @@
 import Foundation
 import simd
 
-
 let UP = simd_float3(0, 1, 0)
 // Matrix PointAt function
 
@@ -67,4 +66,10 @@ func rotation_matrix(axis: vector_float3, theta: Float) -> matrix_float4x4
 
 func magnitude(_ vec: simd_float3) -> Float {
     return sqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
+}
+
+extension Comparable {
+    func clamped(to limits: ClosedRange<Self>) -> Self {
+        return min(max(self, limits.lowerBound), limits.upperBound)
+    }
 }

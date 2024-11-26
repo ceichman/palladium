@@ -83,6 +83,9 @@ class ViewController: UIViewController, RendererDelegate {
         panRecognizer.minimumNumberOfTouches = 1
         panRecognizer.maximumNumberOfTouches = 1
         metalView.addGestureRecognizer(panRecognizer)
+        
+        let pinchRecognizer = UIPinchGestureRecognizer(target: self, action: #selector(didPinch))
+        metalView.addGestureRecognizer(pinchRecognizer)
     }
     
     func preRenderUpdate(deltaTime: CFTimeInterval) {
@@ -139,6 +142,13 @@ class ViewController: UIViewController, RendererDelegate {
         default:
             lastLocation = CGPoint()
         }
+    }
+    
+    @IBAction func didPinch(_ sender: UIPinchGestureRecognizer) {
+        let newFov = renderer.options.fovDegrees / sender.scale
+        renderer.options.fovDegrees = newFov.clamped(to: 25...105)
+        sender.scale = 1.0
+        print("scale: \(sender.scale) fov: \(renderer.options.fovDegrees)")
     }
     
     @IBAction func boxBlurSwitchDidChange(_ sender: UISwitch) {

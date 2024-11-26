@@ -19,7 +19,6 @@ class Camera {
     var pitch = 0.0  // radians, 0 == +z
     var lookDirection: simd_float3 {
         get {
-            print(yaw, pitch)
             let yawMod = yaw.remainder(dividingBy: Double.pi * 2)
             let pitchMod = pitch.remainder(dividingBy: Double.pi * 2)
             // this should get rid of gimbal lock

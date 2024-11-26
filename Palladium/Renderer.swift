@@ -162,12 +162,16 @@ class Renderer: NSObject, MTKViewDelegate {
         let threadsPerGrid = MTLSize(width: inTexture.width,
                                      height: inTexture.height,
                                      depth: 1)
-
+        
         let w = pipeline.threadExecutionWidth
         let h = pipeline.maxTotalThreadsPerThreadgroup / w
         let threadsPerThreadgroup = MTLSizeMake(w, h, 1)
+        
+        let threadgroupsPerGrid = MTLSizeMake(threadsPerGrid.width / threadsPerThreadgroup.width,
+                                              threadsPerGrid.height / threadsPerThreadgroup.height,
+                                              1)
 
-        encoder.dispatchThreads(threadsPerGrid, threadsPerThreadgroup: threadsPerThreadgroup)
+        encoder.dispatchThreadgroups(threadgroupsPerGrid, threadsPerThreadgroup: threadsPerThreadgroup)
         encoder.endEncoding()
     }
     
