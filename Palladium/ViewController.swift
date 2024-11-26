@@ -18,6 +18,8 @@ class ViewController: UIViewController, RendererDelegate {
     let cameraVelocity: Float = 5.0
     
     @IBOutlet weak var metalView: MTKView!
+    @IBOutlet weak var boxBlurSwitch: UISwitch!
+    @IBOutlet weak var gaussianBlurSwitch: UISwitch!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -69,7 +71,7 @@ class ViewController: UIViewController, RendererDelegate {
         
         /// Creates a Renderer object (from refactor). Only supports a single mesh atm
         self.mesh = axisMesh
-        renderer = Renderer(device: device!, mesh: self.mesh, camera: camera)
+        renderer = Renderer(view: metalView, mesh: self.mesh, camera: camera)
         
         /// Set up device and metalView
         metalView.depthStencilPixelFormat = .depth32Float
@@ -139,4 +141,21 @@ class ViewController: UIViewController, RendererDelegate {
         }
     }
     
+    @IBAction func boxBlurSwitchDidChange(_ sender: UISwitch) {
+        renderer.options.boxBlur = sender.isOn
+        if sender.isOn {
+            gaussianBlurSwitch.setOn(false, animated: true)
+        }
+    }
+    
+    @IBAction func gaussianBlurSwitchDidChange(_ sender: UISwitch) {
+        renderer.options.boxBlur = sender.isOn
+        if sender.isOn {
+            boxBlurSwitch.setOn(false, animated: true)
+        }
+    }
+
+    @IBAction func invertColorsSwitchDidChange(_ sender: UISwitch) {
+        renderer.options.invertColors = sender.isOn
+    }
 }

@@ -24,6 +24,12 @@ struct TransformationParams {
     var scale: simd_float3
 }
 
+struct PostProcessingParams {
+    var boxBlur: Bool
+    var gaussianBlur: Bool
+    var invertColors: Bool
+}
+
 // Used to collect info before normals are calculated. Defined as a class
 // to take advantage of pass-by-reference so that multiple Triangle primitives can
 // reuse the same underlying vertex during normal calculation.
