@@ -58,7 +58,7 @@ kernel void gaussian_blur(uint2 gid [[thread_position_in_grid]],
                        texture2d<half, access::read> inColor [[texture(0)]],
                        texture2d<half, access::write> outColor [[texture(1)]])
 {
-    int size = 5;
+    int size = 7;
     int radius = size / 2;
  
     half4 accumColor(0, 0, 0, 0);

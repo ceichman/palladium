@@ -5,7 +5,8 @@ import simd
 /// A struct used to expose configurable renderer parameters.
 struct RendererOptions {
     var fovDegrees: Double
-    var shouldBlur: Bool
+    var boxBlur: Bool
+    var gaussianBlur: Bool
     var invertColors: Bool
 }
 
@@ -21,15 +22,19 @@ class Renderer: NSObject, MTKViewDelegate {
     private var vertexBuffer: MTLBuffer!                // buffer used to store vertex data
     private var pipelineState: MTLRenderPipelineState!  // how to process vertex and fragment shaders during rendering
     private var depthStencilState: MTLDepthStencilState!
-    private var postProcessPipelineState: MTLComputePipelineState!
     private var commandQueue: MTLCommandQueue!          // commands for the GPU
-    
+    private var defaultLibrary: MTLLibrary!
+
+    lazy private var invertColorPipelineState = setupComputePipelineState(shader: "invert_color")
+    lazy private var gaussianBlurPipelineState = setupComputePipelineState(shader: "gaussian_blur")
+    lazy private var boxBlurPipelineState = setupComputePipelineState(shader: "box_blur")
+
     private var currentFrameTime = CACurrentMediaTime()
 
     /// Initializes the Renderer object and calls setup() routine
     init(view: MTKView, mesh: Mesh, camera: Camera) {
         self.view = view
-        self.options = RendererOptions(fovDegrees: 40.0, shouldBlur: true, invertColors: false)
+        self.options = RendererOptions(fovDegrees: 40.0, boxBlur: false, gaussianBlur: false, invertColors: false)
         super.init()
         self.mesh = mesh
         self.camera = camera
@@ -41,7 +46,7 @@ class Renderer: NSObject, MTKViewDelegate {
         view.framebufferOnly = false
         guard let device = view.device else { return }
         /// Set up render pipeline
-        let defaultLibrary = device.makeDefaultLibrary()!
+        defaultLibrary = device.makeDefaultLibrary()
         let fragmentShader = defaultLibrary.makeFunction(name: "basic_fragment")
         let vertexShader = defaultLibrary.makeFunction(name: "project_vertex")
         
@@ -52,11 +57,6 @@ class Renderer: NSObject, MTKViewDelegate {
         pipelineStateDescriptor.colorAttachments[0].pixelFormat = .bgra8Unorm
         
         pipelineState = try! device.makeRenderPipelineState(descriptor: pipelineStateDescriptor)
-        
-        let blurEffectShader = defaultLibrary.makeFunction(name: "invert_color")!
-        
-        self.postProcessPipelineState = try! device.makeComputePipelineState(function: blurEffectShader)
-        
 
         commandQueue = device.makeCommandQueue()
 
@@ -115,7 +115,7 @@ class Renderer: NSObject, MTKViewDelegate {
             let commandBuffer = commandQueue.makeCommandBuffer()!
             /// Configure render command
             guard let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderPassDescriptor) else { return }
-            renderEncoder.label = "Immediate render pass"
+            renderEncoder.label = "Geometry pass"
             renderEncoder.setTriangleFillMode(.fill)
             renderEncoder.setCullMode(.back)
             renderEncoder.setFrontFacing(.clockwise)
@@ -130,8 +130,14 @@ class Renderer: NSObject, MTKViewDelegate {
             renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: mesh.triangles.count * 3)
             renderEncoder.endEncoding()
             
-            if options.shouldBlur {
-                postProcess(commandBuffer: commandBuffer, inTexture: drawable.texture, outTexture: drawable.texture)
+            if options.boxBlur {
+                addPostProcessPass(pipeline: boxBlurPipelineState, commandBuffer: commandBuffer, inTexture: drawable.texture, outTexture: drawable.texture)
+            }
+            if options.gaussianBlur {
+                addPostProcessPass(pipeline: gaussianBlurPipelineState, commandBuffer: commandBuffer, inTexture: drawable.texture, outTexture: drawable.texture)
+            }
+            if options.invertColors {
+                addPostProcessPass(pipeline: invertColorPipelineState, commandBuffer: commandBuffer, inTexture: drawable.texture, outTexture: drawable.texture)
             }
             
             commandBuffer.present(drawable) // render to scene color (output)
@@ -144,11 +150,11 @@ class Renderer: NSObject, MTKViewDelegate {
         //
     }
     
-    func postProcess(commandBuffer: MTLCommandBuffer, inTexture: MTLTexture, outTexture: MTLTexture) {
+    func addPostProcessPass(pipeline: MTLComputePipelineState, commandBuffer: MTLCommandBuffer, inTexture: MTLTexture, outTexture: MTLTexture) {
         
         guard let encoder = commandBuffer.makeComputeCommandEncoder() else { return }
-        encoder.label = "Post-processing pass"
-        encoder.setComputePipelineState(self.postProcessPipelineState)
+        encoder.label = "Post-processing pass: \(pipeline.description)"
+        encoder.setComputePipelineState(pipeline)
         encoder.setTexture(inTexture, index: 0)
         encoder.setTexture(outTexture, index: 1)
         
@@ -157,12 +163,17 @@ class Renderer: NSObject, MTKViewDelegate {
                                      height: inTexture.height,
                                      depth: 1)
 
-        let w = postProcessPipelineState.threadExecutionWidth
-        let h = postProcessPipelineState.maxTotalThreadsPerThreadgroup / w
+        let w = pipeline.threadExecutionWidth
+        let h = pipeline.maxTotalThreadsPerThreadgroup / w
         let threadsPerThreadgroup = MTLSizeMake(w, h, 1)
 
         encoder.dispatchThreads(threadsPerGrid, threadsPerThreadgroup: threadsPerThreadgroup)
         encoder.endEncoding()
+    }
+    
+    private func setupComputePipelineState(shader: String) -> MTLComputePipelineState {
+        let shaderFunction = defaultLibrary.makeFunction(name: shader)!
+        return try! view.device!.makeComputePipelineState(function: shaderFunction)
     }
 
     
