@@ -161,7 +161,7 @@ class Renderer: NSObject, MTKViewDelegate {
         let h = postProcessPipelineState.maxTotalThreadsPerThreadgroup / w
         let threadsPerThreadgroup = MTLSizeMake(w, h, 1)
 
-        encoder.dispatchThreadgroups(threadsPerGrid, threadsPerThreadgroup: threadsPerThreadgroup)
+        encoder.dispatchThreads(threadsPerGrid, threadsPerThreadgroup: threadsPerThreadgroup)
         encoder.endEncoding()
     }
 
