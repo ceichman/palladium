@@ -102,6 +102,7 @@ class Renderer: NSObject, MTKViewDelegate {
                 farZ: 1000.0
             )
             
+            
             var transformationParams = TransformationParams(
                 origin: mesh.origin,
                 position: mesh.position,
@@ -109,7 +110,9 @@ class Renderer: NSObject, MTKViewDelegate {
                 scale: mesh.scale
             )
             
-            var viewMatrix = camera.getViewMatrix()
+            var modelTransformation = mesh.modelTransformation()
+            var viewProjection = camera.viewProjection(projectionParams)
+
             
             /// Command buffer and encoding (encoded rendering instructions for the GPU)
             let commandBuffer = commandQueue.makeCommandBuffer()!
@@ -122,9 +125,8 @@ class Renderer: NSObject, MTKViewDelegate {
             renderEncoder.setRenderPipelineState(pipelineState)
             renderEncoder.setDepthStencilState(self.depthStencilState)
             renderEncoder.setVertexBuffer(vertexBuffer, offset: 0, index: 0)
-            renderEncoder.setVertexBytes(&projectionParams, length: MemoryLayout.size(ofValue: projectionParams), index: 1)
-            renderEncoder.setVertexBytes(&transformationParams, length: MemoryLayout.size(ofValue: transformationParams), index: 2)
-            renderEncoder.setVertexBytes(&viewMatrix, length: MemoryLayout<float4x4>.size, index: 3) // new set for the camera view
+            renderEncoder.setVertexBytes(&viewProjection, length: MemoryLayout.size(ofValue: viewProjection), index: 1)
+            renderEncoder.setVertexBytes(&modelTransformation, length: MemoryLayout.size(ofValue: modelTransformation), index: 2)
             // set*Bytes is convenient because you can pass a buffer to the shader without having to explicitly create it in Swift with device.makeBuffer(). probably saves system memory too
             // interpret vertexCount vertices as instanceCount instances of type .triangle
             renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: mesh.triangles.count * 3)

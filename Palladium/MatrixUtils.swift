@@ -8,8 +8,14 @@
 import Foundation
 import simd
 
-let UP = simd_float3(0, 1, 0)
-// Matrix PointAt function
+let PITCHAXIS = simd_float3(1, 0, 0)
+let YAWAXIS = simd_float3(0, 1, 0)
+let ROLLAXIS = simd_float3(0, 0, 1)
+let WEST = PITCHAXIS
+let UP = YAWAXIS
+let NORTH = ROLLAXIS
+let LEFT = WEST
+let FORWARD = NORTH
 
 func matrixPointAt(pos: simd_float3, target: simd_float3) -> float4x4 {
     // Calculate new forward direction
@@ -30,6 +36,48 @@ func matrixPointAt(pos: simd_float3, target: simd_float3) -> float4x4 {
     let D = simd_float4(pos.x, pos.y, pos.z, 1.0)
 
     return float4x4(A, B, C, D)
+}
+
+func viewMatrix(position: simd_float3, lookDirection: simd_float3) -> simd_float4x4 {
+    let forward = lookDirection
+    let right = normalize(cross(UP, forward))
+    let up = normalize(cross(forward, right))
+    
+    let X = simd_float4(right, 0)
+    let Y = simd_float4(up, 0)
+    let Z = simd_float4(forward, 0)
+    let W = simd_float4(position.x, position.y, position.z, 1)
+    /*
+    let X = simd_float4(right.x, up.x, -forward.x, -dot(right, position))
+    let Y = simd_float4(right.y, up.y, -forward.y, -dot(up, position))
+    let Z = simd_float4(right.z, up.z, -forward.z, dot(forward, position))
+    let W = simd_float4(0, 0, 0, 1)
+     */
+
+    return simd_float4x4(X, Y, Z, W)
+}
+
+func projection_matrix(aspectRatio: Float, fovRadians: Float, nearZ: Float, farZ: Float) -> simd_float4x4 {
+    let y = 1.0 / tan(fovRadians * 0.5)  // y-scale based on FOV
+    let x = y * aspectRatio              // x-scale which abides by aspect ratio
+    let z = farZ / (farZ - nearZ)        // z-scale for perspective divide
+    
+    let X = simd_float4(x, 0, 0,          0)
+    let Y = simd_float4(0, y, 0,          0)
+    let Z = simd_float4(0, 0, z,          1)
+    let W = simd_float4(0, 0, z * -nearZ, 0)
+    
+    return simd_float4x4(X, Y, Z, W)
+}
+
+func translation_matrix(t: simd_float3) -> simd_float4x4 {
+    let X = simd_float4(1, 0, 0, 0)
+    let Y = simd_float4(0, 1, 0, 0)
+    let Z = simd_float4(0, 0, 1, 0)
+    let W = simd_float4(t.x, t.y, t.z, 1)
+
+    let mat = simd_float4x4(X, Y, Z, W)
+    return mat
 }
 
 func rotation_matrix(axis: vector_float3, theta: Float) -> matrix_float4x4
@@ -63,6 +111,18 @@ func rotation_matrix(axis: vector_float3, theta: Float) -> matrix_float4x4
     
     return matrix_float4x4(X, Y, Z, W);
 }
+
+func scaling_matrix(scale: simd_float3) -> simd_float4x4 {
+    
+    let X = simd_float4(scale.x, 0, 0, 0)
+    let Y = simd_float4(0, scale.y, 0, 0)
+    let Z = simd_float4(0, 0, scale.z, 0)
+    let W = simd_float4(0, 0, 0, 1)
+
+    let mat = simd_float4x4(X, Y, Z, W)
+    return mat
+}
+
 
 func magnitude(_ vec: simd_float3) -> Float {
     return sqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);

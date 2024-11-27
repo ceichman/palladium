@@ -17,6 +17,11 @@ struct ProjectionParams {
     // var projectionMatrix: simd_float4x4
 }
 
+struct ViewProjection {
+    var view: simd_float4x4
+    var projection: simd_float4x4
+}
+
 struct TransformationParams {
     var origin: simd_float3
     var position: simd_float3
@@ -24,10 +29,10 @@ struct TransformationParams {
     var scale: simd_float3
 }
 
-struct PostProcessingParams {
-    var boxBlur: Bool
-    var gaussianBlur: Bool
-    var invertColors: Bool
+struct ModelTransformation {
+    var translation: simd_float4x4
+    var rotation: simd_float4x4
+    var scaling: simd_float4x4
 }
 
 // Used to collect info before normals are calculated. Defined as a class

@@ -73,6 +73,15 @@ class Mesh {
         return (result, result.count * MemoryLayout<Vertex>.stride)
     }
     
+    func modelTransformation() -> ModelTransformation {
+        let translation = translation_matrix(t: position - origin)
+        let rotation = rotation_matrix(axis: PITCHAXIS, theta: rotation.x) *
+                       rotation_matrix(axis: YAWAXIS, theta: rotation.y) *
+                       rotation_matrix(axis: ROLLAXIS, theta: rotation.z)
+        let scaling = scaling_matrix(scale: scale)
+        return ModelTransformation(translation: translation, rotation: rotation, scaling: scaling)
+    }
+    
     static func fromOBJ(url: URL) -> Mesh {
         let reader = LineReader(url: url)!
         let parser = OBJParser(source: reader)

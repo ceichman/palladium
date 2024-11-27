@@ -16,11 +16,15 @@ struct ProjectionParams {
     float farZ;
 };
 
-struct TransformationParams {
-    simd_float3 origin;
-    simd_float3 position;
-    simd_float3 rotation;  // gimbal lock central
-    simd_float3 scale;
+struct ViewProjection {
+    simd_float4x4 view;
+    simd_float4x4 projection;
+};
+
+struct ModelTransformation {
+    simd_float4x4 translation;
+    simd_float4x4 rotation;
+    simd_float4x4 scaling;
 };
 
 struct Vertex {
@@ -123,26 +127,16 @@ constant vector_float3 NORTH = vector_float3(0, 0, 1);  // z
 
 vertex ProjectedVertex project_vertex(
                              const device Vertex* vertex_array [[ buffer(0) ]],
-                             constant ProjectionParams &params [[ buffer(1) ]],
-                             constant TransformationParams &tparams [[ buffer(2) ]],
-                             constant float4x4 &viewMatrix [[ buffer(3) ]],
+                             constant ViewProjection &viewProj [[ buffer(1) ]],
+                             constant ModelTransformation &model [[ buffer(2) ]],
                              unsigned int vid [[ vertex_id ]])
 {
     Vertex inVertex = vertex_array[vid];
-    float4 vert = float4(inVertex.position.xyz - tparams.origin, 1.0);
-    float4x4 scalingMatrix = scaling_matrix(tparams.scale);
-    // TODO: following approach suffers from gimbal lock
-    // (loss of information from tparams.rotation: float3 -> rotation_matrix(float3, float4)
-    float4x4 rotationMatrix = rotation_matrix(EAST, tparams.rotation.x) * rotation_matrix(UP, tparams.rotation.y) * rotation_matrix(NORTH, tparams.rotation.z);
-    float4x4 translationMatrix = translation_matrix(tparams.position);
-    float4x4 projMatrix = projection_matrix(params.aspectRatio, params.fovRadians, params.nearZ, params.farZ);
+    float4 vert = float4(inVertex.position.xyz, 1.0);
     
-    // flipped order
-    // float4x4 modelMatrix = scalingMatrix * rotationMatrix * translationMatrix;
-    // REVERT: this is the original order
-    float4x4 modelMatrix = translationMatrix * rotationMatrix * scalingMatrix;
-    float4 projectedPosition = projMatrix * viewMatrix * modelMatrix * vert;
-    float4 projectedNormal = projMatrix * translationMatrix * rotationMatrix * float4(inVertex.normal, 1.0);
+    float4x4 modelMatrix = model.translation * model.rotation * model.scaling;
+    float4 projectedPosition = viewProj.projection * viewProj.view * modelMatrix * vert;
+    float4 projectedNormal = viewProj.projection * model.translation * model.rotation * float4(inVertex.normal, 1.0);
     // then normalize in z
     float4 normalizedNormal = projectedNormal;
     if (projectedNormal.w != 0.0) {
