@@ -36,17 +36,17 @@ class ViewController: UIViewController, RendererDelegate {
         
         let teapotURL = mainBundle.url(forResource: "teapot", withExtension: "obj", subdirectory: "meshes")!
         let teapotMesh = Mesh.fromOBJ(url: teapotURL,
-                                position: simd_float3(0.0, -1.0, 6.0),
-                                rotation: simd_float3(0.8, 0, 0),
-                                scale: simd_float3(1, 1, 1))
+                                      position: simd_float3(0.0, -1.0, 6.0),
+                                      rotation: simd_float3(0.8, 0, 0),
+                                      scale: simd_float3(1, 1, 1))
         // only needed if original OBJ has no normals. Maybe detect this automatically?
         teapotMesh.calculateNormals()
         
         let catURL = mainBundle.url(forResource: "cat", withExtension: "obj", subdirectory: "meshes")!
         let catMesh = Mesh.fromOBJ(url: catURL,
-                                position: simd_float3(0.0, -1.0, 6.0),
-                                rotation: simd_float3(0.8, 0, 0),
-                                scale: simd_float3(0.1, 0.1, 0.1))
+                                   position: simd_float3(0.0, -1.0, 6.0),
+                                   rotation: simd_float3(0.8, 0, 0),
+                                   scale: simd_float3(0.1, 0.1, 0.1))
         catMesh.calculateNormals()
         
         let pumpkinURL = mainBundle.url(forResource: "pumpkin", withExtension: "obj", subdirectory: "meshes")!
@@ -93,7 +93,7 @@ class ViewController: UIViewController, RendererDelegate {
         // mesh.rotation = simd_float3(0, yPosition, 0)
         camera.move(deltaTime: deltaTime)
     }
-
+    
     @IBAction func upButtonPressed(_ sender: UIButton) {
         camera.velocityY = cameraVelocity
     }
@@ -107,7 +107,7 @@ class ViewController: UIViewController, RendererDelegate {
         camera.velocityX += relativeLeft.x * cameraVelocity
         camera.velocityZ += relativeLeft.z * cameraVelocity
     }
-
+    
     @IBAction func rightButtonPressed(_ sender: UIButton) {
         let relativeRight = camera.relativeRight
         camera.velocityX += relativeRight.x * cameraVelocity
@@ -118,7 +118,7 @@ class ViewController: UIViewController, RendererDelegate {
         camera.velocityX = 0.0
         camera.velocityZ = 0.0
     }
-
+    
     @IBAction func resetVertical(_ sender: UIButton) {
         camera.velocityY = 0.0
     }
@@ -165,8 +165,9 @@ class ViewController: UIViewController, RendererDelegate {
             boxBlurSwitch.setOn(false, animated: true)
         }
     }
-
+    
     @IBAction func invertColorsSwitchDidChange(_ sender: UISwitch) {
         renderer.options.invertColors = sender.isOn
     }
+    
 }
