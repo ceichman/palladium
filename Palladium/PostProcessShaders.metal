@@ -58,22 +58,28 @@ kernel void gaussian_blur(uint2 gid [[thread_position_in_grid]],
                        texture2d<half, access::read> inColor [[texture(0)]],
                        texture2d<half, access::write> outColor [[texture(1)]])
 {
-    int size = 7;
+    uint maxWidth = inColor.get_width();
+    uint maxHeight = inColor.get_height();
+    
+    int size = 5;
     int radius = size / 2;
  
     half4 accumColor(0, 0, 0, 0);
+    float accumWeights = 0;
     for (int j = 0; j < size; ++j)
     {
         for (int i = 0; i < size; ++i)
         {
             uint2 textureIndex(gid.x + (i - radius), gid.y + (j - radius));
+            if (!check_bounds(textureIndex, maxWidth, maxHeight)) continue;
             half4 color = inColor.read(textureIndex);
-            half4 weight = gaussian_weight(float(i), float(j), radius / 2);
+            float weight = gaussian_weight(float(i), float(j), radius / 2);
             accumColor += weight * color;
+            accumWeights += weight;
         }
     }
  
-    outColor.write(half4(accumColor.rgb, 1), gid);
+    outColor.write(half4(accumColor.rgb / accumWeights, 1), gid);
 }
 
 kernel void invert_color(uint2 gid [[thread_position_in_grid]],

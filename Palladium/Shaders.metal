@@ -62,6 +62,7 @@ vertex ProjectedVertex project_vertex(
 
 
 fragment half4 basic_fragment(ProjectedVertex vert [[stage_in]]) {
+    
     simd_float3 lightDirection = normalize(simd_float3(1, 0, 0));
     float d = dot(vert.normal, lightDirection);
     return half4(vert.color * d);

@@ -31,7 +31,7 @@ class ViewController: UIViewController, RendererDelegate {
         let cubeNormalURL = mainBundle.url(forResource: "cube-normal", withExtension: "obj", subdirectory: "meshes")!
         let cubeNormalMesh = Mesh.fromOBJ(url: cubeNormalURL,
                                           position: simd_float3(0.0, 0.0, 3.0),
-                                          rotation: simd_float3(0.8, 0, 0),
+                                          rotation: simd_float3(0.4, 0, 0),
                                           scale: simd_float3.one)
         
         let teapotURL = mainBundle.url(forResource: "teapot", withExtension: "obj", subdirectory: "meshes")!
@@ -46,7 +46,7 @@ class ViewController: UIViewController, RendererDelegate {
         let catMesh = Mesh.fromOBJ(url: catURL,
                                 position: simd_float3(0.0, -1.0, 6.0),
                                 rotation: simd_float3(0.8, 0, 0),
-                                scale: simd_float3(0.01, 0.01, 0.01))
+                                scale: simd_float3(0.1, 0.1, 0.1))
         catMesh.calculateNormals()
         
         let pumpkinURL = mainBundle.url(forResource: "pumpkin", withExtension: "obj", subdirectory: "meshes")!
@@ -70,12 +70,10 @@ class ViewController: UIViewController, RendererDelegate {
         metalView.device = device
         
         /// Creates a Renderer object (from refactor). Only supports a single mesh atm
-        self.mesh = axisMesh
+        self.mesh = teapotMesh
         renderer = Renderer(view: metalView, mesh: self.mesh, camera: camera)
         
         /// Set up device and metalView
-        metalView.depthStencilPixelFormat = .depth32Float
-        metalView.clearDepth = 0.0
         metalView.delegate = renderer
         renderer.delegate = self
         
@@ -136,8 +134,8 @@ class ViewController: UIViewController, RendererDelegate {
             let location = sender.location(in: metalView)
             let (dx, dy) = (location.x - lastLocation.x, location.y - lastLocation.y)
             lastLocation = location
+            camera.pitch = (camera.pitch - dy * sensitivity).clamped(to: -Double.pi / 2.0...Double.pi / 2.0)
             camera.yaw -= dx * sensitivity
-            camera.pitch -= dy * sensitivity
             
         default:
             lastLocation = CGPoint()
@@ -146,9 +144,12 @@ class ViewController: UIViewController, RendererDelegate {
     
     @IBAction func didPinch(_ sender: UIPinchGestureRecognizer) {
         let newFov = renderer.options.fovDegrees / sender.scale
-        renderer.options.fovDegrees = newFov.clamped(to: 25...105)
+        renderer.options.fovDegrees = newFov.clamped(to: 15...85)
         sender.scale = 1.0
-        print("scale: \(sender.scale) fov: \(renderer.options.fovDegrees)")
+    }
+    
+    @IBAction func wireframeSwitchDidChange(_ sender: UISwitch) {
+        renderer.options.wireframe = sender.isOn
     }
     
     @IBAction func boxBlurSwitchDidChange(_ sender: UISwitch) {
@@ -159,7 +160,7 @@ class ViewController: UIViewController, RendererDelegate {
     }
     
     @IBAction func gaussianBlurSwitchDidChange(_ sender: UISwitch) {
-        renderer.options.boxBlur = sender.isOn
+        renderer.options.gaussianBlur = sender.isOn
         if sender.isOn {
             boxBlurSwitch.setOn(false, animated: true)
         }

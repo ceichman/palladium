@@ -18,6 +18,7 @@ class Camera {
         get {
             let yawMod = yaw.remainder(dividingBy: Double.pi * 2)
             let pitchMod = pitch.remainder(dividingBy: Double.pi * 2)
+            print(yawMod, pitchMod)
             var forward = simd_float3()
             forward.x = Float(cos(pitchMod) * cos(yawMod))
             forward.y = Float(sin(pitchMod))

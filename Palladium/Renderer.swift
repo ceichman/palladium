@@ -5,6 +5,7 @@ import simd
 /// A struct used to expose configurable renderer parameters.
 struct RendererOptions {
     var fovDegrees: Double
+    var wireframe: Bool
     var boxBlur: Bool
     var gaussianBlur: Bool
     var invertColors: Bool
@@ -34,7 +35,7 @@ class Renderer: NSObject, MTKViewDelegate {
     /// Initializes the Renderer object and calls setup() routine
     init(view: MTKView, mesh: Mesh, camera: Camera) {
         self.view = view
-        self.options = RendererOptions(fovDegrees: 40.0, boxBlur: false, gaussianBlur: false, invertColors: false)
+        self.options = RendererOptions(fovDegrees: 40.0, wireframe: false, boxBlur: false, gaussianBlur: false, invertColors: false)
         super.init()
         self.mesh = mesh
         self.camera = camera
@@ -64,7 +65,10 @@ class Renderer: NSObject, MTKViewDelegate {
         let (vertexArray, dataSize) = mesh.vertexArray()
         vertexBuffer = device.makeBuffer(bytes: vertexArray, length: dataSize, options: [])
         
-        /// Initialize depth stencil state
+        view.depthStencilPixelFormat = .depth32Float
+        view.clearDepth = 0.0
+
+    /// Initialize depth stencil state
         let depthStencilDescriptor = MTLDepthStencilDescriptor()
         depthStencilDescriptor.depthCompareFunction = .greater
         depthStencilDescriptor.isDepthWriteEnabled = true
@@ -111,11 +115,11 @@ class Renderer: NSObject, MTKViewDelegate {
             /// Configure render command
             guard let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderPassDescriptor) else { return }
             renderEncoder.label = "Geometry pass"
-            renderEncoder.setTriangleFillMode(.fill)
+            renderEncoder.setTriangleFillMode(options.wireframe ? .lines : .fill)
             renderEncoder.setCullMode(.back)
             renderEncoder.setFrontFacing(.clockwise)
             renderEncoder.setRenderPipelineState(pipelineState)
-            renderEncoder.setDepthStencilState(self.depthStencilState)
+            renderEncoder.setDepthStencilState(depthStencilState)
             renderEncoder.setVertexBuffer(vertexBuffer, offset: 0, index: 0)
             renderEncoder.setVertexBytes(&viewProjection, length: MemoryLayout.size(ofValue: viewProjection), index: 1)
             renderEncoder.setVertexBytes(&modelTransformation, length: MemoryLayout.size(ofValue: modelTransformation), index: 2)
@@ -127,6 +131,7 @@ class Renderer: NSObject, MTKViewDelegate {
             if options.boxBlur {
                 addPostProcessPass(pipeline: boxBlurPipelineState, commandBuffer: commandBuffer, inTexture: drawable.texture, outTexture: drawable.texture)
             }
+            
             if options.gaussianBlur {
                 addPostProcessPass(pipeline: gaussianBlurPipelineState, commandBuffer: commandBuffer, inTexture: drawable.texture, outTexture: drawable.texture)
             }
