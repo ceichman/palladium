@@ -16,7 +16,7 @@ struct RendererOptions {
 class Renderer: NSObject, MTKViewDelegate {
     
     var view: MTKView
-    var mesh: Mesh!
+    var object: Object!
     var camera: Camera!
     var delegate: RendererDelegate?
     var options: RendererOptions
@@ -33,11 +33,11 @@ class Renderer: NSObject, MTKViewDelegate {
     private var currentFrameTime = CACurrentMediaTime()
 
     /// Initializes the Renderer object and calls setup() routine
-    init(view: MTKView, mesh: Mesh, camera: Camera) {
+    init(view: MTKView, object: Object, camera: Camera) {
         self.view = view
         self.options = RendererOptions(fovDegrees: 40.0, wireframe: false, boxBlur: false, gaussianBlur: false, invertColors: false)
         super.init()
-        self.mesh = mesh
+        self.object = object
         self.camera = camera
         setup()
     }
@@ -62,7 +62,7 @@ class Renderer: NSObject, MTKViewDelegate {
         commandQueue = device.makeCommandQueue()
 
         /// Create vertex buffer
-        let (vertexArray, dataSize) = mesh.vertexArray()
+        let (vertexArray, dataSize) = object.mesh.vertexArray()
         vertexBuffer = device.makeBuffer(bytes: vertexArray, length: dataSize, options: [])
         
         view.depthStencilPixelFormat = .depth32Float
@@ -106,7 +106,7 @@ class Renderer: NSObject, MTKViewDelegate {
                 farZ: 1000.0
             )
             
-            var modelTransformation = mesh.modelTransformation()
+            var modelTransformation = object.mesh.modelTransformation()
             var viewProjection = camera.viewProjection(projectionParams)
 
             
@@ -123,9 +123,11 @@ class Renderer: NSObject, MTKViewDelegate {
             renderEncoder.setVertexBuffer(vertexBuffer, offset: 0, index: 0)
             renderEncoder.setVertexBytes(&viewProjection, length: MemoryLayout.size(ofValue: viewProjection), index: 1)
             renderEncoder.setVertexBytes(&modelTransformation, length: MemoryLayout.size(ofValue: modelTransformation), index: 2)
-            // set*Bytes is convenient because you can pass a buffer to the shader without having to explicitly create it in Swift with device.makeBuffer(). probably saves system memory too
+            if let tex = object.texture {
+                renderEncoder.setFragmentTexture(tex, index: 0)
+            }
             // interpret vertexCount vertices as instanceCount instances of type .triangle
-            renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: mesh.triangles.count * 3)
+            renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: object.mesh.triangles.count * 3)
             renderEncoder.endEncoding()
             
             if options.boxBlur {

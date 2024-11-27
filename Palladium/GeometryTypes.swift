@@ -62,11 +62,13 @@ struct Vertex {
     var position: simd_float3
     var color: simd_float4
     var normal: simd_float3
+    var uvs: simd_float2
     
     init(_ applicationVertex: ApplicationVertex) {
         position = applicationVertex.position
         color = applicationVertex.color
         normal = applicationVertex.normal
+        uvs = applicationVertex.uvs
     }
 }
 

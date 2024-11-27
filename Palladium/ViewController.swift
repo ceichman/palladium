@@ -12,10 +12,10 @@ import MetalKit
 class ViewController: UIViewController, RendererDelegate {
     
     var renderer: Renderer!
-    var mesh: Mesh!
+    var object: Object!
     var camera: Camera!
     
-    let cameraVelocity: Float = 10.0
+    let cameraVelocity: Float = 5.0
     
     @IBOutlet weak var metalView: MTKView!
     @IBOutlet weak var boxBlurSwitch: UISwitch!
@@ -44,9 +44,9 @@ class ViewController: UIViewController, RendererDelegate {
         
         let catURL = mainBundle.url(forResource: "cat", withExtension: "obj", subdirectory: "meshes")!
         let catMesh = Mesh.fromOBJ(url: catURL,
-                                   position: simd_float3(0.0, -1.0, 6.0),
+                                   position: simd_float3(0.0, -1.0, 4.0),
                                    rotation: simd_float3(0.0, 0, 0),
-                                   scale: simd_float3(0.01, 0.01, 0.01))
+                                   scale: simd_float3(0.001, 0.001, 0.001))
         catMesh.calculateNormals()
         
         let pumpkinURL = mainBundle.url(forResource: "pumpkin", withExtension: "obj", subdirectory: "meshes")!
@@ -65,19 +65,25 @@ class ViewController: UIViewController, RendererDelegate {
         
         let spotURL = mainBundle.url(forResource: "spot", withExtension: "obj", subdirectory: "meshes")!
         let spotMesh = Mesh.fromOBJ(url: spotURL,
-                                    position: simd_float3(4.0, 4.0, 4.0),
-                                    rotation: .zero,
+                                    position: simd_float3(-1.0, 0.5, 4.0),
+                                    rotation: simd_float3(0, Float.pi, 0),
                                     scale: .one)
+        
         
         /// Set up camera
         self.camera = Camera(position: simd_float3(0, 0, 0))
         
-        let device = MTLCreateSystemDefaultDevice()
+        let device = MTLCreateSystemDefaultDevice()!
         metalView.device = device
         
+        let texLoader = MTKTextureLoader(device: device)
+        
+        let spotTextureURL = mainBundle.url(forResource: "spot-texture-raster", withExtension: "png", subdirectory: "textures")!
+        let spotTexture = try! texLoader.newTexture(URL: spotTextureURL)
+
         /// Creates a Renderer object (from refactor). Only supports a single mesh atm
-        self.mesh = spotMesh
-        renderer = Renderer(view: metalView, mesh: self.mesh, camera: camera)
+        self.object = Object(mesh: spotMesh, texture: spotTexture)
+        renderer = Renderer(view: metalView, object: object, camera: camera)
         
         /// Set up device and metalView
         metalView.delegate = renderer
@@ -96,7 +102,8 @@ class ViewController: UIViewController, RendererDelegate {
         let time = Date().timeIntervalSince1970.magnitude
         // let xPosition = Float(cos(time) * 2.5) + 4.0
         let yPosition = Float(sin(time) * 2.5)
-        // mesh.rotation = simd_float3(0, yPosition, 0)
+        // object.mesh.rotation = simd_float3(0, Float(time), 0)
+        object.mesh.rotation = simd_float3(0, yPosition, 0)
         camera.move(deltaTime: deltaTime)
     }
     

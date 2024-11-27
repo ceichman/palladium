@@ -13,10 +13,10 @@ import simd
 // and populate an ApplicationVertex array. Right now it's just a dumping ground for raw vertex data.
 
 class Mesh {
+    var position = simd_float3(0, 0, 1)   // World-space position of the mesh
+    var rotation = simd_float3.zero       // 3D rotation (subject to gimbal lock)
+    var scale = simd_float3.one           // Per-axis scaling
     var origin: simd_float3   // Offset for transformations of the mesh
-    var position: simd_float3   // World-space position of the mesh
-    var rotation: simd_float3   // 3D rotation (subject to gimbal lock)
-    var scale: simd_float3   // Per-axis scaling
     var triangles: [Triangle]
     var vertices: [ApplicationVertex]
     
@@ -74,7 +74,7 @@ class Mesh {
     }
     
     func modelTransformation() -> ModelTransformation {
-        let translation = translation_matrix(t: position - origin)
+        let translation = translation_matrix(t: position)
         let rotation = rotation_matrix(axis: PITCHAXIS, theta: rotation.x) *
                        rotation_matrix(axis: YAWAXIS, theta: rotation.y) *
                        rotation_matrix(axis: ROLLAXIS, theta: rotation.z)

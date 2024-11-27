@@ -24,12 +24,14 @@ struct Vertex {
     simd_float3 position;
     simd_float4 color;
     simd_float3 normal;
+    simd_float2 uvs;
 };
 
 struct ProjectedVertex {
     simd_float4 position [[position]];
     simd_float4 color;
     simd_float3 normal;
+    simd_float2 uvs;
 };
 
 vertex ProjectedVertex project_vertex(
@@ -44,15 +46,22 @@ vertex ProjectedVertex project_vertex(
     float4x4 modelMatrix = model.translation * model.scaling * model.rotation;
     float4 projectedPosition = viewProj.projection * viewProj.view * modelMatrix * vert;
     float4 projectedNormal = viewProj.projection * model.rotation * float4(inVertex.normal, 1.0);
-    return { .position = projectedPosition, .color = inVertex.color, .normal = projectedNormal.xyz };
+    return { .position = projectedPosition, .color = inVertex.color, .normal = projectedNormal.xyz, .uvs = inVertex.uvs };
+    
 }
 
 
-fragment half4 basic_fragment(ProjectedVertex vert [[stage_in]]) {
-    
+constexpr sampler textureSampler (mag_filter::linear,
+                                  min_filter::linear);
+
+fragment half4 basic_fragment(ProjectedVertex vert [[stage_in]],
+                              texture2d<half> colorTexture [[ texture(0)]])
+{
+    simd_float2 newUv = simd_float2(vert.uvs.x, 1.0 - vert.uvs.y);
+    const half4 colorSample = colorTexture.sample(textureSampler, newUv);
     simd_float3 lightDirection = normalize(simd_float3(1, 0, 0));
     float d = dot(vert.normal, lightDirection);
-    return half4(vert.color * d);
+    return half4(colorSample * d + 0.1);
 }
                         
                            
