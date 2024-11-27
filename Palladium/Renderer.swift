@@ -66,11 +66,11 @@ class Renderer: NSObject, MTKViewDelegate {
         vertexBuffer = device.makeBuffer(bytes: vertexArray, length: dataSize, options: [])
         
         view.depthStencilPixelFormat = .depth32Float
-        view.clearDepth = 0.0
+        view.clearDepth = 1.0
 
     /// Initialize depth stencil state
         let depthStencilDescriptor = MTLDepthStencilDescriptor()
-        depthStencilDescriptor.depthCompareFunction = .greater
+        depthStencilDescriptor.depthCompareFunction = .less
         depthStencilDescriptor.isDepthWriteEnabled = true
         depthStencilState = device.makeDepthStencilState(descriptor: depthStencilDescriptor)
     }

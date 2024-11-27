@@ -41,23 +41,19 @@ vertex ProjectedVertex project_vertex(
     Vertex inVertex = vertex_array[vid];
     float4 vert = float4(inVertex.position.xyz, 1.0);
     
-    float4x4 modelMatrix = model.translation * model.rotation * model.scaling;
+    float4x4 modelMatrix = model.translation * model.scaling * model.rotation;
     float4 projectedPosition = viewProj.projection * viewProj.view * modelMatrix * vert;
     float4 projectedNormal = viewProj.projection * model.translation * model.rotation * float4(inVertex.normal, 1.0);
     // then normalize in z
     float4 normalizedNormal = projectedNormal;
+    /*
     if (projectedNormal.w != 0.0) {
         normalizedNormal.x /= projectedNormal.w;
         normalizedNormal.y /= projectedNormal.w;
         normalizedNormal.z /= projectedNormal.w;
     }
-    float4 normalizedPosition = projectedPosition;
-    if (projectedPosition.w != 0.0) {
-        normalizedPosition.x /= projectedPosition.w;
-        normalizedPosition.y /= projectedPosition.w;
-        normalizedPosition.z /= projectedPosition.w;
-    }
-    return { .position = normalizedPosition, .color = inVertex.color, .normal = projectedNormal.xyz };
+     */
+    return { .position = projectedPosition, .color = inVertex.color, .normal = projectedNormal.xyz };
 }
 
 

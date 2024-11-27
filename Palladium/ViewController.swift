@@ -15,7 +15,7 @@ class ViewController: UIViewController, RendererDelegate {
     var mesh: Mesh!
     var camera: Camera!
     
-    let cameraVelocity: Float = 5.0
+    let cameraVelocity: Float = 10.0
     
     @IBOutlet weak var metalView: MTKView!
     @IBOutlet weak var boxBlurSwitch: UISwitch!
@@ -51,7 +51,7 @@ class ViewController: UIViewController, RendererDelegate {
         
         let pumpkinURL = mainBundle.url(forResource: "pumpkin", withExtension: "obj", subdirectory: "meshes")!
         let pumpkinMesh = Mesh.fromOBJ(url: pumpkinURL,
-                                       position: simd_float3(0.0, -1.0, 8.0),
+                                       position: simd_float3(0.0, -1.0, 3.0),
                                        rotation: simd_float3(0, 0, 0),
                                        scale: simd_float3(0.1, 0.1, 0.1))
         pumpkinMesh.calculateNormals()
@@ -70,7 +70,7 @@ class ViewController: UIViewController, RendererDelegate {
         metalView.device = device
         
         /// Creates a Renderer object (from refactor). Only supports a single mesh atm
-        self.mesh = teapotMesh
+        self.mesh = pumpkinMesh
         renderer = Renderer(view: metalView, mesh: self.mesh, camera: camera)
         
         /// Set up device and metalView
@@ -102,6 +102,20 @@ class ViewController: UIViewController, RendererDelegate {
         camera.velocityY = -cameraVelocity
     }
     
+    @IBAction func forwardButtonPressed(_ sender: UIButton) {
+        let forward = camera.lookDirection
+        camera.velocityX += forward.x * cameraVelocity
+        camera.velocityY += forward.y * cameraVelocity
+        camera.velocityZ += forward.z * cameraVelocity
+    }
+    
+    @IBAction func backButtonPressed(_ sender: UIButton) {
+        let forward = camera.lookDirection
+        camera.velocityX -= forward.x * cameraVelocity
+        camera.velocityY -= forward.y * cameraVelocity
+        camera.velocityZ -= forward.z * cameraVelocity
+    }
+
     @IBAction func leftButtonPressed(_ sender: UIButton) {
         let relativeLeft = camera.relativeLeft
         camera.velocityX += relativeLeft.x * cameraVelocity
@@ -121,6 +135,13 @@ class ViewController: UIViewController, RendererDelegate {
     
     @IBAction func resetVertical(_ sender: UIButton) {
         camera.velocityY = 0.0
+    }
+    
+    @IBAction func resetCameraVelocity(_ sender: UIButton) {
+        camera.velocityX = 0.0
+        camera.velocityY = 0.0
+        camera.velocityZ = 0.0
+        print(camera.position)
     }
     
     var lastLocation = CGPoint()
@@ -156,6 +177,7 @@ class ViewController: UIViewController, RendererDelegate {
         renderer.options.boxBlur = sender.isOn
         if sender.isOn {
             gaussianBlurSwitch.setOn(false, animated: true)
+            renderer.options.gaussianBlur = false
         }
     }
     
@@ -163,6 +185,7 @@ class ViewController: UIViewController, RendererDelegate {
         renderer.options.gaussianBlur = sender.isOn
         if sender.isOn {
             boxBlurSwitch.setOn(false, animated: true)
+            renderer.options.boxBlur = false
         }
     }
     

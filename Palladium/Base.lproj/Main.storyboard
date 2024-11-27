@@ -20,20 +20,6 @@
                             <mtkView contentMode="scaleToFill" colorPixelFormat="BGRA8Unorm" depthStencilPixelFormat="Depth32Float" translatesAutoresizingMaskIntoConstraints="NO" id="Nw4-FQ-qWd">
                                 <rect key="frame" x="0.0" y="0.0" width="852" height="393"/>
                             </mtkView>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eT7-jp-Cmt" userLabel="Up">
-                                <rect key="frame" x="147" y="222" width="60" height="59"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="tinted">
-                                    <imageReference key="image" image="arrowshape.up.circle.fill" catalog="system" symbolScale="default"/>
-                                </buttonConfiguration>
-                                <connections>
-                                    <action selector="resetVertical:" destination="BYZ-38-t0r" eventType="touchUpOutside" id="952-ML-yf6"/>
-                                    <action selector="resetVertical:" destination="BYZ-38-t0r" eventType="touchCancel" id="SbT-lv-CQw"/>
-                                    <action selector="resetVertical:" destination="BYZ-38-t0r" eventType="touchUpInside" id="TlL-Qi-7sk"/>
-                                    <action selector="upButtonPressed:" destination="BYZ-38-t0r" eventType="touchDown" id="KgP-HE-k6b"/>
-                                </connections>
-                            </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="pQR-yz-l6g" userLabel="Down">
                                 <rect key="frame" x="147" y="304" width="60" height="59"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -42,10 +28,11 @@
                                     <imageReference key="image" image="arrowshape.down.circle.fill" catalog="system" symbolScale="default"/>
                                 </buttonConfiguration>
                                 <connections>
-                                    <action selector="downButtonPressed:" destination="BYZ-38-t0r" eventType="touchDown" id="fmv-K3-jN8"/>
-                                    <action selector="resetVertical:" destination="BYZ-38-t0r" eventType="touchUpOutside" id="MaB-un-hZN"/>
-                                    <action selector="resetVertical:" destination="BYZ-38-t0r" eventType="touchUpInside" id="cbI-PS-w8G"/>
-                                    <action selector="resetVertical:" destination="BYZ-38-t0r" eventType="touchCancel" id="uFR-zi-3cI"/>
+                                    <action selector="backButtonPressed:" destination="BYZ-38-t0r" eventType="touchDown" id="nXx-N1-CCf"/>
+                                    <action selector="resetCameraVelocity:" destination="BYZ-38-t0r" eventType="touchUpOutside" id="1GM-ap-Xsx"/>
+                                    <action selector="resetCameraVelocity:" destination="BYZ-38-t0r" eventType="touchUpInside" id="KOX-GA-If4"/>
+                                    <action selector="resetCameraVelocity:" destination="BYZ-38-t0r" eventType="touchDragExit" id="a2T-o5-Gm9"/>
+                                    <action selector="resetCameraVelocity:" destination="BYZ-38-t0r" eventType="touchCancel" id="xp5-m9-erG"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1Mo-q2-zQ2" userLabel="Right">
@@ -57,6 +44,7 @@
                                 </buttonConfiguration>
                                 <connections>
                                     <action selector="resetHorizontal:" destination="BYZ-38-t0r" eventType="touchUpOutside" id="jWL-cn-MkX"/>
+                                    <action selector="resetHorizontal:" destination="BYZ-38-t0r" eventType="touchDragExit" id="kY3-r1-pQr"/>
                                     <action selector="resetHorizontal:" destination="BYZ-38-t0r" eventType="touchUpInside" id="p4m-60-8GU"/>
                                     <action selector="resetHorizontal:" destination="BYZ-38-t0r" eventType="touchCancel" id="yCX-4Y-LwQ"/>
                                     <action selector="rightButtonPressed:" destination="BYZ-38-t0r" eventType="touchDown" id="oDC-VH-umD"/>
@@ -71,6 +59,7 @@
                                 </buttonConfiguration>
                                 <connections>
                                     <action selector="leftButtonPressed:" destination="BYZ-38-t0r" eventType="touchDown" id="LwP-Zt-WrS"/>
+                                    <action selector="resetHorizontal:" destination="BYZ-38-t0r" eventType="touchDragExit" id="4OU-LI-FFB"/>
                                     <action selector="resetHorizontal:" destination="BYZ-38-t0r" eventType="touchCancel" id="CZK-3G-JRe"/>
                                     <action selector="resetHorizontal:" destination="BYZ-38-t0r" eventType="touchUpOutside" id="GIQ-Od-PRo"/>
                                     <action selector="resetHorizontal:" destination="BYZ-38-t0r" eventType="touchUpInside" id="NNR-26-9Sd"/>
@@ -132,6 +121,51 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QeY-dl-GZx" userLabel="Up">
+                                <rect key="frame" x="304" y="221" width="60" height="59"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="tinted">
+                                    <imageReference key="image" image="arrowshape.up.circle.fill" catalog="system" symbolScale="default"/>
+                                </buttonConfiguration>
+                                <connections>
+                                    <action selector="resetVertical:" destination="BYZ-38-t0r" eventType="touchCancel" id="CsL-Bg-ZEE"/>
+                                    <action selector="resetVertical:" destination="BYZ-38-t0r" eventType="touchUpInside" id="RXJ-VN-E3H"/>
+                                    <action selector="resetVertical:" destination="BYZ-38-t0r" eventType="touchUpOutside" id="W5a-H4-JAJ"/>
+                                    <action selector="resetVertical:" destination="BYZ-38-t0r" eventType="touchDragExit" id="vqo-ka-Hvj"/>
+                                    <action selector="upButtonPressed:" destination="BYZ-38-t0r" eventType="touchDown" id="ieE-7r-nYR"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="pqM-9U-RxL" userLabel="Down">
+                                <rect key="frame" x="304" y="303" width="60" height="59"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="tinted">
+                                    <imageReference key="image" image="arrowshape.down.circle.fill" catalog="system" symbolScale="default"/>
+                                </buttonConfiguration>
+                                <connections>
+                                    <action selector="downButtonPressed:" destination="BYZ-38-t0r" eventType="touchDown" id="w2h-c2-bhT"/>
+                                    <action selector="resetVertical:" destination="BYZ-38-t0r" eventType="touchUpOutside" id="3Q8-QD-9Fa"/>
+                                    <action selector="resetVertical:" destination="BYZ-38-t0r" eventType="touchDragExit" id="Ps9-vC-ZWc"/>
+                                    <action selector="resetVertical:" destination="BYZ-38-t0r" eventType="touchUpInside" id="QY3-ce-Vix"/>
+                                    <action selector="resetVertical:" destination="BYZ-38-t0r" eventType="touchCancel" id="xBr-55-IS5"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eT7-jp-Cmt" userLabel="Up">
+                                <rect key="frame" x="147" y="221" width="60" height="59"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="tinted">
+                                    <imageReference key="image" image="arrowshape.up.circle.fill" catalog="system" symbolScale="default"/>
+                                </buttonConfiguration>
+                                <connections>
+                                    <action selector="forwardButtonPressed:" destination="BYZ-38-t0r" eventType="touchDown" id="96L-O7-DfK"/>
+                                    <action selector="resetCameraVelocity:" destination="BYZ-38-t0r" eventType="touchDragExit" id="Mub-P9-MxS"/>
+                                    <action selector="resetCameraVelocity:" destination="BYZ-38-t0r" eventType="touchCancel" id="c17-sY-nH2"/>
+                                    <action selector="resetCameraVelocity:" destination="BYZ-38-t0r" eventType="touchUpInside" id="juM-cX-2or"/>
+                                    <action selector="resetCameraVelocity:" destination="BYZ-38-t0r" eventType="touchUpOutside" id="lkV-yc-U0R"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>

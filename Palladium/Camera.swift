@@ -12,13 +12,12 @@ class Camera {
     
 
     var position: simd_float3
-    var yaw = 0.0  // radians, 0 == +z
+    var yaw = Double.pi / 2.0  // radians, 0 == +z
     var pitch = 0.0  // radians, 0 == +z
     var lookDirection: simd_float3 {
         get {
             let yawMod = yaw.remainder(dividingBy: Double.pi * 2)
             let pitchMod = pitch.remainder(dividingBy: Double.pi * 2)
-            print(yawMod, pitchMod)
             var forward = simd_float3()
             forward.x = Float(cos(pitchMod) * cos(yawMod))
             forward.y = Float(sin(pitchMod))
