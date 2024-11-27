@@ -29,45 +29,43 @@ class ViewController: UIViewController, RendererDelegate {
         let mainBundle = Bundle.main
         
         let cubeNormalURL = mainBundle.url(forResource: "cube-normal", withExtension: "obj", subdirectory: "meshes")!
-        let cubeNormalMesh = Mesh.fromOBJ(url: cubeNormalURL,
-                                          position: simd_float3(0.0, 0.0, 3.0),
-                                          rotation: simd_float3(0.4, 0, 0),
-                                          scale: simd_float3.one)
+        let cubeNormalMesh = Mesh.fromOBJ(url: cubeNormalURL)
+        let cubeNormalObject = Object(mesh: cubeNormalMesh)
+        cubeNormalObject.position = simd_float3(0.0, 0.0, 3.0)
+        cubeNormalObject.rotation = simd_float3(0.4, 0, 0)
         
         let teapotURL = mainBundle.url(forResource: "teapot", withExtension: "obj", subdirectory: "meshes")!
-        let teapotMesh = Mesh.fromOBJ(url: teapotURL,
-                                      position: simd_float3(0.0, -1.0, 6.0),
-                                      rotation: simd_float3(0.8, 0, 0),
-                                      scale: simd_float3(1, 1, 1))
-        // only needed if original OBJ has no normals. Maybe detect this automatically?
+        let teapotMesh = Mesh.fromOBJ(url: teapotURL)
         teapotMesh.calculateNormals()
+        let teapotObject = Object(mesh: teapotMesh)
+        teapotObject.position = simd_float3(0.0, -1.0, 6.0)
+        teapotObject.rotation = simd_float3(0.8, 0, 0)
         
         let catURL = mainBundle.url(forResource: "cat", withExtension: "obj", subdirectory: "meshes")!
-        let catMesh = Mesh.fromOBJ(url: catURL,
-                                   position: simd_float3(0.0, -1.0, 4.0),
-                                   rotation: simd_float3(0.0, 0, 0),
-                                   scale: simd_float3(0.001, 0.001, 0.001))
+        let catMesh = Mesh.fromOBJ(url: catURL)
         catMesh.calculateNormals()
+        let catObject = Object(mesh: catMesh)
+        catObject.position = simd_float3(0.0, -1.0, 4.0)
+        catObject.scale = simd_float3.one / 1000
         
         let pumpkinURL = mainBundle.url(forResource: "pumpkin", withExtension: "obj", subdirectory: "meshes")!
-        let pumpkinMesh = Mesh.fromOBJ(url: pumpkinURL,
-                                       position: simd_float3(0.0, -1.0, 3.0),
-                                       rotation: simd_float3(0, 0, 0),
-                                       scale: simd_float3(0.1, 0.1, 0.1))
+        let pumpkinMesh = Mesh.fromOBJ(url: pumpkinURL)
         pumpkinMesh.calculateNormals()
+        let pumpkinObject = Object(mesh: pumpkinMesh)
+        pumpkinObject.position = simd_float3(0.0, -1.0, 3.0)
+        pumpkinObject.scale = simd_float3.one / 10
         
         let axisURL = mainBundle.url(forResource: "axis", withExtension: "obj", subdirectory: "meshes")!
-        let axisMesh = Mesh.fromOBJ(url: axisURL,
-                                    position: simd_float3(5.0, 5.0, 4.0),
-                                    rotation: .zero,
-                                    scale: .one)
+        let axisMesh = Mesh.fromOBJ(url: axisURL)
         axisMesh.calculateNormals()
+        let axisObject = Object(mesh: axisMesh)
+        axisObject.position = simd_float3(5.0, 5.0, 4.0)
         
         let spotURL = mainBundle.url(forResource: "spot", withExtension: "obj", subdirectory: "meshes")!
-        let spotMesh = Mesh.fromOBJ(url: spotURL,
-                                    position: simd_float3(-1.0, 0.5, 4.0),
-                                    rotation: simd_float3(0, Float.pi, 0),
-                                    scale: .one)
+        let spotMesh = Mesh.fromOBJ(url: spotURL)
+        let spotObject = Object(mesh: spotMesh)
+        spotObject.position = simd_float3(-1.0, 0.5, 4.0)
+        spotObject.rotation = simd_float3(0, Float.pi, 0)
         
         
         /// Set up camera
@@ -103,7 +101,7 @@ class ViewController: UIViewController, RendererDelegate {
         // let xPosition = Float(cos(time) * 2.5) + 4.0
         let yPosition = Float(sin(time) * 2.5)
         // object.mesh.rotation = simd_float3(0, Float(time), 0)
-        object.mesh.rotation = simd_float3(0, yPosition, 0)
+        object.rotation = simd_float3(0, yPosition, 0)
         camera.move(deltaTime: deltaTime)
     }
     

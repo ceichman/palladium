@@ -13,30 +13,8 @@ import simd
 // and populate an ApplicationVertex array. Right now it's just a dumping ground for raw vertex data.
 
 class Mesh {
-    var position = simd_float3(0, 0, 1)   // World-space position of the mesh
-    var rotation = simd_float3.zero       // 3D rotation (subject to gimbal lock)
-    var scale = simd_float3.one           // Per-axis scaling
-    var origin: simd_float3   // Offset for transformations of the mesh
-    var triangles: [Triangle]
-    var vertices: [ApplicationVertex]
-    
-    init(origin: simd_float3, triangles: [Triangle], vertices: [ApplicationVertex]) {
-        self.origin = origin
-        self.position = simd_float3.zero
-        self.triangles = triangles
-        self.vertices = vertices
-        self.rotation = simd_float3(repeating: 0)
-        self.scale = simd_float3.one
-    }
-    
-    init(triangles: [Triangle], vertices: [ApplicationVertex]) {
-        self.origin = simd_float3.zero
-        self.position = simd_float3.zero
-        self.triangles = triangles
-        self.vertices = vertices
-        self.rotation = simd_float3.zero
-        self.scale = simd_float3.one
-    }
+    var triangles: [Triangle]!
+    var vertices: [ApplicationVertex]!
     
     // Calculates the normal vectors for an array of triangles, updating values in-place.
     // Each triangle in self.triangles should be made up of elements of vertices: [Vertex].
@@ -53,6 +31,11 @@ class Mesh {
         }
         // normalize all vertices
         normalizeNormals()
+    }
+    
+    private init(triangles: [Triangle], vertices: [ApplicationVertex]) {
+        self.triangles = triangles
+        self.vertices = vertices
     }
     
     func normalizeNormals() {
@@ -73,16 +56,7 @@ class Mesh {
         return (result, result.count * MemoryLayout<Vertex>.stride)
     }
     
-    func modelTransformation() -> ModelTransformation {
-        let translation = translation_matrix(t: position)
-        let rotation = rotation_matrix(axis: PITCHAXIS, theta: rotation.x) *
-                       rotation_matrix(axis: YAWAXIS, theta: rotation.y) *
-                       rotation_matrix(axis: ROLLAXIS, theta: rotation.z)
-        let scaling = scaling_matrix(scale: scale)
-        return ModelTransformation(translation: translation, rotation: rotation, scaling: scaling)
-    }
-    
-    static func fromOBJ(url: URL) -> Mesh {
+    static func fromOBJ(url: URL, calculateOrigin: Bool = false) -> Mesh {
         let reader = LineReader(url: url)!
         let parser = OBJParser(source: reader)
         
@@ -124,67 +98,16 @@ class Mesh {
         
         let mesh = Mesh(triangles: triangles, vertices: vertices)
         mesh.normalizeNormals()
-        mesh.origin = simd_float3(vertexAverage / Float(vertices.count))
+        
+        vertexAverage /= Float(vertices.count)
+        if calculateOrigin {
+            for vertex in vertices {
+                vertex.position -= vertexAverage
+            }
+        }
         
         return mesh
     }
     
-    static func fromOBJ(url: URL, origin: simd_float3) -> Mesh {
-        let mesh = self.fromOBJ(url: url)
-        mesh.origin = origin
-        return mesh
-    }
-    
-    static func fromOBJ(url: URL, position: simd_float3, rotation: simd_float3, scale: simd_float3) -> Mesh {
-        let mesh = self.fromOBJ(url: url)
-        mesh.position = position
-        mesh.rotation = rotation
-        mesh.scale = scale
-        return mesh
-    }
 }
 
-
-// In Metal, the default coordinate system is the normalized coordinate system, which means that by default you’re looking at a 2x2x1 cube centered at (0, 0, 0.5).
-// If you consider the Z=0 plane, then (-1, -1, 0) is the lower left, (0, 0, 0) is the center, and (1, 1, 0) is the upper right.
-
-let white = simd_float4(1, 1, 1, 1)
-let red = simd_float4(1, 0, 0, 1)
-let green = simd_float4(0, 1, 0, 1)
-let blue = simd_float4(0, 0, 1, 1)
-
-var vertices: [ApplicationVertex] = // needs to be mutable so we can calculate normals when loaded
-[
-    ApplicationVertex(position: simd_float3(0, 0, 0), color: red), // southwest bottom
-    ApplicationVertex(position: simd_float3(0, 1, 0), color: green), // southwest top
-    ApplicationVertex(position: simd_float3(1, 1, 0), color: blue), // southeast top
-    ApplicationVertex(position: simd_float3(1, 0, 0), color: white), // southeast bottom
-    ApplicationVertex(position: simd_float3(0, 0, 1), color: red), // northwest bottom
-    ApplicationVertex(position: simd_float3(0, 1, 1), color: green), // northwest top
-    ApplicationVertex(position: simd_float3(1, 1, 1), color: blue), // northeast top
-    ApplicationVertex(position: simd_float3(1, 0, 1), color: white), // northeast bottom
-]
-
-var triangles: [Triangle] =
-[
-    // South face
-    Triangle(a: vertices[0], b: vertices[1], c: vertices[2]),
-    Triangle(a: vertices[0], b: vertices[2], c: vertices[3]),
-    // East face
-    Triangle(a: vertices[3], b: vertices[2], c: vertices[6]),
-    Triangle(a: vertices[3], b: vertices[6], c: vertices[7]),
-    // North face
-    Triangle(a: vertices[7], b: vertices[6], c: vertices[5]),
-    Triangle(a: vertices[7], b: vertices[5], c: vertices[4]),
-    // West face
-    Triangle(a: vertices[4], b: vertices[5], c: vertices[1]),
-    Triangle(a: vertices[4], b: vertices[1], c: vertices[0]),
-    // Top face
-    Triangle(a: vertices[1], b: vertices[5], c: vertices[6]),
-    Triangle(a: vertices[1], b: vertices[6], c: vertices[2]),
-    // Bottom face
-    Triangle(a: vertices[4], b: vertices[0], c: vertices[3]),
-    Triangle(a: vertices[4], b: vertices[3], c: vertices[7]),
-]
-
-let cubeMesh = Mesh(triangles: triangles, vertices: vertices)

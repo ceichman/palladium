@@ -24,6 +24,16 @@ class Object {
     }
      */
     
+    func modelTransformation() -> ModelTransformation {
+        let translation = translation_matrix(t: position)
+        let rotation = rotation_matrix(axis: PITCHAXIS, theta: rotation.x) *
+                       rotation_matrix(axis: YAWAXIS, theta: rotation.y) *
+                       rotation_matrix(axis: ROLLAXIS, theta: rotation.z)
+        let scaling = scaling_matrix(scale: scale)
+        return ModelTransformation(translation: translation, rotation: rotation, scaling: scaling)
+    }
+    
+
     init(mesh: Mesh) {
         self.mesh = mesh
     }

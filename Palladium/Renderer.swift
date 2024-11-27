@@ -106,7 +106,7 @@ class Renderer: NSObject, MTKViewDelegate {
                 farZ: 1000.0
             )
             
-            var modelTransformation = object.mesh.modelTransformation()
+            var modelTransformation = object.modelTransformation()
             var viewProjection = camera.viewProjection(projectionParams)
 
             
