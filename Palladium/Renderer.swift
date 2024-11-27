@@ -108,7 +108,6 @@ class Renderer: NSObject, MTKViewDelegate {
             
             var modelTransformation = object.modelTransformation()
             var viewProjection = camera.viewProjection(projectionParams)
-
             
             /// Command buffer and encoding (encoded rendering instructions for the GPU)
             let commandBuffer = commandQueue.makeCommandBuffer()!
@@ -123,9 +122,7 @@ class Renderer: NSObject, MTKViewDelegate {
             renderEncoder.setVertexBuffer(vertexBuffer, offset: 0, index: 0)
             renderEncoder.setVertexBytes(&viewProjection, length: MemoryLayout.size(ofValue: viewProjection), index: 1)
             renderEncoder.setVertexBytes(&modelTransformation, length: MemoryLayout.size(ofValue: modelTransformation), index: 2)
-            if let tex = object.texture {
-                renderEncoder.setFragmentTexture(tex, index: 0)
-            }
+            renderEncoder.setFragmentTexture(object.texture, index: 0)
             // interpret vertexCount vertices as instanceCount instances of type .triangle
             renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: object.mesh.triangles.count * 3)
             renderEncoder.endEncoding()

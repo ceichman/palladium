@@ -57,11 +57,17 @@ constexpr sampler textureSampler (mag_filter::linear,
 fragment half4 basic_fragment(ProjectedVertex vert [[stage_in]],
                               texture2d<half> colorTexture [[ texture(0)]])
 {
-    simd_float2 newUv = simd_float2(vert.uvs.x, 1.0 - vert.uvs.y);
-    const half4 colorSample = colorTexture.sample(textureSampler, newUv);
+    half4 diffuseColor;
+    if (is_null_texture(colorTexture)) {
+        diffuseColor = half4(1, 1, 1, 1);
+    }
+    else {
+        simd_float2 newUv = simd_float2(vert.uvs.x, 1.0 - vert.uvs.y);
+        diffuseColor = colorTexture.sample(textureSampler, newUv);
+    }
     simd_float3 lightDirection = normalize(simd_float3(1, 0, 0));
     float d = dot(vert.normal, lightDirection);
-    return half4(colorSample * d + 0.1);
+    return half4(diffuseColor * d + 0.1);
 }
                         
                            

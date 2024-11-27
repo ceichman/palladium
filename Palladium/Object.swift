@@ -7,9 +7,13 @@
 
 import Foundation
 import Metal
+import MetalKit
 import simd
 
 class Object {
+    
+    let textureLoader = MTKTextureLoader(device: MTLCreateSystemDefaultDevice()!)
+    let mainBundle = Bundle.main
     
     var mesh: Mesh
     var texture: MTLTexture?
@@ -18,11 +22,25 @@ class Object {
     var rotation = simd_float3.zero       // 3D rotation (subject to gimbal lock)
     var scale = simd_float3.one           // Per-axis scaling
 
-    /*
-    init(meshName: String, textureName: String) {
-        // TODO
+    convenience init(meshName: String, textureName: String) {
+        self.init(meshName: meshName)
+        let textureURL = mainBundle.url(forResource: textureName, withExtension: "png", subdirectory: "textures")!
+        self.texture = try! textureLoader.newTexture(URL: textureURL)
     }
-     */
+    
+    init(meshName: String) {
+        let meshURL = mainBundle.url(forResource: meshName, withExtension: "obj", subdirectory: "meshes")!
+        self.mesh = Mesh.fromOBJ(url: meshURL, calculateOrigin: true)
+    }
+
+    init(mesh: Mesh) {
+        self.mesh = mesh
+    }
+    
+    init(mesh: Mesh, texture: MTLTexture) {
+        self.mesh = mesh
+        self.texture = texture
+    }
     
     func modelTransformation() -> ModelTransformation {
         let translation = translation_matrix(t: position)
@@ -34,13 +52,4 @@ class Object {
     }
     
 
-    init(mesh: Mesh) {
-        self.mesh = mesh
-    }
-    
-    init(mesh: Mesh, texture: MTLTexture) {
-        self.mesh = mesh
-        self.texture = texture
-    }
-    
 }

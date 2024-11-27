@@ -22,17 +22,14 @@ struct ViewProjection {
     var projection: simd_float4x4
 }
 
-struct TransformationParams {
-    var origin: simd_float3
-    var position: simd_float3
-    var rotation: simd_float3
-    var scale: simd_float3
-}
-
 struct ModelTransformation {
     var translation: simd_float4x4
     var rotation: simd_float4x4
     var scaling: simd_float4x4
+}
+
+struct FragmentParams {
+    var texturePresent: Bool
 }
 
 // Used to collect info before normals are calculated. Defined as a class

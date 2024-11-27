@@ -28,42 +28,30 @@ class ViewController: UIViewController, RendererDelegate {
         /// Load meshes
         let mainBundle = Bundle.main
         
-        let cubeNormalURL = mainBundle.url(forResource: "cube-normal", withExtension: "obj", subdirectory: "meshes")!
-        let cubeNormalMesh = Mesh.fromOBJ(url: cubeNormalURL)
-        let cubeNormalObject = Object(mesh: cubeNormalMesh)
+        let cubeNormalObject = Object(meshName: "cube-normal")
         cubeNormalObject.position = simd_float3(0.0, 0.0, 3.0)
         cubeNormalObject.rotation = simd_float3(0.4, 0, 0)
         
-        let teapotURL = mainBundle.url(forResource: "teapot", withExtension: "obj", subdirectory: "meshes")!
-        let teapotMesh = Mesh.fromOBJ(url: teapotURL)
-        teapotMesh.calculateNormals()
-        let teapotObject = Object(mesh: teapotMesh)
+        let teapotObject = Object(meshName: "teapot")
+        teapotObject.mesh.calculateNormals()
         teapotObject.position = simd_float3(0.0, -1.0, 6.0)
         teapotObject.rotation = simd_float3(0.8, 0, 0)
         
-        let catURL = mainBundle.url(forResource: "cat", withExtension: "obj", subdirectory: "meshes")!
-        let catMesh = Mesh.fromOBJ(url: catURL)
-        catMesh.calculateNormals()
-        let catObject = Object(mesh: catMesh)
+        let catObject = Object(meshName: "cat")
+        catObject.mesh.calculateNormals()
         catObject.position = simd_float3(0.0, -1.0, 4.0)
         catObject.scale = simd_float3.one / 1000
         
-        let pumpkinURL = mainBundle.url(forResource: "pumpkin", withExtension: "obj", subdirectory: "meshes")!
-        let pumpkinMesh = Mesh.fromOBJ(url: pumpkinURL)
-        pumpkinMesh.calculateNormals()
-        let pumpkinObject = Object(mesh: pumpkinMesh)
-        pumpkinObject.position = simd_float3(0.0, -1.0, 3.0)
+        let pumpkinObject = Object(meshName: "pumpkin")
+        pumpkinObject.mesh.calculateNormals()
+        pumpkinObject.position = simd_float3(0.0, -1.0, 8.0)
         pumpkinObject.scale = simd_float3.one / 10
         
-        let axisURL = mainBundle.url(forResource: "axis", withExtension: "obj", subdirectory: "meshes")!
-        let axisMesh = Mesh.fromOBJ(url: axisURL)
-        axisMesh.calculateNormals()
-        let axisObject = Object(mesh: axisMesh)
+        let axisObject = Object(meshName: "axis")
+        axisObject.mesh.calculateNormals()
         axisObject.position = simd_float3(5.0, 5.0, 4.0)
         
-        let spotURL = mainBundle.url(forResource: "spot", withExtension: "obj", subdirectory: "meshes")!
-        let spotMesh = Mesh.fromOBJ(url: spotURL)
-        let spotObject = Object(mesh: spotMesh)
+        let spotObject = Object(meshName: "spot", textureName: "spot-texture")
         spotObject.position = simd_float3(-1.0, 0.5, 4.0)
         spotObject.rotation = simd_float3(0, Float.pi, 0)
         
@@ -74,13 +62,9 @@ class ViewController: UIViewController, RendererDelegate {
         let device = MTLCreateSystemDefaultDevice()!
         metalView.device = device
         
-        let texLoader = MTKTextureLoader(device: device)
-        
-        let spotTextureURL = mainBundle.url(forResource: "spot-texture-raster", withExtension: "png", subdirectory: "textures")!
-        let spotTexture = try! texLoader.newTexture(URL: spotTextureURL)
 
         /// Creates a Renderer object (from refactor). Only supports a single mesh atm
-        self.object = Object(mesh: spotMesh, texture: spotTexture)
+        self.object = spotObject
         renderer = Renderer(view: metalView, object: object, camera: camera)
         
         /// Set up device and metalView
@@ -100,7 +84,6 @@ class ViewController: UIViewController, RendererDelegate {
         let time = Date().timeIntervalSince1970.magnitude
         // let xPosition = Float(cos(time) * 2.5) + 4.0
         let yPosition = Float(sin(time) * 2.5)
-        // object.mesh.rotation = simd_float3(0, Float(time), 0)
         object.rotation = simd_float3(0, yPosition, 0)
         camera.move(deltaTime: deltaTime)
     }
