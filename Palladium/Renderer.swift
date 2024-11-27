@@ -95,19 +95,11 @@ class Renderer: NSObject, MTKViewDelegate {
             
             /// Projection and transformation parameters
             let aspectRatio: Float = Float(view.bounds.height / view.bounds.width)
-            var projectionParams = ProjectionParams(
+            let projectionParams = ProjectionParams(
                 aspectRatio: aspectRatio,
                 fovRadians: Float(options.fovDegrees / 180.0 * Double.pi),
                 nearZ: 0.3,
                 farZ: 1000.0
-            )
-            
-            
-            var transformationParams = TransformationParams(
-                origin: mesh.origin,
-                position: mesh.position,
-                rotation: mesh.rotation,
-                scale: mesh.scale
             )
             
             var modelTransformation = mesh.modelTransformation()
