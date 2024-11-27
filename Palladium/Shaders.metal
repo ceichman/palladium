@@ -43,16 +43,7 @@ vertex ProjectedVertex project_vertex(
     
     float4x4 modelMatrix = model.translation * model.scaling * model.rotation;
     float4 projectedPosition = viewProj.projection * viewProj.view * modelMatrix * vert;
-    float4 projectedNormal = viewProj.projection * model.translation * model.rotation * float4(inVertex.normal, 1.0);
-    // then normalize in z
-    float4 normalizedNormal = projectedNormal;
-    /*
-    if (projectedNormal.w != 0.0) {
-        normalizedNormal.x /= projectedNormal.w;
-        normalizedNormal.y /= projectedNormal.w;
-        normalizedNormal.z /= projectedNormal.w;
-    }
-     */
+    float4 projectedNormal = viewProj.projection * model.rotation * float4(inVertex.normal, 1.0);
     return { .position = projectedPosition, .color = inVertex.color, .normal = projectedNormal.xyz };
 }
 

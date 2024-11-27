@@ -45,8 +45,8 @@ class ViewController: UIViewController, RendererDelegate {
         let catURL = mainBundle.url(forResource: "cat", withExtension: "obj", subdirectory: "meshes")!
         let catMesh = Mesh.fromOBJ(url: catURL,
                                    position: simd_float3(0.0, -1.0, 6.0),
-                                   rotation: simd_float3(0.8, 0, 0),
-                                   scale: simd_float3(0.1, 0.1, 0.1))
+                                   rotation: simd_float3(0.0, 0, 0),
+                                   scale: simd_float3(0.01, 0.01, 0.01))
         catMesh.calculateNormals()
         
         let pumpkinURL = mainBundle.url(forResource: "pumpkin", withExtension: "obj", subdirectory: "meshes")!
@@ -63,6 +63,12 @@ class ViewController: UIViewController, RendererDelegate {
                                     scale: .one)
         axisMesh.calculateNormals()
         
+        let spotURL = mainBundle.url(forResource: "spot", withExtension: "obj", subdirectory: "meshes")!
+        let spotMesh = Mesh.fromOBJ(url: spotURL,
+                                    position: simd_float3(4.0, 4.0, 4.0),
+                                    rotation: .zero,
+                                    scale: .one)
+        
         /// Set up camera
         self.camera = Camera(position: simd_float3(0, 0, 0))
         
@@ -70,7 +76,7 @@ class ViewController: UIViewController, RendererDelegate {
         metalView.device = device
         
         /// Creates a Renderer object (from refactor). Only supports a single mesh atm
-        self.mesh = pumpkinMesh
+        self.mesh = spotMesh
         renderer = Renderer(view: metalView, mesh: self.mesh, camera: camera)
         
         /// Set up device and metalView
@@ -141,7 +147,6 @@ class ViewController: UIViewController, RendererDelegate {
         camera.velocityX = 0.0
         camera.velocityY = 0.0
         camera.velocityZ = 0.0
-        print(camera.position)
     }
     
     var lastLocation = CGPoint()
