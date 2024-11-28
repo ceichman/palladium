@@ -20,6 +20,21 @@
                             <mtkView contentMode="scaleToFill" colorPixelFormat="BGRA8Unorm" depthStencilPixelFormat="Depth32Float" translatesAutoresizingMaskIntoConstraints="NO" id="Nw4-FQ-qWd">
                                 <rect key="frame" x="0.0" y="0.0" width="852" height="393"/>
                             </mtkView>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eT7-jp-Cmt" userLabel="Up">
+                                <rect key="frame" x="147" y="221" width="60" height="59"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="tinted">
+                                    <imageReference key="image" image="arrowshape.up.circle.fill" catalog="system" symbolScale="default"/>
+                                </buttonConfiguration>
+                                <connections>
+                                    <action selector="forwardButtonPressed:" destination="BYZ-38-t0r" eventType="touchDown" id="96L-O7-DfK"/>
+                                    <action selector="resetCameraVelocity:" destination="BYZ-38-t0r" eventType="touchDragExit" id="Mub-P9-MxS"/>
+                                    <action selector="resetCameraVelocity:" destination="BYZ-38-t0r" eventType="touchCancel" id="c17-sY-nH2"/>
+                                    <action selector="resetCameraVelocity:" destination="BYZ-38-t0r" eventType="touchUpInside" id="juM-cX-2or"/>
+                                    <action selector="resetCameraVelocity:" destination="BYZ-38-t0r" eventType="touchUpOutside" id="lkV-yc-U0R"/>
+                                </connections>
+                            </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="pQR-yz-l6g" userLabel="Down">
                                 <rect key="frame" x="147" y="304" width="60" height="59"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -107,7 +122,7 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="Zr7-Gd-2tK" userLabel="Invert Colors">
+                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="Zr7-Gd-2tK" userLabel="Wireframe">
                                 <rect key="frame" x="769" y="332" width="49" height="31"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <connections>
@@ -151,21 +166,20 @@
                                     <action selector="resetVertical:" destination="BYZ-38-t0r" eventType="touchCancel" id="xBr-55-IS5"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eT7-jp-Cmt" userLabel="Up">
-                                <rect key="frame" x="147" y="221" width="60" height="59"/>
+                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="ubD-ZB-yJ2" userLabel="Texturing">
+                                <rect key="frame" x="769" y="293" width="49" height="31"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="tinted">
-                                    <imageReference key="image" image="arrowshape.up.circle.fill" catalog="system" symbolScale="default"/>
-                                </buttonConfiguration>
                                 <connections>
-                                    <action selector="forwardButtonPressed:" destination="BYZ-38-t0r" eventType="touchDown" id="96L-O7-DfK"/>
-                                    <action selector="resetCameraVelocity:" destination="BYZ-38-t0r" eventType="touchDragExit" id="Mub-P9-MxS"/>
-                                    <action selector="resetCameraVelocity:" destination="BYZ-38-t0r" eventType="touchCancel" id="c17-sY-nH2"/>
-                                    <action selector="resetCameraVelocity:" destination="BYZ-38-t0r" eventType="touchUpInside" id="juM-cX-2or"/>
-                                    <action selector="resetCameraVelocity:" destination="BYZ-38-t0r" eventType="touchUpOutside" id="lkV-yc-U0R"/>
+                                    <action selector="texturingSwitchDidChange:" destination="BYZ-38-t0r" eventType="valueChanged" id="6Bo-Zd-QCb"/>
                                 </connections>
-                            </button>
+                            </switch>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Texturing" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="oZV-D5-tpj">
+                                <rect key="frame" x="679" y="296" width="81" height="24"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>

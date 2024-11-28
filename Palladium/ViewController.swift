@@ -197,4 +197,8 @@ class ViewController: UIViewController, RendererDelegate {
         renderer.options.invertColors = sender.isOn
     }
     
+    @IBAction func texturingSwitchDidChange(_ sender: UISwitch) {
+        renderer.options.texturing = sender.isOn
+    }
+    
 }

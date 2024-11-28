@@ -5,10 +5,11 @@ import simd
 /// A struct used to expose configurable renderer parameters.
 struct RendererOptions {
     var fovDegrees: Double
-    var wireframe: Bool
     var boxBlur: Bool
     var gaussianBlur: Bool
     var invertColors: Bool
+    var texturing: Bool
+    var wireframe: Bool
 }
 
 /// This class focuses solely on rendering logic.
@@ -35,7 +36,7 @@ class Renderer: NSObject, MTKViewDelegate {
     /// Initializes the Renderer object and calls setup() routine
     init(view: MTKView, objects: [Object], camera: Camera) {
         self.view = view
-        self.options = RendererOptions(fovDegrees: 40.0, wireframe: false, boxBlur: false, gaussianBlur: false, invertColors: false)
+        self.options = RendererOptions(fovDegrees: 40.0, boxBlur: false, gaussianBlur: false, invertColors: false, texturing: true, wireframe: false)
         super.init()
         self.objects = objects
         self.camera = camera
@@ -143,14 +144,14 @@ class Renderer: NSObject, MTKViewDelegate {
     
     func renderObject(_ object: Object, renderEncoder: MTLRenderCommandEncoder, viewProjection: inout ViewProjection) {
                     
-            var modelTransformation = object.modelTransformation()
+        var modelTransformation = object.modelTransformation()
 
-            renderEncoder.setVertexBuffer(object.vertexBuffer, offset: 0, index: 0)
-            renderEncoder.setVertexBytes(&viewProjection, length: MemoryLayout.size(ofValue: viewProjection), index: 1)
-            renderEncoder.setVertexBytes(&modelTransformation, length: MemoryLayout.size(ofValue: modelTransformation), index: 2)
-            renderEncoder.setFragmentTexture(object.texture, index: 0)
-            // interpret vertexCount vertices as instanceCount instances of type .triangle
-            renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: object.mesh.triangles.count * 3)
+        renderEncoder.setVertexBuffer(object.vertexBuffer, offset: 0, index: 0)
+        renderEncoder.setVertexBytes(&viewProjection, length: MemoryLayout.size(ofValue: viewProjection), index: 1)
+        renderEncoder.setVertexBytes(&modelTransformation, length: MemoryLayout.size(ofValue: modelTransformation), index: 2)
+        renderEncoder.setFragmentTexture(options.texturing ? object.texture : nil, index: 0)
+        // interpret vertexCount vertices as instanceCount instances of type .triangle
+        renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: object.mesh.triangles.count * 3)
 
     }
     
