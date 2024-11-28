@@ -10,12 +10,13 @@ A lightweight renderer in Metal for iOS.
  - OBJ model loading and PNG texture format (max dimension: 8192 x 8192)
  - Multiple objects per scene, complete with rotation, scaling, and translation transforms
  - Flat lighting
- - Post-processing effects: toggle-able blur, color inversion, and wireframe mode
+ - Compute kernel post-processing effects: toggle-able blur, color inversion, and wireframe mode
 
 ## Usage
 Palladium is used in a landscape orientation.
 Use the buttons on the far left side of the screen to move the camera forward and backward, and strafe left to right. The buttons in the middle-left of the screen will take the camera up and down.
 The toggle switches on the right side of the screen may be used to enable/disable certain post-processing effects.
+Disabling texturing uses vertex color rather than texture sampling to color each object. Some objects have vertex color built-in, while others do not.
 
 ## Further Work
 This project is open to improvement. Some feature ideas might be:
