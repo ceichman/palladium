@@ -12,7 +12,7 @@ import MetalKit
 class ViewController: UIViewController, RendererDelegate {
     
     var renderer: Renderer!
-    var objects: [Object]!
+    var objects: [String:Object]!
     var camera: Camera!
     
     let cameraVelocity: Float = 5.0
@@ -45,7 +45,7 @@ class ViewController: UIViewController, RendererDelegate {
         let pumpkinObject = Object(meshName: "pumpkin")
         pumpkinObject.mesh.calculateNormals()
         pumpkinObject.position = simd_float3(0.0, -1.0, 8.0)
-        pumpkinObject.scale = simd_float3.one / 10
+        pumpkinObject.scale = simd_float3.one / 50
         
         let axisObject = Object(meshName: "axis")
         axisObject.mesh.calculateNormals()
@@ -54,6 +54,7 @@ class ViewController: UIViewController, RendererDelegate {
         let spotObject = Object(meshName: "spot", textureName: "spot-texture")
         spotObject.position = simd_float3(-1.0, 0.5, 4.0)
         spotObject.rotation = simd_float3(0, Float.pi, 0)
+        spotObject.scale = simd_float3(2, 2, 2)
         
         
         /// Set up camera
@@ -64,8 +65,8 @@ class ViewController: UIViewController, RendererDelegate {
         
 
         /// Creates a Renderer object (from refactor). Only supports a single mesh atm
-        self.objects = [spotObject, axisObject]
-        renderer = Renderer(view: metalView, objects: objects, camera: camera)
+        self.objects = ["spot": spotObject, "pumpkin": pumpkinObject, "axis": axisObject]
+        renderer = Renderer(view: metalView, objects: ([Object])(objects.values), camera: camera)
         
         /// Set up device and metalView
         metalView.delegate = renderer
@@ -82,9 +83,10 @@ class ViewController: UIViewController, RendererDelegate {
     
     func preRenderUpdate(deltaTime: CFTimeInterval) {
         let time = Date().timeIntervalSince1970.magnitude
-        // let xPosition = Float(cos(time) * 2.5) + 4.0
+        let xPosition = Float(cos(time * 2) + 2)
         let yPosition = Float(sin(time) * 2.5)
-        // objects[0].rotation = simd_float3(0, yPosition, 0)
+        objects["spot"]!.rotation = simd_float3(0, yPosition, 0)
+        objects["pumpkin"]!.scale = simd_float3(repeating: xPosition) / 50
         camera.move(deltaTime: deltaTime)
     }
     
