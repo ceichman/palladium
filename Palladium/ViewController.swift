@@ -33,8 +33,8 @@ class ViewController: UIViewController, RendererDelegate {
         cubeNormalObject.rotation = simd_float3(0.4, 0, 0)
         
         let teapotObject = Object(meshName: "teapot")
-        teapotObject.position = simd_float3(0.0, -1.0, 6.0)
-        teapotObject.rotation = simd_float3(0.8, 0, 0)
+        teapotObject.position = simd_float3(-6.0, -6.0, 1.0)
+        teapotObject.rotation = simd_float3(0, 0, 0)
         
         let catObject = Object(meshName: "cat")
         catObject.position = simd_float3(0.0, -1.0, 4.0)
@@ -69,7 +69,7 @@ class ViewController: UIViewController, RendererDelegate {
         
 
         /// Creates a Renderer object (from refactor). Only supports a single mesh atm
-        self.objects = ["spot": spotObject, "pumpkin": pumpkinObject, "axis": axisObject, "pineapple": pineappleObject]
+        self.objects = ["spot": spotObject, "pumpkin": pumpkinObject, "axis": axisObject, "pineapple": pineappleObject, "teapot": teapotObject]
         renderer = Renderer(view: metalView, objects: ([Object])(objects.values), camera: camera)
         
         /// Set up device and metalView
@@ -87,10 +87,11 @@ class ViewController: UIViewController, RendererDelegate {
     
     func preRenderUpdate(deltaTime: CFTimeInterval) {
         let time = Date().timeIntervalSince1970.magnitude
-        let xPosition = Float(cos(time * 2) + 2)
-        let yPosition = Float(sin(time) * 2.5)
-        objects["spot"]!.rotation = simd_float3(0, yPosition, 0)
-        objects["pumpkin"]!.scale = simd_float3(repeating: xPosition) / 50
+        let animationA = Float(cos(time * 2) + 2)
+        let animationB = Float(sin(time) * 2.5)
+        objects["spot"]!.rotation = simd_float3(0, animationB, 0)
+        objects["pumpkin"]!.scale = simd_float3(repeating: animationA) / 50
+        objects["teapot"]!.rotation = simd_float3(animationA * 8, 0, 0)
         camera.move(deltaTime: deltaTime)
     }
     
