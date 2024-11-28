@@ -10,11 +10,14 @@ import Metal
 import MetalKit
 import simd
 
-class Object {
+class Object: Hashable {
     
-    let textureLoader = MTKTextureLoader(device: MTLCreateSystemDefaultDevice()!)
-    let mainBundle = Bundle.main
+    private static var nextId = 0
     
+    private static let textureLoader = MTKTextureLoader(device: MTLCreateSystemDefaultDevice()!)
+    private static let mainBundle = Bundle.main
+    
+    let id: Int!
     var mesh: Mesh
     var texture: MTLTexture?
     
@@ -24,21 +27,23 @@ class Object {
 
     convenience init(meshName: String, textureName: String) {
         self.init(meshName: meshName)
-        let textureURL = mainBundle.url(forResource: textureName, withExtension: "png", subdirectory: "textures")!
-        self.texture = try! textureLoader.newTexture(URL: textureURL)
+        let textureURL = Self.mainBundle.url(forResource: textureName, withExtension: "png", subdirectory: "textures")!
+        self.texture = try! Self.textureLoader.newTexture(URL: textureURL)
     }
     
-    init(meshName: String) {
-        let meshURL = mainBundle.url(forResource: meshName, withExtension: "obj", subdirectory: "meshes")!
-        self.mesh = Mesh.fromOBJ(url: meshURL, calculateOrigin: true)
+    convenience init(meshName: String) {
+        let meshURL = Self.mainBundle.url(forResource: meshName, withExtension: "obj", subdirectory: "meshes")!
+        self.init(mesh: Mesh.fromOBJ(url: meshURL, calculateOrigin: true))
     }
 
     init(mesh: Mesh) {
         self.mesh = mesh
+        id = Object.nextId
+        Object.nextId += 1
     }
     
-    init(mesh: Mesh, texture: MTLTexture) {
-        self.mesh = mesh
+    convenience init(mesh: Mesh, texture: MTLTexture) {
+        self.init(mesh: mesh)
         self.texture = texture
     }
     
@@ -51,5 +56,12 @@ class Object {
         return ModelTransformation(translation: translation, rotation: rotation, scaling: scaling)
     }
     
+    static func == (lhs: Object, rhs: Object) -> Bool {
+        lhs.id == rhs.id
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
 
 }
