@@ -102,6 +102,9 @@ class Mesh {
         parser.parse() // populate arrays
         
         let mesh = Mesh(triangles: triangles, vertices: vertices)
+        if normals.isEmpty {
+            mesh.calculateNormals()
+        }
         mesh.normalizeNormals()
         
         vertexAverage /= Float(vertices.count)

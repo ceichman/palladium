@@ -62,8 +62,6 @@ class Renderer: NSObject, MTKViewDelegate {
 
         commandQueue = device.makeCommandQueue()
 
-        /// Create vertex buffer
-        
         view.depthStencilPixelFormat = .depth32Float
         view.clearDepth = 1.0
 
