@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		1B9CEDBB2CE2C4CE0087C604 /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B9CEDBA2CE2C4CE0087C604 /* Renderer.swift */; };
 		D5559C162CE2E23800019348 /* meshes in Resources */ = {isa = PBXBuildFile; fileRef = D5559C152CE2E23800019348 /* meshes */; };
-		D5694C182CF7CD9D00E446B0 /* textures in Resources */ = {isa = PBXBuildFile; fileRef = D5694C172CF7CD9D00E446B0 /* textures */; };
 		D5694C1A2CF7D1A600E446B0 /* Object.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5694C192CF7D1A600E446B0 /* Object.swift */; };
 		D5A512EC2CD18CD90050E219 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A512EB2CD18CD90050E219 /* AppDelegate.swift */; };
 		D5A512EE2CD18CD90050E219 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A512ED2CD18CD90050E219 /* SceneDelegate.swift */; };
@@ -51,7 +50,6 @@
 /* Begin PBXFileReference section */
 		1B9CEDBA2CE2C4CE0087C604 /* Renderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Renderer.swift; sourceTree = "<group>"; };
 		D5559C152CE2E23800019348 /* meshes */ = {isa = PBXFileReference; lastKnownFileType = folder; path = meshes; sourceTree = "<group>"; };
-		D5694C172CF7CD9D00E446B0 /* textures */ = {isa = PBXFileReference; lastKnownFileType = folder; path = textures; sourceTree = "<group>"; };
 		D5694C192CF7D1A600E446B0 /* Object.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Object.swift; sourceTree = "<group>"; };
 		D5A512E82CD18CD90050E219 /* Palladium.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Palladium.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D5A512EB2CD18CD90050E219 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -125,7 +123,6 @@
 		D5A512EA2CD18CD90050E219 /* Palladium */ = {
 			isa = PBXGroup;
 			children = (
-				D5694C172CF7CD9D00E446B0 /* textures */,
 				D5559C152CE2E23800019348 /* meshes */,
 				D5AEB3812CD996D200C30959 /* OBJParser.swift */,
 				D5F50AB92CDAD12F00B27E0D /* LineReader.swift */,
@@ -271,7 +268,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				D5A512F52CD18CDA0050E219 /* Assets.xcassets in Resources */,
-				D5694C182CF7CD9D00E446B0 /* textures in Resources */,
 				D5A512F82CD18CDA0050E219 /* Base in Resources */,
 				D5A512F32CD18CD90050E219 /* Base in Resources */,
 				D5559C162CE2E23800019348 /* meshes in Resources */,

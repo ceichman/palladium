@@ -57,10 +57,11 @@ class ViewController: UIViewController, RendererDelegate {
         spotObject.rotation = simd_float3(0, Float.pi, 0)
         spotObject.scale = simd_float3(2, 2, 2)
         
-        let pineappleObject = Object(meshName: "pineapple2", textureName: "pineapple2")
+        let pineappleObject = Object(meshName: "pineapple2")//, textureName: "pineapple2")
         pineappleObject.mesh.calculateNormals()
         pineappleObject.position = simd_float3(0, -1, -4)
         pineappleObject.rotation = simd_float3(2.0 * Float.pi / 5, 5 * Float.pi / 6, Float.pi / 3)
+        pineappleObject.scale = simd_float3.one * 4
         
         
         /// Set up camera

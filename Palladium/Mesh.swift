@@ -57,6 +57,7 @@ class Mesh {
     }
     
     static func fromOBJ(url: URL, calculateOrigin: Bool = false) -> Mesh {
+        
         let reader = LineReader(url: url)!
         let parser = OBJParser(source: reader)
         

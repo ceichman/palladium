@@ -35,7 +35,6 @@ class Object: Hashable {
     convenience init(meshName: String, textureName: String) {
         self.init(meshName: meshName)
         self.texture = try! Self.textureLoader.newTexture(name: textureName, scaleFactor: 1.0, bundle: Self.mainBundle)
-        // self.texture = try! Self.textureLoader.newTexture(URL: textureURL)
     }
     
     convenience init(meshName: String) {

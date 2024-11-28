@@ -59,7 +59,7 @@ fragment half4 basic_fragment(ProjectedVertex vert [[stage_in]],
 {
     half4 diffuseColor;
     if (is_null_texture(colorTexture)) {
-        diffuseColor = half4(1, 1, 1, 1);
+        diffuseColor = half4(vert.color);
     }
     else {
         simd_float2 newUv = simd_float2(vert.uvs.x, 1.0 - vert.uvs.y);
