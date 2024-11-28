@@ -12,7 +12,7 @@ import MetalKit
 class ViewController: UIViewController, RendererDelegate {
     
     var renderer: Renderer!
-    var object: Object!
+    var objects: [Object]!
     var camera: Camera!
     
     let cameraVelocity: Float = 5.0
@@ -64,8 +64,8 @@ class ViewController: UIViewController, RendererDelegate {
         
 
         /// Creates a Renderer object (from refactor). Only supports a single mesh atm
-        self.object = spotObject
-        renderer = Renderer(view: metalView, objects: [object], camera: camera)
+        self.objects = [spotObject, axisObject]
+        renderer = Renderer(view: metalView, objects: objects, camera: camera)
         
         /// Set up device and metalView
         metalView.delegate = renderer
@@ -84,7 +84,7 @@ class ViewController: UIViewController, RendererDelegate {
         let time = Date().timeIntervalSince1970.magnitude
         // let xPosition = Float(cos(time) * 2.5) + 4.0
         let yPosition = Float(sin(time) * 2.5)
-        object.rotation = simd_float3(0, yPosition, 0)
+        // objects[0].rotation = simd_float3(0, yPosition, 0)
         camera.move(deltaTime: deltaTime)
     }
     

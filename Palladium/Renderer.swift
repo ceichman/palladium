@@ -106,9 +106,19 @@ class Renderer: NSObject, MTKViewDelegate {
             )
             var viewProjection = camera.viewProjection(projectionParams)
  
+            guard let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderPassDescriptor) else { return }
+            /// Common render encoder configuration
+            renderEncoder.label = "Geometry pass"
+            renderEncoder.setTriangleFillMode(options.wireframe ? .lines : .fill)
+            renderEncoder.setCullMode(.back)
+            renderEncoder.setFrontFacing(.clockwise)
+            renderEncoder.setRenderPipelineState(pipelineState)
+            renderEncoder.setDepthStencilState(depthStencilState)
+
             for object in objects {
-                renderObject(object, commandBuffer: commandBuffer, renderPass: renderPassDescriptor, viewProjection: &viewProjection)
+                renderObject(object, renderEncoder: renderEncoder, viewProjection: &viewProjection)
             }
+            renderEncoder.endEncoding()
             
             if options.boxBlur {
                 addPostProcessPass(pipeline: boxBlurPipelineState, commandBuffer: commandBuffer, inTexture: drawable.texture, outTexture: drawable.texture)
@@ -131,25 +141,16 @@ class Renderer: NSObject, MTKViewDelegate {
         //
     }
     
-    func renderObject(_ object: Object, commandBuffer: MTLCommandBuffer, renderPass: MTLRenderPassDescriptor, viewProjection: inout ViewProjection) {
+    func renderObject(_ object: Object, renderEncoder: MTLRenderCommandEncoder, viewProjection: inout ViewProjection) {
                     
             var modelTransformation = object.modelTransformation()
 
-            /// Configure render command
-            guard let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderPass) else { return }
-            renderEncoder.label = "Geometry pass: object \(object.name)"
-            renderEncoder.setTriangleFillMode(options.wireframe ? .lines : .fill)
-            renderEncoder.setCullMode(.back)
-            renderEncoder.setFrontFacing(.clockwise)
-            renderEncoder.setRenderPipelineState(pipelineState)
-            renderEncoder.setDepthStencilState(depthStencilState)
             renderEncoder.setVertexBuffer(object.vertexBuffer, offset: 0, index: 0)
             renderEncoder.setVertexBytes(&viewProjection, length: MemoryLayout.size(ofValue: viewProjection), index: 1)
             renderEncoder.setVertexBytes(&modelTransformation, length: MemoryLayout.size(ofValue: modelTransformation), index: 2)
             renderEncoder.setFragmentTexture(object.texture, index: 0)
             // interpret vertexCount vertices as instanceCount instances of type .triangle
             renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: object.mesh.triangles.count * 3)
-            renderEncoder.endEncoding()
 
     }
     
