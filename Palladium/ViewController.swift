@@ -65,7 +65,7 @@ class ViewController: UIViewController, RendererDelegate {
 
         /// Creates a Renderer object (from refactor). Only supports a single mesh atm
         self.object = spotObject
-        renderer = Renderer(view: metalView, object: object, camera: camera)
+        renderer = Renderer(view: metalView, objects: [object], camera: camera)
         
         /// Set up device and metalView
         metalView.delegate = renderer

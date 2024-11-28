@@ -16,7 +16,7 @@ struct RendererOptions {
 class Renderer: NSObject, MTKViewDelegate {
     
     var view: MTKView
-    var object: Object!
+    var objects: [Object]!
     var camera: Camera!
     var delegate: RendererDelegate?
     var options: RendererOptions
@@ -33,11 +33,11 @@ class Renderer: NSObject, MTKViewDelegate {
     private var currentFrameTime = CACurrentMediaTime()
 
     /// Initializes the Renderer object and calls setup() routine
-    init(view: MTKView, object: Object, camera: Camera) {
+    init(view: MTKView, objects: [Object], camera: Camera) {
         self.view = view
         self.options = RendererOptions(fovDegrees: 40.0, wireframe: false, boxBlur: false, gaussianBlur: false, invertColors: false)
         super.init()
-        self.object = object
+        self.objects = objects
         self.camera = camera
         setup()
     }
@@ -62,8 +62,6 @@ class Renderer: NSObject, MTKViewDelegate {
         commandQueue = device.makeCommandQueue()
 
         /// Create vertex buffer
-        let (vertexArray, dataSize) = object.mesh.vertexArray()
-        vertexBuffer = device.makeBuffer(bytes: vertexArray, length: dataSize, options: [])
         
         view.depthStencilPixelFormat = .depth32Float
         view.clearDepth = 1.0
@@ -84,7 +82,7 @@ class Renderer: NSObject, MTKViewDelegate {
             if let delegate = self.delegate {
                 delegate.preRenderUpdate(deltaTime: deltaTime)
             }
-            guard let drawable = view.currentDrawable else { return } // retrieves current frame of the mesh
+            guard let drawable = view.currentDrawable else { return }
             
             /// Render pass descriptor defines how rendering should occur (textures, color, etc.)
             guard let renderPassDescriptor = view.currentRenderPassDescriptor else { return }
@@ -96,6 +94,7 @@ class Renderer: NSObject, MTKViewDelegate {
                 blue: 55.0 / 255.0,
                 alpha: 1.0
             )
+            let commandBuffer = commandQueue.makeCommandBuffer()!
             
             /// Projection and transformation parameters
             let aspectRatio: Float = Float(view.bounds.height / view.bounds.width)
@@ -105,27 +104,11 @@ class Renderer: NSObject, MTKViewDelegate {
                 nearZ: 0.3,
                 farZ: 1000.0
             )
-            
-            var modelTransformation = object.modelTransformation()
             var viewProjection = camera.viewProjection(projectionParams)
-            
-            /// Command buffer and encoding (encoded rendering instructions for the GPU)
-            let commandBuffer = commandQueue.makeCommandBuffer()!
-            /// Configure render command
-            guard let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderPassDescriptor) else { return }
-            renderEncoder.label = "Geometry pass"
-            renderEncoder.setTriangleFillMode(options.wireframe ? .lines : .fill)
-            renderEncoder.setCullMode(.back)
-            renderEncoder.setFrontFacing(.clockwise)
-            renderEncoder.setRenderPipelineState(pipelineState)
-            renderEncoder.setDepthStencilState(depthStencilState)
-            renderEncoder.setVertexBuffer(vertexBuffer, offset: 0, index: 0)
-            renderEncoder.setVertexBytes(&viewProjection, length: MemoryLayout.size(ofValue: viewProjection), index: 1)
-            renderEncoder.setVertexBytes(&modelTransformation, length: MemoryLayout.size(ofValue: modelTransformation), index: 2)
-            renderEncoder.setFragmentTexture(object.texture, index: 0)
-            // interpret vertexCount vertices as instanceCount instances of type .triangle
-            renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: object.mesh.triangles.count * 3)
-            renderEncoder.endEncoding()
+ 
+            for object in objects {
+                renderObject(object, commandBuffer: commandBuffer, renderPass: renderPassDescriptor, viewProjection: &viewProjection)
+            }
             
             if options.boxBlur {
                 addPostProcessPass(pipeline: boxBlurPipelineState, commandBuffer: commandBuffer, inTexture: drawable.texture, outTexture: drawable.texture)
@@ -146,6 +129,28 @@ class Renderer: NSObject, MTKViewDelegate {
     // placeholder for now, come back and add dynamic buffer resizing
     func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
         //
+    }
+    
+    func renderObject(_ object: Object, commandBuffer: MTLCommandBuffer, renderPass: MTLRenderPassDescriptor, viewProjection: inout ViewProjection) {
+                    
+            var modelTransformation = object.modelTransformation()
+
+            /// Configure render command
+            guard let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderPass) else { return }
+            renderEncoder.label = "Geometry pass: object \(object.name)"
+            renderEncoder.setTriangleFillMode(options.wireframe ? .lines : .fill)
+            renderEncoder.setCullMode(.back)
+            renderEncoder.setFrontFacing(.clockwise)
+            renderEncoder.setRenderPipelineState(pipelineState)
+            renderEncoder.setDepthStencilState(depthStencilState)
+            renderEncoder.setVertexBuffer(object.vertexBuffer, offset: 0, index: 0)
+            renderEncoder.setVertexBytes(&viewProjection, length: MemoryLayout.size(ofValue: viewProjection), index: 1)
+            renderEncoder.setVertexBytes(&modelTransformation, length: MemoryLayout.size(ofValue: modelTransformation), index: 2)
+            renderEncoder.setFragmentTexture(object.texture, index: 0)
+            // interpret vertexCount vertices as instanceCount instances of type .triangle
+            renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: object.mesh.triangles.count * 3)
+            renderEncoder.endEncoding()
+
     }
     
     func addPostProcessPass(pipeline: MTLComputePipelineState, commandBuffer: MTLCommandBuffer, inTexture: MTLTexture, outTexture: MTLTexture) {

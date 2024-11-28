@@ -14,13 +14,20 @@ class Object: Hashable {
     
     private static var nextId = 0
     
-    private static let textureLoader = MTKTextureLoader(device: MTLCreateSystemDefaultDevice()!)
+    private static let device = MTLCreateSystemDefaultDevice()!
+    private static let textureLoader = MTKTextureLoader(device: device)
     private static let mainBundle = Bundle.main
     
     let id: Int!
     var mesh: Mesh
     var texture: MTLTexture?
+    lazy var name = String(self.id)
     
+    lazy var vertexBuffer: MTLBuffer = {
+        let (vertexArray, dataSize) = mesh.vertexArray()
+        return Self.device.makeBuffer(bytes: vertexArray, length: dataSize, options: [])!
+    }()
+
     var position = simd_float3(0, 0, 1)   // World-space position of the mesh
     var rotation = simd_float3.zero       // 3D rotation (subject to gimbal lock)
     var scale = simd_float3.one           // Per-axis scaling
