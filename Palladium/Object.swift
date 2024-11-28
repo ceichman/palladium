@@ -34,8 +34,8 @@ class Object: Hashable {
 
     convenience init(meshName: String, textureName: String) {
         self.init(meshName: meshName)
-        let textureURL = Self.mainBundle.url(forResource: textureName, withExtension: "png", subdirectory: "textures")!
-        self.texture = try! Self.textureLoader.newTexture(URL: textureURL)
+        self.texture = try! Self.textureLoader.newTexture(name: textureName, scaleFactor: 1.0, bundle: Self.mainBundle)
+        // self.texture = try! Self.textureLoader.newTexture(URL: textureURL)
     }
     
     convenience init(meshName: String) {

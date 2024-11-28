@@ -49,23 +49,31 @@ class ViewController: UIViewController, RendererDelegate {
         
         let axisObject = Object(meshName: "axis")
         axisObject.mesh.calculateNormals()
-        axisObject.position = simd_float3(5.0, 5.0, 4.0)
-        
+        axisObject.position = simd_float3(1.0, 0.0, 0.0)
+        axisObject.scale = simd_float3.one / 20.0
+
         let spotObject = Object(meshName: "spot", textureName: "spot-texture")
         spotObject.position = simd_float3(-1.0, 0.5, 4.0)
         spotObject.rotation = simd_float3(0, Float.pi, 0)
         spotObject.scale = simd_float3(2, 2, 2)
         
+        let pineappleObject = Object(meshName: "pineapple2", textureName: "pineapple2")
+        pineappleObject.mesh.calculateNormals()
+        pineappleObject.position = simd_float3(0, -1, -4)
+        pineappleObject.rotation = simd_float3(2.0 * Float.pi / 5, 5 * Float.pi / 6, Float.pi / 3)
+        
         
         /// Set up camera
-        self.camera = Camera(position: simd_float3(0, 0, 0))
+        self.camera = Camera(position: simd_float3(8.5, 3.2, 6.1))
+        camera.yaw = -2.8
+        camera.pitch = -0.45
         
         let device = MTLCreateSystemDefaultDevice()!
         metalView.device = device
         
 
         /// Creates a Renderer object (from refactor). Only supports a single mesh atm
-        self.objects = ["spot": spotObject, "pumpkin": pumpkinObject, "axis": axisObject]
+        self.objects = ["spot": spotObject, "pumpkin": pumpkinObject, "axis": axisObject, "pineapple": pineappleObject]
         renderer = Renderer(view: metalView, objects: ([Object])(objects.values), camera: camera)
         
         /// Set up device and metalView

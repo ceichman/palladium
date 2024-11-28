@@ -19,7 +19,7 @@ public struct OBJParserStats {
 
 public class OBJParser<T: Sequence> where T.Iterator.Element == String {
     
-    private let vertexRegex = try! NSRegularExpression(pattern: "^v\\s+(-?\\d*\\.?\\d+)\\s+(-?\\d*\\.?\\d+)\\s+(-?\\d*\\.?\\d+)(\\s+(-?\\d*\\.?\\d+))?(\\s+(-?\\d*\\.?\\d+))?(\\s+(-?\\d*\\.?\\d+))?$")
+    private let vertexRegex = try! NSRegularExpression(pattern: "^v\\s+(-?\\d*\\.?\\d+)\\s+(-?\\d*\\.?\\d+)\\s+(-?\\d*\\.?\\d+)\\s*(-?\\d*\\.?\\d+)?\\s*(-?\\d*\\.?\\d+)?\\s*(-?\\d*\\.?\\d+)?$")
     private let textureRegex = try! NSRegularExpression(pattern: "^vt\\s+(-?\\d*\\.?\\d+)\\s+(-?\\d*\\.?\\d+)\\s*(-?\\d*\\.?\\d+)*$")
     private let normalRegex = try! NSRegularExpression(pattern: "^vn\\s+(-?\\d*\\.?\\d+)\\s+(-?\\d*\\.?\\d+)\\s+(-?\\d*\\.?\\d+)$")
     private let faceRegexVertexOnly = try! NSRegularExpression(pattern: "^f\\s(\\d+)\\s(\\d+)\\s(\\d+)$")
@@ -33,7 +33,6 @@ public class OBJParser<T: Sequence> where T.Iterator.Element == String {
         self.onVertex = { (x, y, z, w, r, g, b) in }
         self.onTextureCoord = { (u, v, w) in }
         self.onVertexNormal = { (x, y, z) in }
-        self.onParameterSpaceVertex = { (u, v, w) in }
         self.onFace = { (count, vs, vtcs, vns) in }
         self.onUnknown = { (line) in }
     }
@@ -72,18 +71,23 @@ public class OBJParser<T: Sequence> where T.Iterator.Element == String {
     
     public func parse() {
         for line in source {
-            // # List of geometric vertices, with (x,y,z[,w]) coordinates, w is optional and defaults to 1.0.
-            // also supports trailing r,g,b vertex colours
+            // List of geometric vertices, with (x,y,z[,w]) coordinates, w is optional and defaults to 1.0.
+            // also supports trailing r,g,b vertex colours, replacing w coordinate
             // v 0.123 0.234 0.345 1.0
             if let vertexMatch = match(line, regex: vertexRegex) {
                 let x = Float(vertexMatch[0]!) ?? 0.0
                 let y = Float(vertexMatch[1]!) ?? 0.0
                 let z = Float(vertexMatch[2]!) ?? 0.0
                 // optional params
-                let w = vertexMatch.count > 3 ? Float(vertexMatch[3] ?? "1.0")! : 1.0
-                let r = vertexMatch.count > 4 ? Float(vertexMatch[4] ?? "1.0")! : 1.0
-                let g = vertexMatch.count > 5 ? Float(vertexMatch[5] ?? "1.0")! : 1.0
-                let b = vertexMatch.count > 6 ? Float(vertexMatch[6] ?? "1.0")! : 1.0
+                var w, r, g, b : Float?
+                if (vertexMatch.count == 4) {
+                    w = Float(vertexMatch[3] ?? "1.0")!
+                }
+                if (vertexMatch.count == 6) {
+                    r = Float(vertexMatch[3] ?? "1.0")!
+                    g = Float(vertexMatch[4] ?? "1.0")!
+                    b = Float(vertexMatch[5] ?? "1.0")!
+                }
                 
                 onVertex(x, y, z, w, r, g, b)
             }
@@ -161,9 +165,8 @@ public class OBJParser<T: Sequence> where T.Iterator.Element == String {
         }
     }
 
-    public var onVertex: (Float, Float, Float, Float, Float, Float, Float) -> Void
-    public var onTextureCoord: (Float, Float, Float) -> Void
-    public var onParameterSpaceVertex: (Float, Float, Float) -> Void
+    public var onVertex: (Float, Float, Float, Float?, Float?, Float?, Float?) -> Void
+    public var onTextureCoord: (Float, Float, Float?) -> Void
     public var onVertexNormal: (Float, Float, Float) -> Void
     public var onFace: (Int, [Int], [Int], [Int]) -> Void
     public var onUnknown: (String) -> Void

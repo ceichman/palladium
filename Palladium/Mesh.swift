@@ -68,9 +68,13 @@ class Mesh {
         var vertexAverage = simd_float3.zero
         
         parser.onVertex = { (x, y, z, w, r, g, b) in
+            var color = simd_float4.one
+            if let red = r {
+                color = simd_float4(r!, g!, b!, 1.0)
+            }
             vertices.append(ApplicationVertex(
                 position: simd_float3(x: Float(x), y: Float(y), z: Float(z)),
-                color: simd_float4(x: r, y: g, z: b, w: 1.0)
+                color: color
             ))
             vertexAverage += simd_float3(x, y, z)
         }
