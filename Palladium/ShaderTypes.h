@@ -35,6 +35,7 @@ struct ProjectedVertex {
     simd_float4 worldPosition;
     simd_float4 color;
     simd_float3 normal;
+    simd_float3 worldNormal;
     simd_float2 uvs;
 };
 

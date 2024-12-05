@@ -76,8 +76,13 @@ extension Scene {
             objects["teapot"]!.rotation = simd_float3(animationA * 8, 0, 0)
             camera.move(deltaTime: deltaTime)
         }
-
-        let scene = Scene(objects: objects, directionalLights: [], pointLights: [], camera: camera)
+        
+        let pointLight = PointLight(position: .zero,
+                                    color: .one,
+                                    intensity: 100.0,
+                                    radius: 20.0)
+        
+        let scene = Scene(objects: objects, directionalLights: [], pointLights: [pointLight], camera: camera)
         scene.preRenderUpdate = preRenderUpdate
         return scene
     }()
