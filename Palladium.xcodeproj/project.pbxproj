@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		1B9CEDBB2CE2C4CE0087C604 /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B9CEDBA2CE2C4CE0087C604 /* Renderer.swift */; };
+		D5453ECF2D01365E00FA98F9 /* DirectionalLight.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5453ECE2D01365E00FA98F9 /* DirectionalLight.swift */; };
+		D5453ED12D01373B00FA98F9 /* PointLight.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5453ED02D01373B00FA98F9 /* PointLight.swift */; };
 		D5559C162CE2E23800019348 /* meshes in Resources */ = {isa = PBXBuildFile; fileRef = D5559C152CE2E23800019348 /* meshes */; };
 		D5694C1A2CF7D1A600E446B0 /* Object.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5694C192CF7D1A600E446B0 /* Object.swift */; };
 		D5A512EC2CD18CD90050E219 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A512EB2CD18CD90050E219 /* AppDelegate.swift */; };
@@ -49,6 +51,8 @@
 
 /* Begin PBXFileReference section */
 		1B9CEDBA2CE2C4CE0087C604 /* Renderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Renderer.swift; sourceTree = "<group>"; };
+		D5453ECE2D01365E00FA98F9 /* DirectionalLight.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectionalLight.swift; sourceTree = "<group>"; };
+		D5453ED02D01373B00FA98F9 /* PointLight.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PointLight.swift; sourceTree = "<group>"; };
 		D5559C152CE2E23800019348 /* meshes */ = {isa = PBXFileReference; lastKnownFileType = folder; path = meshes; sourceTree = "<group>"; };
 		D5694C192CF7D1A600E446B0 /* Object.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Object.swift; sourceTree = "<group>"; };
 		D5A512E82CD18CD90050E219 /* Palladium.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Palladium.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -135,6 +139,8 @@
 				D5AEB37B2CD939EE00C30959 /* GeometryTypes.swift */,
 				1B9CEDBA2CE2C4CE0087C604 /* Renderer.swift */,
 				D5694C192CF7D1A600E446B0 /* Object.swift */,
+				D5453ECE2D01365E00FA98F9 /* DirectionalLight.swift */,
+				D5453ED02D01373B00FA98F9 /* PointLight.swift */,
 				D5AEB3792CD9398600C30959 /* Mesh.swift */,
 				D5A5131B2CD190310050E219 /* Shaders.metal */,
 				D5F71ECE2CF5196100DFE2AE /* PostProcessShaders.metal */,
@@ -296,6 +302,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D5B094A92CEE62470035A28C /* Camera.swift in Sources */,
+				D5453ECF2D01365E00FA98F9 /* DirectionalLight.swift in Sources */,
 				D5F50ABA2CDAD12F00B27E0D /* LineReader.swift in Sources */,
 				D5A5131C2CD190310050E219 /* Shaders.metal in Sources */,
 				D5AEB37A2CD9398600C30959 /* Mesh.swift in Sources */,
@@ -307,6 +314,7 @@
 				D5AEB37C2CD939EE00C30959 /* GeometryTypes.swift in Sources */,
 				D5694C1A2CF7D1A600E446B0 /* Object.swift in Sources */,
 				D5A512EE2CD18CD90050E219 /* SceneDelegate.swift in Sources */,
+				D5453ED12D01373B00FA98F9 /* PointLight.swift in Sources */,
 				D5B094AB2CEE628E0035A28C /* MatrixUtils.swift in Sources */,
 				D5AEB3822CD996D200C30959 /* OBJParser.swift in Sources */,
 			);

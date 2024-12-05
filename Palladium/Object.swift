@@ -10,27 +10,27 @@ import Metal
 import MetalKit
 import simd
 
-class Object: Hashable {
+class Object {
     
     private static var nextId = 0
-    
     private static let device = MTLCreateSystemDefaultDevice()!
     private static let textureLoader = MTKTextureLoader(device: device)
     private static let mainBundle = Bundle.main
     
     let id: Int!
+    lazy var name = String(self.id)
     var mesh: Mesh
     var texture: MTLTexture?
-    lazy var name = String(self.id)
-    
-    lazy var vertexBuffer: MTLBuffer = {
-        let (vertexArray, dataSize) = mesh.vertexArray()
-        return Self.device.makeBuffer(bytes: vertexArray, length: dataSize, options: [])!
-    }()
+    var specular: Float = 1.0  // how "shiny" the material surface is. sometimes mapped to a texture
 
     var position = simd_float3(0, 0, 1)   // World-space position of the mesh
     var rotation = simd_float3.zero       // 3D rotation (subject to gimbal lock)
     var scale = simd_float3.one           // Per-axis scaling
+
+    lazy var vertexBuffer: MTLBuffer = {
+        let (vertexArray, dataSize) = mesh.vertexArray()
+        return Self.device.makeBuffer(bytes: vertexArray, length: dataSize, options: [])!
+    }()
 
     convenience init(meshName: String, textureName: String) {
         self.init(meshName: meshName)
@@ -61,6 +61,10 @@ class Object: Hashable {
         let scaling = scaling_matrix(scale: scale)
         return ModelTransformation(translation: translation, rotation: rotation, scaling: scaling)
     }
+
+}
+
+extension Object: Hashable {
     
     static func == (lhs: Object, rhs: Object) -> Bool {
         lhs.id == rhs.id
@@ -69,5 +73,4 @@ class Object: Hashable {
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
     }
-
 }
