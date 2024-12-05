@@ -76,9 +76,7 @@ class Renderer: NSObject, MTKViewDelegate {
             let deltaTime = now - currentFrameTime
             currentFrameTime = now
             
-            if let delegate = self.delegate {
-                delegate.preRenderUpdate(deltaTime: deltaTime)
-            }
+            scene.preRenderUpdate(deltaTime)
             guard let drawable = view.currentDrawable else { return }
             
             /// Render pass descriptor defines how rendering should occur (textures, color, etc.)

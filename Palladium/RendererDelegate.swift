@@ -16,6 +16,6 @@ protocol RendererDelegate {
      @param deltaTime Time in seconds since last frame
      */
     // TODO: move this function off of the render thread
-    func preRenderUpdate(deltaTime: CFTimeInterval) 
+    var preRenderUpdate: (CFTimeInterval) -> Void { get }
     
 }

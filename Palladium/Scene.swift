@@ -13,6 +13,7 @@ class Scene: RendererDelegate {
     var directionalLights: [DirectionalLight]
     var pointLights: [PointLight]
     var camera: Camera
+    var preRenderUpdate: (CFTimeInterval) -> Void = {_ in }
     
     init(objects: [String:Object], directionalLights: [DirectionalLight], pointLights: [PointLight], camera: Camera) {
         self.objects = objects
@@ -21,15 +22,6 @@ class Scene: RendererDelegate {
         self.camera = camera
     }
     
-    func preRenderUpdate(deltaTime: CFTimeInterval) {
-        let time = Date().timeIntervalSince1970.magnitude
-        let animationA = Float(cos(time * 2) + 2)
-        let animationB = Float(sin(time) * 2.5)
-        objects["spot"]!.rotation = simd_float3(0, animationB, 0)
-        objects["pumpkin"]!.scale = simd_float3(repeating: animationA) / 50
-        objects["teapot"]!.rotation = simd_float3(animationA * 8, 0, 0)
-        camera.move(deltaTime: deltaTime)
-    }
 }
 
 extension Scene {
@@ -74,6 +66,19 @@ extension Scene {
         
         let objects = ["spot": spotObject, "pumpkin": pumpkinObject, "axis": axisObject, "pineapple": pineappleObject, "teapot": teapotObject]
         
-        return Scene(objects: objects, directionalLights: [], pointLights: [], camera: camera)
+        
+        let preRenderUpdate = { (deltaTime: CFTimeInterval) in
+            let time = Date().timeIntervalSince1970.magnitude
+            let animationA = Float(cos(time * 2) + 2)
+            let animationB = Float(sin(time) * 2.5)
+            objects["spot"]!.rotation = simd_float3(0, animationB, 0)
+            objects["pumpkin"]!.scale = simd_float3(repeating: animationA) / 50
+            objects["teapot"]!.rotation = simd_float3(animationA * 8, 0, 0)
+            camera.move(deltaTime: deltaTime)
+        }
+
+        let scene = Scene(objects: objects, directionalLights: [], pointLights: [], camera: camera)
+        scene.preRenderUpdate = preRenderUpdate
+        return scene
     }()
 }

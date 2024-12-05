@@ -9,11 +9,11 @@ import UIKit
 import Metal
 import MetalKit
 
-class ViewController: UIViewController, RendererDelegate {
+class ViewController: UIViewController {
     
     var renderer: Renderer!
+    var scene: Scene!
     var objects: [String:Object]!
-    var camera: Camera!
     
     let cameraVelocity: Float = 5.0
     
@@ -59,24 +59,16 @@ class ViewController: UIViewController, RendererDelegate {
         pineappleObject.scale = simd_float3.one * 4
         
         
-        /// Set up camera
-        self.camera = Camera(position: simd_float3(8.5, 3.2, 6.1))
-        camera.yaw = -2.8
-        camera.pitch = -0.45
-        
         let device = MTLCreateSystemDefaultDevice()!
         metalView.device = device
         
-
-        /// Creates a Renderer object (from refactor). Only supports a single mesh atm
-        self.objects = ["spot": spotObject, "pumpkin": pumpkinObject, "axis": axisObject, "pineapple": pineappleObject, "teapot": teapotObject]
-        let scene = Scene(objects: self.objects, directionalLights: [], pointLights: [], camera: camera)
+        scene = Scene.defaultScene
         renderer = Renderer(view: metalView, scene: scene)
         
         /// Set up device and metalView
         metalView.delegate = renderer
-        renderer.delegate = self
-        
+        renderer.delegate = scene
+
         let panRecognizer = UIPanGestureRecognizer(target: self, action: #selector(didPan))
         panRecognizer.minimumNumberOfTouches = 1
         panRecognizer.maximumNumberOfTouches = 1
@@ -86,63 +78,53 @@ class ViewController: UIViewController, RendererDelegate {
         metalView.addGestureRecognizer(pinchRecognizer)
     }
     
-    func preRenderUpdate(deltaTime: CFTimeInterval) {
-        let time = Date().timeIntervalSince1970.magnitude
-        let animationA = Float(cos(time * 2) + 2)
-        let animationB = Float(sin(time) * 2.5)
-        objects["spot"]!.rotation = simd_float3(0, animationB, 0)
-        objects["pumpkin"]!.scale = simd_float3(repeating: animationA) / 50
-        objects["teapot"]!.rotation = simd_float3(animationA * 8, 0, 0)
-        camera.move(deltaTime: deltaTime)
-    }
-    
     @IBAction func upButtonPressed(_ sender: UIButton) {
-        camera.velocityY = cameraVelocity
+        scene.camera.velocityY = cameraVelocity
     }
     
     @IBAction func downButtonPressed(_ sender: UIButton) {
-        camera.velocityY = -cameraVelocity
+        scene.camera.velocityY = -cameraVelocity
     }
     
     @IBAction func forwardButtonPressed(_ sender: UIButton) {
-        let forward = camera.lookDirection
-        camera.velocityX += forward.x * cameraVelocity
-        camera.velocityY += forward.y * cameraVelocity
-        camera.velocityZ += forward.z * cameraVelocity
+        let forward = scene.camera.lookDirection
+        scene.camera.velocityX += forward.x * cameraVelocity
+        scene.camera.velocityY += forward.y * cameraVelocity
+        scene.camera.velocityZ += forward.z * cameraVelocity
     }
     
     @IBAction func backButtonPressed(_ sender: UIButton) {
-        let forward = camera.lookDirection
-        camera.velocityX -= forward.x * cameraVelocity
-        camera.velocityY -= forward.y * cameraVelocity
-        camera.velocityZ -= forward.z * cameraVelocity
+        let forward = scene.camera.lookDirection
+        scene.camera.velocityX -= forward.x * cameraVelocity
+        scene.camera.velocityY -= forward.y * cameraVelocity
+        scene.camera.velocityZ -= forward.z * cameraVelocity
     }
 
     @IBAction func leftButtonPressed(_ sender: UIButton) {
-        let relativeLeft = camera.relativeLeft
-        camera.velocityX += relativeLeft.x * cameraVelocity
-        camera.velocityZ += relativeLeft.z * cameraVelocity
+        let relativeLeft = scene.camera.relativeLeft
+        scene.camera.velocityX += relativeLeft.x * cameraVelocity
+        scene.camera.velocityZ += relativeLeft.z * cameraVelocity
     }
     
     @IBAction func rightButtonPressed(_ sender: UIButton) {
-        let relativeRight = camera.relativeRight
-        camera.velocityX += relativeRight.x * cameraVelocity
-        camera.velocityZ += relativeRight.z * cameraVelocity
+        let relativeRight = scene.camera.relativeRight
+        scene.camera.velocityX += relativeRight.x * cameraVelocity
+        scene.camera.velocityZ += relativeRight.z * cameraVelocity
     }
     
     @IBAction func resetHorizontal(_ sender: UIButton) {
-        camera.velocityX = 0.0
-        camera.velocityZ = 0.0
+        scene.camera.velocityX = 0.0
+        scene.camera.velocityZ = 0.0
     }
     
     @IBAction func resetVertical(_ sender: UIButton) {
-        camera.velocityY = 0.0
+        scene.camera.velocityY = 0.0
     }
     
     @IBAction func resetCameraVelocity(_ sender: UIButton) {
-        camera.velocityX = 0.0
-        camera.velocityY = 0.0
-        camera.velocityZ = 0.0
+        scene.camera.velocityX = 0.0
+        scene.camera.velocityY = 0.0
+        scene.camera.velocityZ = 0.0
     }
     
     var lastLocation = CGPoint()
@@ -156,8 +138,8 @@ class ViewController: UIViewController, RendererDelegate {
             let location = sender.location(in: metalView)
             let (dx, dy) = (location.x - lastLocation.x, location.y - lastLocation.y)
             lastLocation = location
-            camera.pitch = (camera.pitch - dy * sensitivity).clamped(to: -Double.pi / 2.0...Double.pi / 2.0)
-            camera.yaw -= dx * sensitivity
+            scene.camera.pitch = (scene.camera.pitch - dy * sensitivity).clamped(to: -Double.pi / 2.0...Double.pi / 2.0)
+            scene.camera.yaw -= dx * sensitivity
             
         default:
             lastLocation = CGPoint()
