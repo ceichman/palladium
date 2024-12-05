@@ -8,7 +8,7 @@
 import Foundation
 import simd
 
-class DirectionalLight {
+struct DirectionalLight {
     var intensity: Float = 1.0
     var color: simd_float3 = .one
     var direction: simd_float3

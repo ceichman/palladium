@@ -99,7 +99,9 @@ class Renderer: NSObject, MTKViewDelegate {
                 farZ: 1000.0
             )
             var viewProjection = scene.camera.viewProjection(projectionParams)
- 
+            
+            var fragParams = FragmentParams(numDirectionalLights: scene.directionalLights.count, numPointLights: scene.pointLights.count)
+
             guard let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderPassDescriptor) else { return }
             /// Common render encoder configuration
             renderEncoder.label = "Geometry pass"
@@ -108,9 +110,20 @@ class Renderer: NSObject, MTKViewDelegate {
             renderEncoder.setFrontFacing(.clockwise)
             renderEncoder.setRenderPipelineState(pipelineState)
             renderEncoder.setDepthStencilState(depthStencilState)
-
+            
             for object in scene.objects.values {
-                renderObject(object, renderEncoder: renderEncoder, viewProjection: &viewProjection)
+                var modelTransformation = object.modelTransformation()
+
+                renderEncoder.setVertexBuffer(object.vertexBuffer, offset: 0, index: 0)
+                renderEncoder.setVertexBytes(&viewProjection, length: MemoryLayout.size(ofValue: viewProjection), index: 1)
+                renderEncoder.setVertexBytes(&modelTransformation, length: MemoryLayout.size(ofValue: modelTransformation), index: 2)
+                renderEncoder.setFragmentTexture(options.texturing ? object.texture : nil, index: 0)
+                renderEncoder.setFragmentBytes(&fragParams, length: MemoryLayout.size(ofValue: fragParams), index: 0)
+                renderEncoder.setFragmentBytes(scene.directionalLights, length: MemoryLayout.size(ofValue: scene.directionalLights), index: 1)
+                renderEncoder.setFragmentBytes(scene.pointLights, length: MemoryLayout.size(ofValue: scene.pointLights), index: 2)
+                // interpret vertexCount vertices as instanceCount instances of type .triangle
+                renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: object.mesh.triangles.count * 3)
+
             }
             renderEncoder.endEncoding()
             
@@ -133,19 +146,6 @@ class Renderer: NSObject, MTKViewDelegate {
     // placeholder for now, come back and add dynamic buffer resizing
     func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
         //
-    }
-    
-    func renderObject(_ object: Object, renderEncoder: MTLRenderCommandEncoder, viewProjection: inout ViewProjection) {
-                    
-        var modelTransformation = object.modelTransformation()
-
-        renderEncoder.setVertexBuffer(object.vertexBuffer, offset: 0, index: 0)
-        renderEncoder.setVertexBytes(&viewProjection, length: MemoryLayout.size(ofValue: viewProjection), index: 1)
-        renderEncoder.setVertexBytes(&modelTransformation, length: MemoryLayout.size(ofValue: modelTransformation), index: 2)
-        renderEncoder.setFragmentTexture(options.texturing ? object.texture : nil, index: 0)
-        // interpret vertexCount vertices as instanceCount instances of type .triangle
-        renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: object.mesh.triangles.count * 3)
-
     }
     
     func addPostProcessPass(pipeline: MTLComputePipelineState, commandBuffer: MTLCommandBuffer, inTexture: MTLTexture, outTexture: MTLTexture) {

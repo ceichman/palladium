@@ -29,7 +29,8 @@ struct ModelTransformation {
 }
 
 struct FragmentParams {
-    var texturePresent: Bool
+    var numDirectionalLights: Int
+    var numPointLights: Int
 }
 
 // Used to collect info before normals are calculated. Defined as a class

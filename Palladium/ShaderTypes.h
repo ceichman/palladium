@@ -32,6 +32,7 @@ struct Vertex {
 
 struct ProjectedVertex {
     simd_float4 position [[position]];
+    simd_float4 worldPosition;
     simd_float4 color;
     simd_float3 normal;
     simd_float2 uvs;
@@ -44,7 +45,13 @@ struct DirectionalLight {
 };
 
 struct PointLight {
+    simd_float3 position;
     simd_float3 color;
     float intensity;
     float radius;
+};
+
+struct FragmentParams {
+    int numDirectionalLights;
+    int numPointLights;
 };
