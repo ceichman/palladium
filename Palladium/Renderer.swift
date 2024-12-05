@@ -17,7 +17,7 @@ struct RendererOptions {
 class Renderer: NSObject, MTKViewDelegate {
     
     var view: MTKView
-    var objects: [Object]!
+    var scene: Scene!
     var camera: Camera!
     var delegate: RendererDelegate?
     var options: RendererOptions
@@ -34,11 +34,11 @@ class Renderer: NSObject, MTKViewDelegate {
     private var currentFrameTime = CACurrentMediaTime()
 
     /// Initializes the Renderer object and calls setup() routine
-    init(view: MTKView, objects: [Object], camera: Camera) {
+    init(view: MTKView, scene: Scene, camera: Camera) {
         self.view = view
         self.options = RendererOptions(fovDegrees: 40.0, boxBlur: false, gaussianBlur: false, invertColors: false, texturing: true, wireframe: false)
         super.init()
-        self.objects = objects
+        self.scene = scene
         self.camera = camera
         setup()
     }
@@ -114,7 +114,7 @@ class Renderer: NSObject, MTKViewDelegate {
             renderEncoder.setRenderPipelineState(pipelineState)
             renderEncoder.setDepthStencilState(depthStencilState)
 
-            for object in objects {
+            for object in scene.objects.values {
                 renderObject(object, renderEncoder: renderEncoder, viewProjection: &viewProjection)
             }
             renderEncoder.endEncoding()

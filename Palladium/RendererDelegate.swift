@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol RendererDelegate : NSObjectProtocol {
+protocol RendererDelegate {
     
     /**
      @method preRenderUpdate

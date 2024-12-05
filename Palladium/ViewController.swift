@@ -70,7 +70,8 @@ class ViewController: UIViewController, RendererDelegate {
 
         /// Creates a Renderer object (from refactor). Only supports a single mesh atm
         self.objects = ["spot": spotObject, "pumpkin": pumpkinObject, "axis": axisObject, "pineapple": pineappleObject, "teapot": teapotObject]
-        renderer = Renderer(view: metalView, objects: ([Object])(objects.values), camera: camera)
+        let scene = Scene(objects: self.objects, directionalLights: [], pointLights: [], camera: camera)
+        renderer = Renderer(view: metalView, scene: scene, camera: camera)
         
         /// Set up device and metalView
         metalView.delegate = renderer
