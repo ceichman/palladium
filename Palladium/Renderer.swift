@@ -18,7 +18,6 @@ class Renderer: NSObject, MTKViewDelegate {
     
     var view: MTKView
     var scene: Scene!
-    var delegate: RendererDelegate?
     var options: RendererOptions
     private var vertexBuffer: MTLBuffer!                // buffer used to store vertex data
     private var pipelineState: MTLRenderPipelineState!  // how to process vertex and fragment shaders during rendering

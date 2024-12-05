@@ -8,7 +8,7 @@
 import Foundation
 import simd
 
-class Scene: RendererDelegate {
+class Scene {
     var objects: [String:Object]
     var directionalLights: [DirectionalLight]
     var pointLights: [PointLight]

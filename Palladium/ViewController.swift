@@ -24,41 +24,6 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        
-        /// Load meshes
-        let mainBundle = Bundle.main
-        
-        let cubeNormalObject = Object(meshName: "cube-normal")
-        cubeNormalObject.position = simd_float3(0.0, 0.0, 3.0)
-        cubeNormalObject.rotation = simd_float3(0.4, 0, 0)
-        
-        let teapotObject = Object(meshName: "teapot")
-        teapotObject.position = simd_float3(-6.0, -6.0, 1.0)
-        teapotObject.rotation = simd_float3(0, 0, 0)
-        
-        let catObject = Object(meshName: "cat")
-        catObject.position = simd_float3(0.0, -1.0, 4.0)
-        catObject.scale = simd_float3.one / 1000
-        
-        let pumpkinObject = Object(meshName: "pumpkin")
-        pumpkinObject.position = simd_float3(0.0, -1.0, 8.0)
-        pumpkinObject.scale = simd_float3.one / 50
-        
-        let axisObject = Object(meshName: "axis")
-        axisObject.position = simd_float3(1.0, 0.0, 0.0)
-        axisObject.scale = simd_float3.one / 10.0
-
-        let spotObject = Object(meshName: "spot", textureName: "spot-texture")
-        spotObject.position = simd_float3(-1.0, 0.5, 4.0)
-        spotObject.rotation = simd_float3(0, Float.pi, 0)
-        spotObject.scale = simd_float3(2, 2, 2)
-        
-        let pineappleObject = Object(meshName: "pineapple2")//, textureName: "pineapple2")
-        pineappleObject.position = simd_float3(0, -1, -4)
-        pineappleObject.rotation = simd_float3(2.0 * Float.pi / 5, 5 * Float.pi / 6, Float.pi / 3)
-        pineappleObject.scale = simd_float3.one * 4
-        
-        
         let device = MTLCreateSystemDefaultDevice()!
         metalView.device = device
         
@@ -67,7 +32,6 @@ class ViewController: UIViewController {
         
         /// Set up device and metalView
         metalView.delegate = renderer
-        renderer.delegate = scene
 
         let panRecognizer = UIPanGestureRecognizer(target: self, action: #selector(didPan))
         panRecognizer.minimumNumberOfTouches = 1
