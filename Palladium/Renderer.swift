@@ -18,7 +18,6 @@ class Renderer: NSObject, MTKViewDelegate {
     
     var view: MTKView
     var scene: Scene!
-    var camera: Camera!
     var delegate: RendererDelegate?
     var options: RendererOptions
     private var vertexBuffer: MTLBuffer!                // buffer used to store vertex data
@@ -34,12 +33,11 @@ class Renderer: NSObject, MTKViewDelegate {
     private var currentFrameTime = CACurrentMediaTime()
 
     /// Initializes the Renderer object and calls setup() routine
-    init(view: MTKView, scene: Scene, camera: Camera) {
+    init(view: MTKView, scene: Scene) {
         self.view = view
         self.options = RendererOptions(fovDegrees: 40.0, boxBlur: false, gaussianBlur: false, invertColors: false, texturing: true, wireframe: false)
         super.init()
         self.scene = scene
-        self.camera = camera
         setup()
     }
     
@@ -103,7 +101,7 @@ class Renderer: NSObject, MTKViewDelegate {
                 nearZ: 0.3,
                 farZ: 1000.0
             )
-            var viewProjection = camera.viewProjection(projectionParams)
+            var viewProjection = scene.camera.viewProjection(projectionParams)
  
             guard let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderPassDescriptor) else { return }
             /// Common render encoder configuration
