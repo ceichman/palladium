@@ -7,32 +7,9 @@
 
 #include <metal_stdlib>
 #include <simd/simd.h>
+#include "ShaderTypes.h"
+
 using namespace metal;
-
-struct ViewProjection {
-    simd_float4x4 view;
-    simd_float4x4 projection;
-};
-
-struct ModelTransformation {
-    simd_float4x4 translation;
-    simd_float4x4 rotation;
-    simd_float4x4 scaling;
-};
-
-struct Vertex {
-    simd_float3 position;
-    simd_float4 color;
-    simd_float3 normal;
-    simd_float2 uvs;
-};
-
-struct ProjectedVertex {
-    simd_float4 position [[position]];
-    simd_float4 color;
-    simd_float3 normal;
-    simd_float2 uvs;
-};
 
 vertex ProjectedVertex project_vertex(
                              const device Vertex* vertex_array [[ buffer(0) ]],

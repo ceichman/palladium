@@ -54,6 +54,7 @@
 		D5453ECE2D01365E00FA98F9 /* DirectionalLight.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectionalLight.swift; sourceTree = "<group>"; };
 		D5453ED02D01373B00FA98F9 /* PointLight.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PointLight.swift; sourceTree = "<group>"; };
 		D5453ED22D0137FA00FA98F9 /* Scene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Scene.swift; sourceTree = "<group>"; };
+		D5453ED42D013F8200FA98F9 /* ShaderTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShaderTypes.h; sourceTree = "<group>"; };
 		D5559C152CE2E23800019348 /* meshes */ = {isa = PBXFileReference; lastKnownFileType = folder; path = meshes; sourceTree = "<group>"; };
 		D5694C192CF7D1A600E446B0 /* Object.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Object.swift; sourceTree = "<group>"; };
 		D5A512E82CD18CD90050E219 /* Palladium.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Palladium.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -143,6 +144,7 @@
 				D5453ED02D01373B00FA98F9 /* PointLight.swift */,
 				D5AEB3792CD9398600C30959 /* Mesh.swift */,
 				D5A5131B2CD190310050E219 /* Shaders.metal */,
+				D5453ED42D013F8200FA98F9 /* ShaderTypes.h */,
 				D5F71ECE2CF5196100DFE2AE /* PostProcessShaders.metal */,
 				D5A512F12CD18CD90050E219 /* Main.storyboard */,
 				D5A512F42CD18CDA0050E219 /* Assets.xcassets */,
