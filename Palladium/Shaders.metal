@@ -46,23 +46,33 @@ fragment half4 basic_fragment(ProjectedVertex vert [[stage_in]],
                               constant DirectionalLight *directionalLights [[ buffer(1) ]],
                               constant PointLight *pointLights [[ buffer(2) ]] )
 {
-    half4 diffuseColor;
+    half4 flatColor;
     if (is_null_texture(colorTexture)) {
-        diffuseColor = half4(vert.color);
+        flatColor = half4(vert.color);
     }
     else {
         simd_float2 newUv = simd_float2(vert.uvs.x, 1.0 - vert.uvs.y);
-        diffuseColor = colorTexture.sample(textureSampler, newUv);
+        flatColor = colorTexture.sample(textureSampler, newUv);
     }
     
-    float3 color = float3(0, 0, 0);
+    float ambient = 0.1;
+    float3 color = float3(flatColor.xyz) * ambient;
     for (int i = 0; i < params.numPointLights; i++) {
         float3 vertexToLight = pointLights[i].position - vert.worldPosition.xyz;
         float distanceSquared = dot(vertexToLight, vertexToLight);
-        float3 reflectedColor = pointLights[i].color * float3(diffuseColor.xyz);
+        vertexToLight = normalize(vertexToLight);
+        float3 reflectedColor = pointLights[i].color * float3(flatColor.xyz);
         float attenuation = fmax((1 - (distanceSquared / pointLights[i].radius)), 0.0);
-        color += reflectedColor * attenuation * pointLights[i].intensity;
+        float diffuse = max(dot(vertexToLight, vert.worldNormal), 0.0);
+        color += reflectedColor * attenuation * diffuse * pointLights[i].intensity;
     }
+    
+    for (int i = 0; i < params.numDirectionalLights; i++) {
+        float diffuse = max(dot(vert.worldNormal, directionalLights[i].direction), 0.0);
+        float3 reflectedColor = directionalLights[i].color * float3(flatColor.xyz);
+        color += reflectedColor * diffuse * directionalLights[i].intensity;
+    }
+    
     color = saturate(color);
     return half4(half3(color), 1.0);
     
