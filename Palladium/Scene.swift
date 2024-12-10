@@ -80,7 +80,7 @@ extension Scene {
         let pointLight = PointLight(position: .zero,
                                     color: .one,
                                     intensity: 1.0,
-                                    radius: 40.0)
+                                    radius: 60.0)
         
         var directionalLight = DirectionalLight(direction: simd_float3(0, -1, 0))
         directionalLight.intensity = 0.8

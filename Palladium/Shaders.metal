@@ -44,7 +44,8 @@ fragment half4 basic_fragment(ProjectedVertex vert [[stage_in]],
                               texture2d<half> colorTexture [[ texture(0)]],
                               constant FragmentParams &params [[ buffer(0) ]],
                               constant DirectionalLight *directionalLights [[ buffer(1) ]],
-                              constant PointLight *pointLights [[ buffer(2) ]] )
+                              constant PointLight *pointLights [[ buffer(2) ]],
+                              constant simd_float3 &cameraPos [[ buffer(3) ]])
 {
     half4 flatColor;
     if (is_null_texture(colorTexture)) {
@@ -57,6 +58,11 @@ fragment half4 basic_fragment(ProjectedVertex vert [[stage_in]],
     
     float ambient = 0.1;
     float3 color = float3(flatColor.xyz) * ambient;
+    float specularCoeff = 1;  // TODO: pass specular in from texture
+    
+    float3 cameraToVertex = cameraPos - vert.position.xyz;
+    
+    // Point light contribution
     for (int i = 0; i < params.numPointLights; i++) {
         float3 vertexToLight = pointLights[i].position - vert.worldPosition.xyz;
         float distanceSquared = dot(vertexToLight, vertexToLight);
@@ -65,8 +71,13 @@ fragment half4 basic_fragment(ProjectedVertex vert [[stage_in]],
         float attenuation = fmax((1 - (distanceSquared / pointLights[i].radius)), 0.0);
         float diffuse = max(dot(vertexToLight, vert.worldNormal), 0.0);
         color += reflectedColor * attenuation * diffuse * pointLights[i].intensity;
+        
+        // specular highlights contribution
+        float3 halfway = normalize(vertexToLight + cameraToVertex);
+        color += max(dot(float3(vert.worldNormal.xyz), halfway),0.0) * float3(reflectedColor) * specularCoeff * attenuation;
     }
     
+    // Directional light contribution
     for (int i = 0; i < params.numDirectionalLights; i++) {
         float diffuse = max(dot(vert.worldNormal, directionalLights[i].direction), 0.0);
         float3 reflectedColor = directionalLights[i].color * float3(flatColor.xyz);

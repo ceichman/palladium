@@ -100,7 +100,10 @@ class Renderer: NSObject, MTKViewDelegate {
             )
             var viewProjection = scene.camera.viewProjection(projectionParams)
             
-            var fragParams = FragmentParams(numDirectionalLights: CInt(scene.directionalLights.count), numPointLights: CInt(scene.pointLights.count))
+            var fragParams = FragmentParams(numDirectionalLights: CInt(scene.directionalLights.count),
+                                            numPointLights: CInt(scene.pointLights.count),
+                                            cameraPosition: scene.camera.position
+            )
 
             guard let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderPassDescriptor) else { return }
             /// Common render encoder configuration
@@ -121,6 +124,7 @@ class Renderer: NSObject, MTKViewDelegate {
                 renderEncoder.setFragmentBytes(&fragParams, length: MemoryLayout.size(ofValue: fragParams), index: 0)
                 renderEncoder.setFragmentBytes(scene.directionalLights, length: MemoryLayout<DirectionalLight>.stride * Int(fragParams.numDirectionalLights), index: 1)
                 renderEncoder.setFragmentBytes(scene.pointLights, length: MemoryLayout<PointLight>.stride * Int(fragParams.numPointLights), index: 2)
+                renderEncoder.setFragmentBytes(&scene.camera.position, length: MemoryLayout.size(ofValue: scene.camera.position), index: 3)
                 // interpret vertexCount vertices as instanceCount instances of type .triangle
                 renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: object.mesh.triangles.count * 3)
 

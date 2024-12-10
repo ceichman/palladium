@@ -31,6 +31,7 @@ struct ModelTransformation {
 struct FragmentParams {
     var numDirectionalLights: CInt
     var numPointLights: CInt
+    var cameraPosition: simd_float3
 }
 
 // Used to collect info before normals are calculated. Defined as a class
