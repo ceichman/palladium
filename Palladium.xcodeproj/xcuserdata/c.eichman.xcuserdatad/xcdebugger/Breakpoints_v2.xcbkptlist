@@ -398,8 +398,8 @@
             filePath = "Palladium/Object.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "31"
-            endingLineNumber = "31"
+            startingLineNumber = "29"
+            endingLineNumber = "29"
             landmarkName = "vertexBuffer"
             landmarkType = "24">
          </BreakpointContent>

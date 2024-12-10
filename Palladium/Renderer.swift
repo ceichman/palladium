@@ -120,7 +120,7 @@ class Renderer: NSObject, MTKViewDelegate {
                 renderEncoder.setVertexBuffer(object.vertexBuffer, offset: 0, index: 0)
                 renderEncoder.setVertexBytes(&viewProjection, length: MemoryLayout.size(ofValue: viewProjection), index: 1)
                 renderEncoder.setVertexBytes(&modelTransformation, length: MemoryLayout.size(ofValue: modelTransformation), index: 2)
-                renderEncoder.setFragmentTexture(options.texturing ? object.texture : nil, index: 0)
+                renderEncoder.setFragmentTexture(options.texturing ? object.material.colorTexture : nil, index: 0)
                 renderEncoder.setFragmentBytes(&fragParams, length: MemoryLayout.size(ofValue: fragParams), index: 0)
                 renderEncoder.setFragmentBytes(scene.directionalLights, length: MemoryLayout<DirectionalLight>.stride * Int(fragParams.numDirectionalLights), index: 1)
                 renderEncoder.setFragmentBytes(scene.pointLights, length: MemoryLayout<PointLight>.stride * Int(fragParams.numPointLights), index: 2)

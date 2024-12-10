@@ -14,15 +14,13 @@ class Object {
     
     private static var nextId = 0
     private static let device = MTLCreateSystemDefaultDevice()!
-    private static let textureLoader = MTKTextureLoader(device: device)
     private static let mainBundle = Bundle.main
     
     let id: Int!
     lazy var name = String(self.id)
     var mesh: Mesh
-    var texture: MTLTexture?
-    var specular: Float = 1.0  // how "shiny" the material surface is. sometimes mapped to a texture
-
+    var material: Material
+    
     var position = simd_float3(0, 0, 1)   // World-space position of the mesh
     var rotation = simd_float3.zero       // 3D rotation (subject to gimbal lock)
     var scale = simd_float3.one           // Per-axis scaling
@@ -34,7 +32,7 @@ class Object {
 
     convenience init(meshName: String, textureName: String) {
         self.init(meshName: meshName)
-        self.texture = try! Self.textureLoader.newTexture(name: textureName, scaleFactor: 1.0, bundle: Self.mainBundle)
+        self.material = Material(colorTextureName: textureName)
     }
     
     convenience init(meshName: String) {
@@ -44,13 +42,14 @@ class Object {
 
     init(mesh: Mesh) {
         self.mesh = mesh
+        self.material = Material()
         id = Object.nextId
         Object.nextId += 1
     }
     
-    convenience init(mesh: Mesh, texture: MTLTexture) {
+    convenience init(mesh: Mesh, material: Material) {
         self.init(mesh: mesh)
-        self.texture = texture
+        self.material = material
     }
     
     func modelTransformation() -> ModelTransformation {
