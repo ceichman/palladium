@@ -29,10 +29,8 @@
                                 </buttonConfiguration>
                                 <connections>
                                     <action selector="forwardButtonPressed:" destination="BYZ-38-t0r" eventType="touchDown" id="96L-O7-DfK"/>
-                                    <action selector="resetCameraVelocity:" destination="BYZ-38-t0r" eventType="touchDragExit" id="Mub-P9-MxS"/>
-                                    <action selector="resetCameraVelocity:" destination="BYZ-38-t0r" eventType="touchCancel" id="c17-sY-nH2"/>
-                                    <action selector="resetCameraVelocity:" destination="BYZ-38-t0r" eventType="touchUpInside" id="juM-cX-2or"/>
-                                    <action selector="resetCameraVelocity:" destination="BYZ-38-t0r" eventType="touchUpOutside" id="lkV-yc-U0R"/>
+                                    <action selector="resetCameraVelocity:" destination="BYZ-38-t0r" eventType="touchUpInside" id="DEs-DS-Oov"/>
+                                    <action selector="resetCameraVelocity:" destination="BYZ-38-t0r" eventType="touchDragExit" id="EkB-NP-yue"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="pQR-yz-l6g" userLabel="Backward">
@@ -44,10 +42,8 @@
                                 </buttonConfiguration>
                                 <connections>
                                     <action selector="backButtonPressed:" destination="BYZ-38-t0r" eventType="touchDown" id="nXx-N1-CCf"/>
-                                    <action selector="resetCameraVelocity:" destination="BYZ-38-t0r" eventType="touchUpOutside" id="1GM-ap-Xsx"/>
-                                    <action selector="resetCameraVelocity:" destination="BYZ-38-t0r" eventType="touchUpInside" id="KOX-GA-If4"/>
-                                    <action selector="resetCameraVelocity:" destination="BYZ-38-t0r" eventType="touchDragExit" id="a2T-o5-Gm9"/>
-                                    <action selector="resetCameraVelocity:" destination="BYZ-38-t0r" eventType="touchCancel" id="xp5-m9-erG"/>
+                                    <action selector="resetCameraVelocity:" destination="BYZ-38-t0r" eventType="touchUpInside" id="KHo-lo-yVK"/>
+                                    <action selector="resetCameraVelocity:" destination="BYZ-38-t0r" eventType="touchDragExit" id="iht-hD-qXB"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1Mo-q2-zQ2" userLabel="Right">
@@ -58,10 +54,8 @@
                                     <imageReference key="image" image="arrowshape.right.circle.fill" catalog="system" symbolScale="default"/>
                                 </buttonConfiguration>
                                 <connections>
-                                    <action selector="resetHorizontal:" destination="BYZ-38-t0r" eventType="touchUpOutside" id="jWL-cn-MkX"/>
-                                    <action selector="resetHorizontal:" destination="BYZ-38-t0r" eventType="touchDragExit" id="kY3-r1-pQr"/>
-                                    <action selector="resetHorizontal:" destination="BYZ-38-t0r" eventType="touchUpInside" id="p4m-60-8GU"/>
-                                    <action selector="resetHorizontal:" destination="BYZ-38-t0r" eventType="touchCancel" id="yCX-4Y-LwQ"/>
+                                    <action selector="resetCameraVelocity:" destination="BYZ-38-t0r" eventType="touchDragExit" id="dbf-Cg-alR"/>
+                                    <action selector="resetCameraVelocity:" destination="BYZ-38-t0r" eventType="touchUpInside" id="pI9-A1-XH8"/>
                                     <action selector="rightButtonPressed:" destination="BYZ-38-t0r" eventType="touchDown" id="oDC-VH-umD"/>
                                 </connections>
                             </button>
@@ -74,10 +68,8 @@
                                 </buttonConfiguration>
                                 <connections>
                                     <action selector="leftButtonPressed:" destination="BYZ-38-t0r" eventType="touchDown" id="LwP-Zt-WrS"/>
-                                    <action selector="resetHorizontal:" destination="BYZ-38-t0r" eventType="touchDragExit" id="4OU-LI-FFB"/>
-                                    <action selector="resetHorizontal:" destination="BYZ-38-t0r" eventType="touchCancel" id="CZK-3G-JRe"/>
-                                    <action selector="resetHorizontal:" destination="BYZ-38-t0r" eventType="touchUpOutside" id="GIQ-Od-PRo"/>
-                                    <action selector="resetHorizontal:" destination="BYZ-38-t0r" eventType="touchUpInside" id="NNR-26-9Sd"/>
+                                    <action selector="resetCameraVelocity:" destination="BYZ-38-t0r" eventType="touchDragExit" id="3dj-1H-99w"/>
+                                    <action selector="resetCameraVelocity:" destination="BYZ-38-t0r" eventType="touchUpInside" id="fr8-6R-xK2"/>
                                 </connections>
                             </button>
                             <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="cPb-Yn-X6O" userLabel="Box Blur">
@@ -144,10 +136,8 @@
                                     <imageReference key="image" image="arrowshape.up.circle.fill" catalog="system" symbolScale="default"/>
                                 </buttonConfiguration>
                                 <connections>
-                                    <action selector="resetVertical:" destination="BYZ-38-t0r" eventType="touchCancel" id="CsL-Bg-ZEE"/>
-                                    <action selector="resetVertical:" destination="BYZ-38-t0r" eventType="touchUpInside" id="RXJ-VN-E3H"/>
-                                    <action selector="resetVertical:" destination="BYZ-38-t0r" eventType="touchUpOutside" id="W5a-H4-JAJ"/>
-                                    <action selector="resetVertical:" destination="BYZ-38-t0r" eventType="touchDragExit" id="vqo-ka-Hvj"/>
+                                    <action selector="resetCameraVelocity:" destination="BYZ-38-t0r" eventType="touchDragExit" id="cOH-ou-5hq"/>
+                                    <action selector="resetCameraVelocity:" destination="BYZ-38-t0r" eventType="touchUpInside" id="ydJ-Tb-qHZ"/>
                                     <action selector="upButtonPressed:" destination="BYZ-38-t0r" eventType="touchDown" id="ieE-7r-nYR"/>
                                 </connections>
                             </button>
@@ -160,10 +150,8 @@
                                 </buttonConfiguration>
                                 <connections>
                                     <action selector="downButtonPressed:" destination="BYZ-38-t0r" eventType="touchDown" id="w2h-c2-bhT"/>
-                                    <action selector="resetVertical:" destination="BYZ-38-t0r" eventType="touchUpOutside" id="3Q8-QD-9Fa"/>
-                                    <action selector="resetVertical:" destination="BYZ-38-t0r" eventType="touchDragExit" id="Ps9-vC-ZWc"/>
-                                    <action selector="resetVertical:" destination="BYZ-38-t0r" eventType="touchUpInside" id="QY3-ce-Vix"/>
-                                    <action selector="resetVertical:" destination="BYZ-38-t0r" eventType="touchCancel" id="xBr-55-IS5"/>
+                                    <action selector="resetCameraVelocity:" destination="BYZ-38-t0r" eventType="touchDragExit" id="kc6-56-hUi"/>
+                                    <action selector="resetCameraVelocity:" destination="BYZ-38-t0r" eventType="touchUpInside" id="mP3-N3-Q96"/>
                                 </connections>
                             </button>
                             <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ubD-ZB-yJ2" userLabel="Texturing">

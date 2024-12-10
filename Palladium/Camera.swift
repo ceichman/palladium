@@ -26,21 +26,19 @@ class Camera {
         }
     }
     
-    // debug the physics
-    // Normalized direction vectors for strafing.
-    var relativeLeft: simd_float3 {
-        let cross = cross(YAWAXIS * -1.0, lookDirection)
-        return normalize(simd_float3(cross.x, 0, cross.z))
-    }
-    var relativeRight: simd_float3 {
-        let cross = cross(YAWAXIS, lookDirection)
-        return normalize(simd_float3(cross.x, 0, cross.z))
+    var forwardVelocity: Float = 0 // in the direction of LookDirection
+    var strafeVelocity: Float = 0  // in the xz-plane
+    var verticalVelocity: Float = 0  // independent of LookDirection
+    private var worldVelocity: simd_float3 {
+        get {
+            let forwardContribution = forwardVelocity * lookDirection
+            let relativeRight = normalize(cross(YAWAXIS, lookDirection))
+            let strafeContribution = relativeRight * strafeVelocity
+            let verticalContribution = YAWAXIS * verticalVelocity
+            return forwardContribution + strafeContribution + verticalContribution
+        }
     }
     
-    var velocityX: Float = 0
-    var velocityY: Float = 0
-    var velocityZ: Float = 0
-
     init(position: simd_float3) {
         self.position = position
     }
@@ -52,7 +50,7 @@ class Camera {
     }
     
     func move(deltaTime: CFTimeInterval) {
-        self.position += simd_float3(self.velocityX, self.velocityY, self.velocityZ) * Float(deltaTime)
+        self.position += worldVelocity * Float(deltaTime)
     }
     
     // Create the view matrix using the current position, target, and up vector

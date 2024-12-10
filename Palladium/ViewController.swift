@@ -43,52 +43,33 @@ class ViewController: UIViewController {
     }
     
     @IBAction func upButtonPressed(_ sender: UIButton) {
-        scene.camera.velocityY = cameraVelocity
+        scene.camera.verticalVelocity = cameraVelocity
     }
     
     @IBAction func downButtonPressed(_ sender: UIButton) {
-        scene.camera.velocityY = -cameraVelocity
+        scene.camera.verticalVelocity = -cameraVelocity
     }
     
     @IBAction func forwardButtonPressed(_ sender: UIButton) {
-        let forward = scene.camera.lookDirection
-        scene.camera.velocityX += forward.x * cameraVelocity
-        scene.camera.velocityY += forward.y * cameraVelocity
-        scene.camera.velocityZ += forward.z * cameraVelocity
+        scene.camera.forwardVelocity = cameraVelocity
     }
     
     @IBAction func backButtonPressed(_ sender: UIButton) {
-        let forward = scene.camera.lookDirection
-        scene.camera.velocityX -= forward.x * cameraVelocity
-        scene.camera.velocityY -= forward.y * cameraVelocity
-        scene.camera.velocityZ -= forward.z * cameraVelocity
+        scene.camera.forwardVelocity = -cameraVelocity
     }
 
     @IBAction func leftButtonPressed(_ sender: UIButton) {
-        let relativeLeft = scene.camera.relativeLeft
-        scene.camera.velocityX += relativeLeft.x * cameraVelocity
-        scene.camera.velocityZ += relativeLeft.z * cameraVelocity
+        scene.camera.strafeVelocity = -cameraVelocity
     }
     
     @IBAction func rightButtonPressed(_ sender: UIButton) {
-        let relativeRight = scene.camera.relativeRight
-        scene.camera.velocityX += relativeRight.x * cameraVelocity
-        scene.camera.velocityZ += relativeRight.z * cameraVelocity
-    }
-    
-    @IBAction func resetHorizontal(_ sender: UIButton) {
-        scene.camera.velocityX = 0.0
-        scene.camera.velocityZ = 0.0
-    }
-    
-    @IBAction func resetVertical(_ sender: UIButton) {
-        scene.camera.velocityY = 0.0
+        scene.camera.strafeVelocity = cameraVelocity
     }
     
     @IBAction func resetCameraVelocity(_ sender: UIButton) {
-        scene.camera.velocityX = 0.0
-        scene.camera.velocityY = 0.0
-        scene.camera.velocityZ = 0.0
+        scene.camera.forwardVelocity = 0
+        scene.camera.strafeVelocity = 0
+        scene.camera.verticalVelocity = 0
     }
     
     var lastLocation = CGPoint()

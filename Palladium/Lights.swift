@@ -17,3 +17,10 @@ struct DirectionalLight {
         self.direction = direction
     }
 }
+
+struct PointLight {
+    var position: simd_float3 = .zero
+    var color: simd_float3 = .one
+    var intensity: Float = 1.0
+    var radius: Float = 1.0
+}
