@@ -13,7 +13,6 @@ class ViewController: UIViewController {
     
     var renderer: Renderer!
     var scene: Scene!
-    var objects: [String:Object]!
     
     let cameraVelocity: Float = 5.0
     

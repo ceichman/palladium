@@ -71,7 +71,7 @@ class Renderer: NSObject, MTKViewDelegate {
     }
     
     func draw(in view: MTKView) {
-        autoreleasepool { // ensures efficient memory management
+        autoreleasepool { [self] in // ensures efficient memory management
             let now = CACurrentMediaTime()
             let deltaTime = now - currentFrameTime
             currentFrameTime = now
@@ -110,26 +110,33 @@ class Renderer: NSObject, MTKViewDelegate {
             renderEncoder.setRenderPipelineState(pipelineState)
             renderEncoder.setDepthStencilState(depthStencilState)
             
-            for object in scene.objects.values {
-                var modelTransformation = object.modelTransformation()
+            for index in scene.objects.indices {
+                let entry = scene.objects[index]
+                let template = entry.key
+                let instances = entry.value
+                
+                var models = [ModelTransformation]()
+                for instance in instances {
+                    models.append(instance.modelTransformation())
+                }
                 
                 var fragParams = FragmentParams(
                     cameraPosition: scene.camera.position,
-                    specularCoefficient: options.specularHighlights ? object.material.specularCoefficient : 0.0,
+                    specularCoefficient: options.specularHighlights ? template.material.specularCoefficient : 0.0,
                     numDirectionalLights: CInt(scene.directionalLights.count),
                     numPointLights: CInt(scene.pointLights.count)
                 )
 
-                renderEncoder.setVertexBuffer(object.vertexBuffer, offset: 0, index: 0)
+                renderEncoder.setVertexBuffer(template.vertexBuffer, offset: 0, index: 0)
                 renderEncoder.setVertexBytes(&viewProjection, length: MemoryLayout.size(ofValue: viewProjection), index: 1)
-                renderEncoder.setVertexBytes(&modelTransformation, length: MemoryLayout.size(ofValue: modelTransformation), index: 2)
-                renderEncoder.setFragmentTexture(options.texturing ? object.material.colorTexture : nil, index: 0)
+                renderEncoder.setVertexBytes(models, length: MemoryLayout<ModelTransformation>.stride * models.count, index: 2)
+                renderEncoder.setFragmentTexture(options.texturing ? template.material.colorTexture : nil, index: 0)
                 renderEncoder.setFragmentBytes(&fragParams, length: MemoryLayout<FragmentParams>.stride, index: 0)
                 renderEncoder.setFragmentBytes(scene.directionalLights, length: MemoryLayout<DirectionalLight>.stride * Int(fragParams.numDirectionalLights), index: 1)
                 renderEncoder.setFragmentBytes(scene.pointLights, length: MemoryLayout<PointLight>.stride * Int(fragParams.numPointLights), index: 2)
                 renderEncoder.setFragmentBytes(&scene.camera.position, length: MemoryLayout.size(ofValue: scene.camera.position), index: 3)
                 // interpret vertexCount vertices as instanceCount instances of type .triangle
-                renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: object.mesh.triangles.count * 3)
+                renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: template.mesh.triangles.count * 3, instanceCount: instances.count)
 
             }
             renderEncoder.endEncoding()
