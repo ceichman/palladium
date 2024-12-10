@@ -9,7 +9,7 @@ A lightweight renderer in Metal for iOS.
  - UV texturing
  - OBJ model loading and PNG texture format (max dimension: 8192 x 8192)
  - Multiple objects per scene, complete with rotation, scaling, and translation transforms
- - Flat lighting
+ - Forward-shading point and directional lighting with spectral highlights
  - Compute kernel post-processing effects: toggle-able blur, color inversion, and wireframe mode
 
 ## Usage
@@ -21,13 +21,12 @@ Disabling texturing uses vertex color rather than texture sampling to color each
 
 ## Further Work
 This project is open to improvement. Some feature ideas might be:
-- Forward shading using point/directional sources
+- Post-processing effects: bloom, ambient occlusion, anti-aliasing
 - Tone mapping
 - Mipmapping/dynamic texture loading
 - Double-buffering (i.e. render the next frame while the current one is being displayed)
 - Object culling
 - Reflections
-- Post-processing effects: ambient occlusion, anti-aliasing
 - Particle generation
 
 ## Credit
