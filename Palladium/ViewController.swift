@@ -144,4 +144,8 @@ class ViewController: UIViewController {
         renderer.options.texturing = sender.isOn
     }
     
+    @IBAction func specularHighlightsSwitchDidChange(_ sender: UISwitch) {
+        renderer.options.specularHighlights = sender.isOn
+    }
+    
 }

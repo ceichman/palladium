@@ -10,7 +10,7 @@ struct RendererOptions {
     var invertColors: Bool
     var texturing: Bool
     var wireframe: Bool
-    var spectralHighlights: Bool
+    var specularHighlights: Bool
 }
 
 /// This class focuses solely on rendering logic.
@@ -35,7 +35,7 @@ class Renderer: NSObject, MTKViewDelegate {
     /// Initializes the Renderer object and calls setup() routine
     init(view: MTKView, scene: Scene) {
         self.view = view
-        self.options = RendererOptions(fovDegrees: 40.0, boxBlur: false, gaussianBlur: false, invertColors: false, texturing: true, wireframe: false, spectralHighlights: true)
+        self.options = RendererOptions(fovDegrees: 40.0, boxBlur: false, gaussianBlur: false, invertColors: false, texturing: true, wireframe: false, specularHighlights: true)
         super.init()
         self.scene = scene
         setup()
@@ -115,7 +115,7 @@ class Renderer: NSObject, MTKViewDelegate {
                 
                 var fragParams = FragmentParams(
                     cameraPosition: scene.camera.position,
-                    specularCoefficient: object.material.specularCoefficient,
+                    specularCoefficient: options.specularHighlights ? object.material.specularCoefficient : 0.0,
                     numDirectionalLights: CInt(scene.directionalLights.count),
                     numPointLights: CInt(scene.pointLights.count)
                 )

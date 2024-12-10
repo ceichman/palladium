@@ -72,8 +72,8 @@ fragment half4 basic_fragment(ProjectedVertex vert [[stage_in]],
         color += reflectedColor * attenuation * diffuse * pointLights[i].intensity;
         
         // specular highlights contribution
-        float3 halfway = normalize(vertexToLight + cameraToVertex);
-        color += max(dot(float3(vert.worldNormal.xyz), halfway),0.0) * float3(reflectedColor) * specularCoeff * attenuation;
+        float3 halfway = normalize(normalize(vertexToLight) + normalize(cameraToVertex));
+        color += powr(max(dot(float3(vert.worldNormal.xyz), halfway),0.0),32.0) * float3(reflectedColor) * specularCoeff * attenuation;
     }
     
     // Directional light contribution
@@ -85,10 +85,6 @@ fragment half4 basic_fragment(ProjectedVertex vert [[stage_in]],
     
     color = saturate(color);
     return half4(half3(color), 1.0);
-    
-    // simd_float3 lightDirection = normalize(simd_float3(1, 0, 0));
-    // float d = dot(vert.normal, lightDirection);
-    // return half4(diffuseColor * (d + 0.2));
 }
                         
                            

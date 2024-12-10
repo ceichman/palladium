@@ -46,7 +46,7 @@ extension Scene {
         pumpkinObject.scale = simd_float3.one / 50
         
         let axisObject = Object(meshName: "axis")
-        axisObject.position = simd_float3(1.0, 0.0, 0.0)
+        axisObject.position = simd_float3(0.0, 0.0, 0.0)
         axisObject.scale = simd_float3.one / 10.0
 
         let spotObject = Object(meshName: "spot", textureName: "spot-texture")
