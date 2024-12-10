@@ -53,6 +53,8 @@ struct PointLight {
 };
 
 struct FragmentParams {
+    simd_float3 cameraPosition;
+    float specularCoefficient;
     int numDirectionalLights;
     int numPointLights;
 };

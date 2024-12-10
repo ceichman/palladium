@@ -10,6 +10,7 @@ struct RendererOptions {
     var invertColors: Bool
     var texturing: Bool
     var wireframe: Bool
+    var spectralHighlights: Bool
 }
 
 /// This class focuses solely on rendering logic.
@@ -34,7 +35,7 @@ class Renderer: NSObject, MTKViewDelegate {
     /// Initializes the Renderer object and calls setup() routine
     init(view: MTKView, scene: Scene) {
         self.view = view
-        self.options = RendererOptions(fovDegrees: 40.0, boxBlur: false, gaussianBlur: false, invertColors: false, texturing: true, wireframe: false)
+        self.options = RendererOptions(fovDegrees: 40.0, boxBlur: false, gaussianBlur: false, invertColors: false, texturing: true, wireframe: false, spectralHighlights: true)
         super.init()
         self.scene = scene
         setup()
@@ -100,11 +101,6 @@ class Renderer: NSObject, MTKViewDelegate {
             )
             var viewProjection = scene.camera.viewProjection(projectionParams)
             
-            var fragParams = FragmentParams(numDirectionalLights: CInt(scene.directionalLights.count),
-                                            numPointLights: CInt(scene.pointLights.count),
-                                            cameraPosition: scene.camera.position
-            )
-
             guard let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderPassDescriptor) else { return }
             /// Common render encoder configuration
             renderEncoder.label = "Geometry pass"
@@ -116,12 +112,19 @@ class Renderer: NSObject, MTKViewDelegate {
             
             for object in scene.objects.values {
                 var modelTransformation = object.modelTransformation()
+                
+                var fragParams = FragmentParams(
+                    cameraPosition: scene.camera.position,
+                    specularCoefficient: object.material.specularCoefficient,
+                    numDirectionalLights: CInt(scene.directionalLights.count),
+                    numPointLights: CInt(scene.pointLights.count)
+                )
 
                 renderEncoder.setVertexBuffer(object.vertexBuffer, offset: 0, index: 0)
                 renderEncoder.setVertexBytes(&viewProjection, length: MemoryLayout.size(ofValue: viewProjection), index: 1)
                 renderEncoder.setVertexBytes(&modelTransformation, length: MemoryLayout.size(ofValue: modelTransformation), index: 2)
                 renderEncoder.setFragmentTexture(options.texturing ? object.material.colorTexture : nil, index: 0)
-                renderEncoder.setFragmentBytes(&fragParams, length: MemoryLayout.size(ofValue: fragParams), index: 0)
+                renderEncoder.setFragmentBytes(&fragParams, length: MemoryLayout<FragmentParams>.stride, index: 0)
                 renderEncoder.setFragmentBytes(scene.directionalLights, length: MemoryLayout<DirectionalLight>.stride * Int(fragParams.numDirectionalLights), index: 1)
                 renderEncoder.setFragmentBytes(scene.pointLights, length: MemoryLayout<PointLight>.stride * Int(fragParams.numPointLights), index: 2)
                 renderEncoder.setFragmentBytes(&scene.camera.position, length: MemoryLayout.size(ofValue: scene.camera.position), index: 3)

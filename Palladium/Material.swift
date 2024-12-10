@@ -15,7 +15,7 @@ class Material {
     private static let mainBundle = Bundle.main
     
     var colorTexture: MTLTexture?
-    var specularCoefficient: Float = 1.0
+    var specularCoefficient: Float = 10.0
     var normalMapTexture: MTLTexture?
     var specularMapTexture: MTLTexture?
     
