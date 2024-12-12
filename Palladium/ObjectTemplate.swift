@@ -20,7 +20,7 @@ class ObjectTemplate {
     lazy var name = String(self.id)
     var mesh: Mesh
     var material: Material
-    private var instances: [ObjectInstance] = []
+    var instances: [ObjectInstance] = []
     
     lazy var vertexBuffer: MTLBuffer = {
         let (vertexArray, dataSize) = mesh.vertexArray()

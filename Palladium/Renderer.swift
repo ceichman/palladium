@@ -110,10 +110,9 @@ class Renderer: NSObject, MTKViewDelegate {
             renderEncoder.setRenderPipelineState(pipelineState)
             renderEncoder.setDepthStencilState(depthStencilState)
             
-            for index in scene.objects.indices {
-                let entry = scene.objects[index]
-                let template = entry.key
-                let instances = entry.value
+            for template in scene.objects {
+                let instances = template.instances
+                guard instances.count > 0 else { continue }
                 
                 var models = [ModelTransformation]()
                 for instance in instances {

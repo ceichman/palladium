@@ -9,7 +9,7 @@ import Foundation
 import simd
 
 class Scene {
-    var objects: [ObjectTemplate:[ObjectInstance]] = [:]
+    var objects: [ObjectTemplate] = []
     var directionalLights: [DirectionalLight] = []
     var pointLights: [PointLight]  = []
     var camera: Camera
@@ -27,38 +27,39 @@ extension Scene {
         let mainBundle = Bundle.main
         
         let cubeNormalObject = ObjectTemplate(meshName: "cube-normal")
-        let cubeNormalInstance = ObjectInstance()
+        let cubeNormalInstance = cubeNormalObject.newInstance()
         cubeNormalInstance.position = simd_float3(0.0, 0.0, 3.0)
         cubeNormalInstance.rotation = simd_float3(0.4, 0, 0)
         
         let teapotObject = ObjectTemplate(meshName: "teapot")
-        let teapotInstance = ObjectInstance()
+        let teapotInstance = teapotObject.newInstance()
         teapotInstance.position = simd_float3(-6.0, -6.0, 1.0)
         teapotInstance.rotation = simd_float3(0, 0, 0)
         
         let catObject = ObjectTemplate(meshName: "cat")
-        let catInstance = ObjectInstance()
-        catInstance.position = simd_float3(0.0, -1.0, 4.0)
-        catInstance.scale = simd_float3.one / 1000
+        let catInstance = catObject.newInstance()
+        catInstance.position = simd_float3(15.0, 1.0, 4.0)
+        catInstance.rotation = simd_float3(0, Float.pi / 2, 0)
+        catInstance.scale = simd_float3.one / 100
         
         let pumpkinObject = ObjectTemplate(meshName: "pumpkin")
-        let pumpkinInstance = ObjectInstance()
+        let pumpkinInstance = pumpkinObject.newInstance()
         pumpkinInstance.position = simd_float3(0.0, -1.0, 8.0)
         pumpkinInstance.scale = simd_float3.one / 50
         
         let axisObject = ObjectTemplate(meshName: "axis")
-        let axisInstance = ObjectInstance()
+        let axisInstance = axisObject.newInstance()
         axisInstance.position = simd_float3(0.0, 0.0, 0.0)
         axisInstance.scale = simd_float3.one / 10.0
 
         let spotObject = ObjectTemplate(meshName: "spot", textureName: "spot-texture")
-        let spotInstance = ObjectInstance()
+        let spotInstance = spotObject.newInstance()
         spotInstance.position = simd_float3(-1.0, 0.5, 4.0)
         spotInstance.rotation = simd_float3(0, Float.pi, 0)
         spotInstance.scale = simd_float3(2, 2, 2)
         
         let pineappleObject = ObjectTemplate(meshName: "pineapple2")//, textureName: "pineapple2")
-        let pineappleInstance = ObjectInstance()
+        let pineappleInstance = pineappleObject.newInstance()
         pineappleInstance.position = simd_float3(0, -1, -4)
         pineappleInstance.rotation = simd_float3(2.0 * Float.pi / 5, 5 * Float.pi / 6, Float.pi / 3)
         pineappleInstance.scale = simd_float3.one * 4
@@ -69,12 +70,12 @@ extension Scene {
         camera.pitch = -0.45
         
         let objects = [
-            teapotObject: [teapotInstance],
-            catObject: [catInstance],
-            pumpkinObject: [pumpkinInstance],
-            axisObject: [axisInstance],
-            spotObject: [spotInstance],
-            pineappleObject: [pineappleInstance]
+            teapotObject,
+            catObject,
+            pumpkinObject,
+            axisObject,
+            spotObject,
+            pineappleObject
         ]
         
         let preRenderUpdate = { (deltaTime: CFTimeInterval) in
