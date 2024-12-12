@@ -97,8 +97,12 @@ extension Scene {
         directionalLight.intensity = 0.8
         directionalLight.color = simd_float3(0, 1, 0.2)
         
+        var blueHalo = DirectionalLight(direction: simd_float3(-3, 1, 1))
+        blueHalo.color = simd_float3(0.1, 0.2, 1.0)
+        blueHalo.intensity = 0.5
+
         let scene = Scene(camera: camera)
-        scene.directionalLights = [directionalLight]
+        scene.directionalLights = [directionalLight, blueHalo]
         scene.pointLights = [pointLight]
         scene.preRenderUpdate = preRenderUpdate
         scene.objects = objects

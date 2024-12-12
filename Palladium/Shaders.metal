@@ -80,8 +80,8 @@ fragment half4 basic_fragment(ProjectedVertex vert [[stage_in]],
     
     // Directional light contribution
     for (int i = 0; i < params.numDirectionalLights; i++) {
-        float diffuse = max(dot(vert.worldNormal, directionalLights[i].direction), 0.0);
-        float3 reflectedColor = directionalLights[i].color * float3(flatColor.xyz);
+        float diffuse = max(dot(vert.worldNormal, normalize(directionalLights[i].direction)), 0.0);
+        float3 reflectedColor = saturate(directionalLights[i].color) * float3(flatColor.xyz);
         color += reflectedColor * diffuse * directionalLights[i].intensity;
     }
     
