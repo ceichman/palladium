@@ -7,6 +7,7 @@
 
 #include <metal_stdlib>
 #include <simd/simd.h>
+#include "ShaderTypes.h"
 using namespace metal;
 
 inline bool check_bounds(uint2 gid, uint maxWidth, uint maxHeight) {
@@ -89,4 +90,27 @@ kernel void invert_color(uint2 gid [[thread_position_in_grid]],
     // if (!check_bounds(gid, inColor.get_width(), inColor.get_height())) return;
     // Invert the pixel's color by subtracting it from 1.0.
     outColor.write(1.0 - inColor.read(gid), gid);
+}
+
+kernel void convolve_kernel(uint2 gid [[thread_position_in_grid]],
+                       texture2d<half, access::read> inColor [[texture(0)]],
+                       texture2d<half, access::write> outColor [[texture(1)]],
+                       constant ConvolutionKernel &kern [[ buffer(0) ]])
+{
+    // Kernel is full of float weights
+    float weightAccumulator = 0.0;
+    half4 colorAccumulator = half4(0, 0, 0, 0);
+    for (int row = 0; row < kern.size; ++row) {
+        for (int col = 0; col < kern.size; ++col) {
+            int kernelIndex = row * kern.size + col;
+            int radius = kern.size / 2;
+            uint2 pixelOffset = uint2(row - radius, col - radius);
+            uint2 pixelCoord = gid + pixelOffset;
+            if (!check_bounds(pixelCoord, inColor.get_width(), inColor.get_height())) continue;
+            float weight = kern.mat[kernelIndex];
+            weightAccumulator += weight;
+            colorAccumulator += inColor.read(pixelCoord) * weight;
+        }
+    }
+    outColor.write(half4(colorAccumulator.rgb / weightAccumulator, 1.0), gid);
 }

@@ -35,6 +35,11 @@ struct FragmentParams {
     var numPointLights: CInt
 }
 
+struct ConvolutionKernel {
+    var size: CInt
+    var mat: [Float]
+}
+
 // Used to collect info before normals are calculated. Defined as a class
 // to take advantage of pass-by-reference so that multiple Triangle primitives can
 // reuse the same underlying vertex during normal calculation.

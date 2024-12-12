@@ -58,3 +58,8 @@ struct FragmentParams {
     int numDirectionalLights;
     int numPointLights;
 };
+
+struct ConvolutionKernel {
+    int size;   // should be odd sqrt(sizeof(mat))
+    constant float *mat;
+};
