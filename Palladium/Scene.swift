@@ -57,7 +57,7 @@ extension Scene {
         spotInstance.position = simd_float3(-1.0, 0.5, 4.0)
         spotInstance.rotation = simd_float3(0, Float.pi, 0)
         spotInstance.scale = simd_float3(2, 2, 2)
-        
+
         let pineappleObject = ObjectTemplate(meshName: "pineapple2")//, textureName: "pineapple2")
         let pineappleInstance = pineappleObject.newInstance()
         pineappleInstance.position = simd_float3(0, -1, -4)
@@ -88,7 +88,7 @@ extension Scene {
             camera.move(deltaTime: deltaTime)
         }
         
-        let pointLight = PointLight(position: .zero,
+        let pointLight = PointLight(position: simd_float3(-2.0, 1.0, 0.0),
                                     color: .one,
                                     intensity: 1.0,
                                     radius: 60.0)

@@ -352,8 +352,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "164"
             endingLineNumber = "164"
-            landmarkName = "addPostProcessPass(pipeline:commandBuffer:inTexture:outTexture:)"
-            landmarkType = "7">
+            landmarkName = "Renderer"
+            landmarkType = "3">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -545,6 +545,22 @@
             startingLineNumber = "114"
             endingLineNumber = "114"
             landmarkName = "draw(in:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "C150B9A2-ACF3-4CC5-BA63-156518860A8A"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Palladium/Mesh.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "106"
+            endingLineNumber = "106"
+            landmarkName = "fromOBJ(url:calculateOrigin:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

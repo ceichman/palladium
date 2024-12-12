@@ -61,7 +61,7 @@ fragment half4 basic_fragment(ProjectedVertex vert [[stage_in]],
     float3 color = float3(flatColor.xyz) * ambient;
     float specularCoeff = params.specularCoefficient;
     
-    float3 cameraToVertex = params.cameraPosition - vert.position.xyz;
+    float3 cameraToVertex = params.cameraPosition - vert.worldPosition.xyz;
     
     // Point light contribution
     for (int i = 0; i < params.numPointLights; i++) {
@@ -75,7 +75,7 @@ fragment half4 basic_fragment(ProjectedVertex vert [[stage_in]],
         
         // specular highlights contribution
         float3 halfway = normalize(normalize(vertexToLight) + normalize(cameraToVertex));
-        color += powr(max(dot(float3(vert.worldNormal.xyz), halfway),0.0),32.0) * float3(reflectedColor) * specularCoeff * attenuation;
+        color += powr(fmax(dot(float3(vert.worldNormal.xyz), halfway),0.0),32.0) * float3(reflectedColor) * specularCoeff * attenuation;
     }
     
     // Directional light contribution
