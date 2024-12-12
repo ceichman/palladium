@@ -9,16 +9,13 @@ import Foundation
 import simd
 
 class Scene {
-    var objects: [ObjectTemplate:[ObjectInstance]]!
-    var directionalLights: [DirectionalLight]
-    var pointLights: [PointLight]
+    var objects: [ObjectTemplate:[ObjectInstance]] = [:]
+    var directionalLights: [DirectionalLight] = []
+    var pointLights: [PointLight]  = []
     var camera: Camera
     var preRenderUpdate: (CFTimeInterval) -> Void = {_ in }
     
-    init(directionalLights: [DirectionalLight], pointLights: [PointLight], camera: Camera) {
-        self.objects = [:]
-        self.directionalLights = directionalLights
-        self.pointLights = pointLights
+    init(camera: Camera) {
         self.camera = camera
     }
     
@@ -99,7 +96,9 @@ extension Scene {
         directionalLight.intensity = 0.8
         directionalLight.color = simd_float3(0, 1, 0.2)
         
-        let scene = Scene(directionalLights: [directionalLight], pointLights: [pointLight], camera: camera)
+        let scene = Scene(camera: camera)
+        scene.directionalLights = [directionalLight]
+        scene.pointLights = [pointLight]
         scene.preRenderUpdate = preRenderUpdate
         scene.objects = objects
         return scene

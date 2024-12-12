@@ -12,9 +12,9 @@
 		D5453ED32D0137FA00FA98F9 /* Scene.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5453ED22D0137FA00FA98F9 /* Scene.swift */; };
 		D5559C162CE2E23800019348 /* meshes in Resources */ = {isa = PBXBuildFile; fileRef = D5559C152CE2E23800019348 /* meshes */; };
 		D5694C1A2CF7D1A600E446B0 /* ObjectTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5694C192CF7D1A600E446B0 /* ObjectTemplate.swift */; };
+		D590E2712D0B84BB00B0069A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D590E2702D0B84BB00B0069A /* AppDelegate.swift */; };
 		D59191882D08E20D0034397F /* Material.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59191872D08E20D0034397F /* Material.swift */; };
 		D591918C2D09039E0034397F /* ObjectInstance.swift in Sources */ = {isa = PBXBuildFile; fileRef = D591918B2D09039E0034397F /* ObjectInstance.swift */; };
-		D5A512EC2CD18CD90050E219 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A512EB2CD18CD90050E219 /* AppDelegate.swift */; };
 		D5A512EE2CD18CD90050E219 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A512ED2CD18CD90050E219 /* SceneDelegate.swift */; };
 		D5A512F02CD18CD90050E219 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A512EF2CD18CD90050E219 /* ViewController.swift */; };
 		D5A512F32CD18CD90050E219 /* Base in Resources */ = {isa = PBXBuildFile; fileRef = D5A512F22CD18CD90050E219 /* Base */; };
@@ -57,10 +57,10 @@
 		D5453ED42D013F8200FA98F9 /* ShaderTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShaderTypes.h; sourceTree = "<group>"; };
 		D5559C152CE2E23800019348 /* meshes */ = {isa = PBXFileReference; lastKnownFileType = folder; path = meshes; sourceTree = "<group>"; };
 		D5694C192CF7D1A600E446B0 /* ObjectTemplate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectTemplate.swift; sourceTree = "<group>"; };
+		D590E2702D0B84BB00B0069A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		D59191872D08E20D0034397F /* Material.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Material.swift; sourceTree = "<group>"; };
 		D591918B2D09039E0034397F /* ObjectInstance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectInstance.swift; sourceTree = "<group>"; };
 		D5A512E82CD18CD90050E219 /* Palladium.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Palladium.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		D5A512EB2CD18CD90050E219 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		D5A512ED2CD18CD90050E219 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		D5A512EF2CD18CD90050E219 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		D5A512F22CD18CD90050E219 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -131,18 +131,18 @@
 			isa = PBXGroup;
 			children = (
 				D5559C152CE2E23800019348 /* meshes */,
-				D5AEB3812CD996D200C30959 /* OBJParser.swift */,
-				D5F50AB92CDAD12F00B27E0D /* LineReader.swift */,
-				D5A512EB2CD18CD90050E219 /* AppDelegate.swift */,
+				D590E2702D0B84BB00B0069A /* AppDelegate.swift */,
 				D5A512ED2CD18CD90050E219 /* SceneDelegate.swift */,
 				D5A512EF2CD18CD90050E219 /* ViewController.swift */,
-				D591918B2D09039E0034397F /* ObjectInstance.swift */,
-				D5B094A82CEE62470035A28C /* Camera.swift */,
+				D5AEB3812CD996D200C30959 /* OBJParser.swift */,
+				D5F50AB92CDAD12F00B27E0D /* LineReader.swift */,
 				D5B094AA2CEE628E0035A28C /* MatrixUtils.swift */,
 				D5AEB37B2CD939EE00C30959 /* GeometryTypes.swift */,
 				1B9CEDBA2CE2C4CE0087C604 /* Renderer.swift */,
+				D5B094A82CEE62470035A28C /* Camera.swift */,
 				D5453ED22D0137FA00FA98F9 /* Scene.swift */,
 				D5694C192CF7D1A600E446B0 /* ObjectTemplate.swift */,
+				D591918B2D09039E0034397F /* ObjectInstance.swift */,
 				D5453ECE2D01365E00FA98F9 /* Lights.swift */,
 				D5AEB3792CD9398600C30959 /* Mesh.swift */,
 				D59191872D08E20D0034397F /* Material.swift */,
@@ -313,7 +313,6 @@
 				D591918C2D09039E0034397F /* ObjectInstance.swift in Sources */,
 				D5AEB37A2CD9398600C30959 /* Mesh.swift in Sources */,
 				D5A512F02CD18CD90050E219 /* ViewController.swift in Sources */,
-				D5A512EC2CD18CD90050E219 /* AppDelegate.swift in Sources */,
 				1B9CEDBB2CE2C4CE0087C604 /* Renderer.swift in Sources */,
 				D5F71ECF2CF5196100DFE2AE /* PostProcessShaders.metal in Sources */,
 				D5453ED32D0137FA00FA98F9 /* Scene.swift in Sources */,
@@ -322,6 +321,7 @@
 				D5694C1A2CF7D1A600E446B0 /* ObjectTemplate.swift in Sources */,
 				D5A512EE2CD18CD90050E219 /* SceneDelegate.swift in Sources */,
 				D5B094AB2CEE628E0035A28C /* MatrixUtils.swift in Sources */,
+				D590E2712D0B84BB00B0069A /* AppDelegate.swift in Sources */,
 				D5AEB3822CD996D200C30959 /* OBJParser.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
