@@ -113,6 +113,6 @@ kernel void convolve_kernel(uint2 gid [[thread_position_in_grid]],
             colorAccumulator += inColor.read(pixelCoord) * weight.r;
         }
     }
-    outColor.write(half4(colorAccumulator.rgb, 1.0), gid);
-    // outColor.write(half4(colorAccumulator.rgb / weightAccumulator, 1.0), gid);
+    // outColor.write(half4(colorAccumulator.rgb, 1.0), gid);
+    outColor.write(half4(colorAccumulator.rgb / weightAccumulator, 1.0), gid);
 }

@@ -173,9 +173,6 @@ class Renderer: NSObject, MTKViewDelegate {
         encoder.setComputePipelineState(pipeline)
         encoder.setTexture(inTexture, index: 0)
         encoder.setTexture(outTexture, index: 1)
-        if let kern = kernel {
-            encoder.setTexture(kernel, index: 2)
-        }
         
         let threadsPerGrid = MTLSize(width: inTexture.width,
                                      height: inTexture.height,
