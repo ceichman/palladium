@@ -143,12 +143,12 @@ class Renderer: NSObject, MTKViewDelegate {
             renderEncoder.endEncoding()
             
             if options.boxBlur {
-                addPostProcessPass(pipeline: boxBlurPipelineState, commandBuffer: commandBuffer, inTexture: drawable.texture, outTexture: drawable.texture)
+                let kernel = ConvolutionKernels.boxBlur(size: 7, device: view.device!)
+                addConvolutionKernelPass(kernel: kernel, commandBuffer: commandBuffer, inTexture: drawable.texture, outTexture: drawable.texture)
             }
             
             if options.gaussianBlur {
                 let kernel = ConvolutionKernels.gaussianBlur(size: 7, device: view.device!)
-                // addPostProcessPass(pipeline: convolutionKernelShader, commandBuffer: commandBuffer, inTexture: drawable.texture, outTexture: drawable.texture, kernel: kernelTexture)
                 addConvolutionKernelPass(kernel: kernel, commandBuffer: commandBuffer, inTexture: drawable.texture, outTexture: drawable.texture)
             }
             

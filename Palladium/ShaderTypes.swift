@@ -46,16 +46,21 @@ struct FragmentParams {
 
 class ConvolutionKernels {
     
+    static func boxBlur(size: Int, device: MTLDevice) -> MTLTexture {
+        let weights = [Float](repeating: 1, count: size * size)
+        return makeTexture(weights: weights, size: size, device: device)
+    }
+    
     static func gaussianBlur(size: Int, device: MTLDevice) -> MTLTexture {
         // expect size is odd
         var weights = [Float]()
         let sigma = Float(size) / 2.0
-        let coeff = 1 / (2 * Float.pi * sigma * sigma)
+        // normalization happens in shader, so no coefficient needed :)
         for row in (0..<size) {
             for col in (0..<size) {
                 let numerator: Float = -1 * Float(row * row + col * col)
                 let denominator: Float = (2 * sigma * sigma)
-                weights.append(coeff * exp(numerator / denominator))
+                weights.append(exp(numerator / denominator))
             }
         }
         return makeTexture(weights: weights, size: size, device: device)
