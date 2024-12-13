@@ -26,9 +26,11 @@ class Renderer: NSObject, MTKViewDelegate {
     private var commandQueue: MTLCommandQueue!          // commands for the GPU
     private var defaultLibrary: MTLLibrary!
 
+    // has to be a var (not static let) because setupComputePipelineState requires access to view.device
     lazy private var invertColorPipelineState = setupComputePipelineState(shader: "invert_color")
     lazy private var gaussianBlurPipelineState = setupComputePipelineState(shader: "gaussian_blur")
     lazy private var boxBlurPipelineState = setupComputePipelineState(shader: "box_blur")
+    lazy private var convolutionKernelShader = setupComputePipelineState(shader: "convolve_kernel")
 
     private var currentFrameTime = CACurrentMediaTime()
 
@@ -145,8 +147,11 @@ class Renderer: NSObject, MTKViewDelegate {
             }
             
             if options.gaussianBlur {
-                addPostProcessPass(pipeline: gaussianBlurPipelineState, commandBuffer: commandBuffer, inTexture: drawable.texture, outTexture: drawable.texture)
+                let kernel = ConvolutionKernels.gaussianBlur(size: 7, device: view.device!)
+                // addPostProcessPass(pipeline: convolutionKernelShader, commandBuffer: commandBuffer, inTexture: drawable.texture, outTexture: drawable.texture, kernel: kernelTexture)
+                addConvolutionKernelPass(kernel: kernel, commandBuffer: commandBuffer, inTexture: drawable.texture, outTexture: drawable.texture)
             }
+            
             if options.invertColors {
                 addPostProcessPass(pipeline: invertColorPipelineState, commandBuffer: commandBuffer, inTexture: drawable.texture, outTexture: drawable.texture)
             }
@@ -161,14 +166,16 @@ class Renderer: NSObject, MTKViewDelegate {
         //
     }
     
-    func addPostProcessPass(pipeline: MTLComputePipelineState, commandBuffer: MTLCommandBuffer, inTexture: MTLTexture, outTexture: MTLTexture) {
+    func addPostProcessPass(pipeline: MTLComputePipelineState, commandBuffer: MTLCommandBuffer, inTexture: MTLTexture, outTexture: MTLTexture, kernel: MTLTexture? = nil) {
         
         guard let encoder = commandBuffer.makeComputeCommandEncoder() else { return }
         encoder.label = "Post-processing pass: \(pipeline.description)"
         encoder.setComputePipelineState(pipeline)
         encoder.setTexture(inTexture, index: 0)
         encoder.setTexture(outTexture, index: 1)
-        
+        if let kern = kernel {
+            encoder.setTexture(kernel, index: 2)
+        }
         
         let threadsPerGrid = MTLSize(width: inTexture.width,
                                      height: inTexture.height,
@@ -176,6 +183,31 @@ class Renderer: NSObject, MTKViewDelegate {
         
         let w = pipeline.threadExecutionWidth
         let h = pipeline.maxTotalThreadsPerThreadgroup / w
+        let threadsPerThreadgroup = MTLSizeMake(w, h, 1)
+        
+        let threadgroupsPerGrid = MTLSizeMake(threadsPerGrid.width / threadsPerThreadgroup.width,
+                                              threadsPerGrid.height / threadsPerThreadgroup.height,
+                                              1)
+
+        encoder.dispatchThreadgroups(threadgroupsPerGrid, threadsPerThreadgroup: threadsPerThreadgroup)
+        encoder.endEncoding()
+    }
+    
+    func addConvolutionKernelPass(kernel: MTLTexture, commandBuffer: MTLCommandBuffer, inTexture: MTLTexture, outTexture: MTLTexture) {
+        
+        guard let encoder = commandBuffer.makeComputeCommandEncoder() else { return }
+        encoder.label = "Convolution kernel post-processing pass"
+        encoder.setComputePipelineState(convolutionKernelShader)
+        encoder.setTexture(inTexture, index: 0)
+        encoder.setTexture(outTexture, index: 1)
+        encoder.setTexture(kernel, index: 2)
+        
+        let threadsPerGrid = MTLSize(width: inTexture.width,
+                                     height: inTexture.height,
+                                     depth: 1)
+        
+        let w = convolutionKernelShader.threadExecutionWidth
+        let h = convolutionKernelShader.maxTotalThreadsPerThreadgroup / w
         let threadsPerThreadgroup = MTLSizeMake(w, h, 1)
         
         let threadgroupsPerGrid = MTLSizeMake(threadsPerGrid.width / threadsPerThreadgroup.width,

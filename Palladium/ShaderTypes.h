@@ -59,7 +59,3 @@ struct FragmentParams {
     int numPointLights;
 };
 
-struct ConvolutionKernel {
-    int size;   // should be odd sqrt(sizeof(mat) / sizeof(float))
-    constant float *mat;
-};

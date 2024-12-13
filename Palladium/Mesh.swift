@@ -9,9 +9,6 @@ import Foundation
 import Metal
 import simd
 
-// Eventually this file should contain routines to import data from .obj files
-// and populate an ApplicationVertex array. Right now it's just a dumping ground for raw vertex data.
-
 class Mesh {
     var triangles: [Triangle]!
     var vertices: [ApplicationVertex]!

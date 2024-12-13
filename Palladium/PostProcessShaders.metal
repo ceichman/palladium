@@ -62,7 +62,7 @@ kernel void gaussian_blur(uint2 gid [[thread_position_in_grid]],
     uint maxWidth = inColor.get_width();
     uint maxHeight = inColor.get_height();
     
-    int size = 5;
+    int size = 21;
     int radius = size / 2;
  
     half4 accumColor(0, 0, 0, 0);
@@ -95,22 +95,24 @@ kernel void invert_color(uint2 gid [[thread_position_in_grid]],
 kernel void convolve_kernel(uint2 gid [[thread_position_in_grid]],
                        texture2d<half, access::read> inColor [[texture(0)]],
                        texture2d<half, access::write> outColor [[texture(1)]],
-                       constant ConvolutionKernel &kern [[ buffer(0) ]])
+                       texture2d<float, access::read> kern [[ texture(2) ]])
 {
     // Kernel is full of float weights
+    int size = kern.get_width();
+    int radius = size / 2;
     float weightAccumulator = 0.0;
     half4 colorAccumulator = half4(0, 0, 0, 0);
-    for (int row = 0; row < kern.size; ++row) {
-        for (int col = 0; col < kern.size; ++col) {
-            int kernelIndex = row * kern.size + col;
-            int radius = kern.size / 2;
+    for (int row = 0; row < size; ++row) {
+        for (int col = 0; col < size; ++col) {
             uint2 pixelOffset = uint2(row - radius, col - radius);
             uint2 pixelCoord = gid + pixelOffset;
-            if (!check_bounds(pixelCoord, inColor.get_width(), inColor.get_height())) continue;
-            float weight = kern.mat[kernelIndex];
-            weightAccumulator += weight;
-            colorAccumulator += inColor.read(pixelCoord) * weight;
+            // if (!check_bounds(pixelCoord, inColor.get_width(), inColor.get_height())) continue;
+            uint2 kernelCoord = uint2(row, col);
+            float4 weight = kern.read(kernelCoord).rrrr;
+            weightAccumulator += weight.r;
+            colorAccumulator += inColor.read(pixelCoord) * weight.r;
         }
     }
-    outColor.write(half4(colorAccumulator.rgb / weightAccumulator, 1.0), gid);
+    outColor.write(half4(colorAccumulator.rgb, 1.0), gid);
+    // outColor.write(half4(colorAccumulator.rgb / weightAccumulator, 1.0), gid);
 }

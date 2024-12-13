@@ -53,6 +53,9 @@ struct Vertex {
     }
 }
 
+// should this be a class instead, so that vertices shared by multiple
+// triangles aren't copied several times?
+// will that cause problems when data is passed to GPU?
 struct Triangle {
     var a: ApplicationVertex
     var b: ApplicationVertex
