@@ -70,7 +70,7 @@ class Mesh {
         
         parser.onVertex = { (x, y, z, w, r, g, b) in
             var color = simd_float4.one
-            if let red = r {
+            if r != nil {
                 color = simd_float4(r!, g!, b!, 1.0)
             }
             vertices.append(ApplicationVertex(

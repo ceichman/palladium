@@ -13,32 +13,8 @@ struct ProjectionParams {
     var fovRadians: Float
     var nearZ: Float
     var farZ: Float
-    // temp
-    // var projectionMatrix: simd_float4x4
 }
 
-struct ViewProjection {
-    var view: simd_float4x4
-    var projection: simd_float4x4
-}
-
-struct ModelTransformation {
-    var translation: simd_float4x4
-    var rotation: simd_float4x4
-    var scaling: simd_float4x4
-}
-
-struct FragmentParams {
-    var cameraPosition: simd_float3
-    var specularCoefficient: Float
-    var numDirectionalLights: CInt
-    var numPointLights: CInt
-}
-
-struct ConvolutionKernel {
-    var size: CInt
-    var mat: [Float]
-}
 
 // Used to collect info before normals are calculated. Defined as a class
 // to take advantage of pass-by-reference so that multiple Triangle primitives can

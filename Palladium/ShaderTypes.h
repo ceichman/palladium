@@ -60,6 +60,6 @@ struct FragmentParams {
 };
 
 struct ConvolutionKernel {
-    int size;   // should be odd sqrt(sizeof(mat))
+    int size;   // should be odd sqrt(sizeof(mat) / sizeof(float))
     constant float *mat;
 };
