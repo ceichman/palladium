@@ -26,8 +26,8 @@ class ViewController: UIViewController {
         let device = MTLCreateSystemDefaultDevice()!
         metalView.device = device
         
-        scene = Scene.defaultScene
-        renderer = Renderer(view: metalView, scene: scene)
+        renderer = Renderer(view: metalView)
+        self.scene = renderer.scene
         
         /// Set up device and metalView
         metalView.delegate = renderer

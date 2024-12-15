@@ -18,7 +18,7 @@ struct RendererOptions {
 class Renderer: NSObject, MTKViewDelegate {
     
     var view: MTKView
-    var scene: Scene!
+    var scene: Scene
     var options: RendererOptions
     private var vertexBuffer: MTLBuffer!                // buffer used to store vertex data
     private var pipelineState: MTLRenderPipelineState!  // how to process vertex and fragment shaders during rendering
@@ -35,11 +35,11 @@ class Renderer: NSObject, MTKViewDelegate {
     private var currentFrameTime = CACurrentMediaTime()
 
     /// Initializes the Renderer object and calls setup() routine
-    init(view: MTKView, scene: Scene) {
+    init(view: MTKView, scene: Scene = Scene.defaultScene) {
         self.view = view
         self.options = RendererOptions(fovDegrees: 40.0, boxBlur: false, gaussianBlur: false, invertColors: false, texturing: true, wireframe: false, specularHighlights: true)
-        super.init()
         self.scene = scene
+        super.init()
         setup()
     }
     
