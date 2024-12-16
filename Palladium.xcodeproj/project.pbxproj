@@ -30,6 +30,7 @@
 		D5B094AB2CEE628E0035A28C /* MatrixUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5B094AA2CEE628E0035A28C /* MatrixUtils.swift */; };
 		D5B75BEA2D0CD5820009C7A9 /* ShaderTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5B75BE92D0CD5820009C7A9 /* ShaderTypes.swift */; };
 		D5B75BEC2D0CF8D50009C7A9 /* ConvolutionKernels.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5B75BEB2D0CF8D50009C7A9 /* ConvolutionKernels.swift */; };
+		D5C573A42D0FA19E0025736D /* OptionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5C573A32D0FA19E0025736D /* OptionsView.swift */; };
 		D5F50ABA2CDAD12F00B27E0D /* LineReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5F50AB92CDAD12F00B27E0D /* LineReader.swift */; };
 		D5F71ECF2CF5196100DFE2AE /* PostProcessShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = D5F71ECE2CF5196100DFE2AE /* PostProcessShaders.metal */; };
 /* End PBXBuildFile section */
@@ -80,6 +81,7 @@
 		D5B094AA2CEE628E0035A28C /* MatrixUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatrixUtils.swift; sourceTree = "<group>"; };
 		D5B75BE92D0CD5820009C7A9 /* ShaderTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShaderTypes.swift; sourceTree = "<group>"; };
 		D5B75BEB2D0CF8D50009C7A9 /* ConvolutionKernels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConvolutionKernels.swift; sourceTree = "<group>"; };
+		D5C573A32D0FA19E0025736D /* OptionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionsView.swift; sourceTree = "<group>"; };
 		D5F50AB92CDAD12F00B27E0D /* LineReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineReader.swift; sourceTree = "<group>"; };
 		D5F71ECE2CF5196100DFE2AE /* PostProcessShaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = PostProcessShaders.metal; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -136,6 +138,7 @@
 				D590E2702D0B84BB00B0069A /* AppDelegate.swift */,
 				D5A512ED2CD18CD90050E219 /* SceneDelegate.swift */,
 				D5A512EF2CD18CD90050E219 /* ViewController.swift */,
+				D5C573A32D0FA19E0025736D /* OptionsView.swift */,
 				D5AEB3812CD996D200C30959 /* OBJParser.swift */,
 				D5F50AB92CDAD12F00B27E0D /* LineReader.swift */,
 				D5B094AA2CEE628E0035A28C /* MatrixUtils.swift */,
@@ -321,6 +324,7 @@
 				D5453ED32D0137FA00FA98F9 /* Scene.swift in Sources */,
 				D59191882D08E20D0034397F /* Material.swift in Sources */,
 				D5AEB37C2CD939EE00C30959 /* GeometryTypes.swift in Sources */,
+				D5C573A42D0FA19E0025736D /* OptionsView.swift in Sources */,
 				D5694C1A2CF7D1A600E446B0 /* ObjectTemplate.swift in Sources */,
 				D5A512EE2CD18CD90050E219 /* SceneDelegate.swift in Sources */,
 				D5B094AB2CEE628E0035A28C /* MatrixUtils.swift in Sources */,

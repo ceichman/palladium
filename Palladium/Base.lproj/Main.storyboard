@@ -182,17 +182,47 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gdK-0i-BLa">
-                                <rect key="frame" x="533" y="1" width="319" height="392"/>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nfI-8l-ny5" userLabel="Show Options">
+                                <rect key="frame" x="500" y="16" width="51" height="35"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="tinted" image="gearshape.fill" catalog="system"/>
+                                <connections>
+                                    <action selector="shouldShowOptions:" destination="BYZ-38-t0r" eventType="touchUpInside" id="dr6-bo-lbR"/>
+                                </connections>
+                            </button>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="gdK-0i-BLa" userLabel="Options View" customClass="OptionsView" customModule="Palladium" customModuleProvider="target">
+                                <rect key="frame" x="852" y="0.0" width="319" height="393"/>
+                                <subviews>
+                                    <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="bnQ-vE-r6k" userLabel="Top Bar">
+                                        <rect key="frame" x="0.0" y="0.0" width="403" height="59"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <subviews>
+                                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0nJ-4m-YuM" userLabel="Close Options">
+                                                <rect key="frame" x="9" y="12" width="47" height="35"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                <state key="normal" title="Button"/>
+                                                <buttonConfiguration key="configuration" style="plain" image="xmark" catalog="system"/>
+                                                <connections>
+                                                    <action selector="shouldCloseOptions:" destination="BYZ-38-t0r" eventType="touchUpInside" id="urF-dR-1ff"/>
+                                                </connections>
+                                            </button>
+                                        </subviews>
+                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                    </view>
+                                </subviews>
                                 <color key="backgroundColor" systemColor="systemGreenColor"/>
                             </view>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
+                            <constraint firstItem="gdK-0i-BLa" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="7ip-z3-ApS"/>
+                            <constraint firstItem="gdK-0i-BLa" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="trailing" id="Cyo-J2-V3F"/>
                             <constraint firstItem="Nw4-FQ-qWd" firstAttribute="bottom" secondItem="8bC-Xf-vdC" secondAttribute="bottom" id="LTh-aP-Lj4"/>
                             <constraint firstItem="Nw4-FQ-qWd" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="MY8-CX-gdm"/>
+                            <constraint firstItem="gdK-0i-BLa" firstAttribute="bottom" secondItem="8bC-Xf-vdC" secondAttribute="bottom" id="YQ5-CX-ZDW"/>
+                            <constraint firstItem="gdK-0i-BLa" firstAttribute="width" secondItem="8bC-Xf-vdC" secondAttribute="width" multiplier="0.374413" id="efB-pv-d79"/>
                             <constraint firstItem="Nw4-FQ-qWd" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="gMP-uE-p3S"/>
                             <constraint firstItem="Nw4-FQ-qWd" firstAttribute="trailing" secondItem="8bC-Xf-vdC" secondAttribute="trailing" id="uJM-SO-EoW"/>
                         </constraints>
@@ -201,6 +231,7 @@
                         <outlet property="boxBlurSwitch" destination="cPb-Yn-X6O" id="LSJ-wh-84c"/>
                         <outlet property="gaussianBlurSwitch" destination="ETW-nT-DTu" id="cUZ-bh-uty"/>
                         <outlet property="metalView" destination="Nw4-FQ-qWd" id="DOv-wN-u0y"/>
+                        <outlet property="optionsView" destination="gdK-0i-BLa" id="W8G-oF-SGh"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
@@ -213,6 +244,8 @@
         <image name="arrowshape.left.circle.fill" catalog="system" width="128" height="123"/>
         <image name="arrowshape.right.circle.fill" catalog="system" width="128" height="123"/>
         <image name="arrowshape.up.circle.fill" catalog="system" width="128" height="123"/>
+        <image name="gearshape.fill" catalog="system" width="128" height="123"/>
+        <image name="xmark" catalog="system" width="128" height="113"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

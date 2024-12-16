@@ -19,6 +19,7 @@ class ViewController: UIViewController {
     @IBOutlet weak var metalView: MTKView!
     @IBOutlet weak var boxBlurSwitch: UISwitch!
     @IBOutlet weak var gaussianBlurSwitch: UISwitch!
+    @IBOutlet weak var optionsView: OptionsView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -39,6 +40,14 @@ class ViewController: UIViewController {
         
         let pinchRecognizer = UIPinchGestureRecognizer(target: self, action: #selector(didPinch))
         metalView.addGestureRecognizer(pinchRecognizer)
+    }
+    
+    @IBAction func shouldShowOptions(_ sender: Any) {
+        optionsView.flyIn()
+    }
+    
+    @IBAction func shouldCloseOptions(_ sender: Any) {
+        optionsView.flyOut()
     }
     
     @IBAction func upButtonPressed(_ sender: UIButton) {
