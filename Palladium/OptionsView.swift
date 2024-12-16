@@ -10,7 +10,7 @@ import UIKit
 
 class OptionsView: UIView {
     
-    static let duration = 0.5;
+    static let duration = 0.3;
     
     func setup() {
         let blurEffect = UIBlurEffect(style: UIBlurEffect.Style.prominent)

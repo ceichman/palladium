@@ -182,8 +182,9 @@ class Renderer: NSObject, MTKViewDelegate {
         let h = pipeline.maxTotalThreadsPerThreadgroup / w
         let threadsPerThreadgroup = MTLSizeMake(w, h, 1)
         
-        let threadgroupsPerGrid = MTLSizeMake(threadsPerGrid.width / threadsPerThreadgroup.width,
-                                              threadsPerGrid.height / threadsPerThreadgroup.height,
+        // add one for rounding error
+        let threadgroupsPerGrid = MTLSizeMake(threadsPerGrid.width / threadsPerThreadgroup.width + 1,
+                                              threadsPerGrid.height / threadsPerThreadgroup.height + 1,
                                               1)
 
         encoder.dispatchThreadgroups(threadgroupsPerGrid, threadsPerThreadgroup: threadsPerThreadgroup)
@@ -207,8 +208,9 @@ class Renderer: NSObject, MTKViewDelegate {
         let h = convolutionKernelShader.maxTotalThreadsPerThreadgroup / w
         let threadsPerThreadgroup = MTLSizeMake(w, h, 1)
         
-        let threadgroupsPerGrid = MTLSizeMake(threadsPerGrid.width / threadsPerThreadgroup.width,
-                                              threadsPerGrid.height / threadsPerThreadgroup.height,
+        // add one for rounding error
+        let threadgroupsPerGrid = MTLSizeMake(threadsPerGrid.width / threadsPerThreadgroup.width + 1,
+                                              threadsPerGrid.height / threadsPerThreadgroup.height + 1,
                                               1)
 
         encoder.dispatchThreadgroups(threadgroupsPerGrid, threadsPerThreadgroup: threadsPerThreadgroup)

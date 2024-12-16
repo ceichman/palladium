@@ -334,8 +334,8 @@
             filePath = "Palladium/Renderer.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "189"
-            endingLineNumber = "189"
+            startingLineNumber = "190"
+            endingLineNumber = "190"
             landmarkName = "addPostProcessPass(pipeline:commandBuffer:inTexture:outTexture:kernel:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -561,6 +561,22 @@
             startingLineNumber = "103"
             endingLineNumber = "103"
             landmarkName = "fromOBJ(url:calculateOrigin:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "7D32F957-844C-4FB7-A8DD-870824F04DEA"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Palladium/Renderer.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "177"
+            endingLineNumber = "177"
+            landmarkName = "addPostProcessPass(pipeline:commandBuffer:inTexture:outTexture:kernel:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
