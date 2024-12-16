@@ -12,6 +12,15 @@ class OptionsView: UIView {
     
     static let duration = 0.5;
     
+    func setup() {
+        let blurEffect = UIBlurEffect(style: UIBlurEffect.Style.prominent)
+        let blurEffectView = UIVisualEffectView(effect: blurEffect)
+        blurEffectView.frame = self.bounds
+        blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        self.addSubview(blurEffectView)
+        self.sendSubviewToBack(blurEffectView)
+    }
+        
     func flyIn() {
         UIView.animate(withDuration: Self.duration, animations: {
             let moveLeft = CGAffineTransform(translationX: -(self.bounds.width), y: 0)

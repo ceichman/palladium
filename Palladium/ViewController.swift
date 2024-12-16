@@ -23,6 +23,7 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        optionsView.setup()
         
         let device = MTLCreateSystemDefaultDevice()!
         metalView.device = device
