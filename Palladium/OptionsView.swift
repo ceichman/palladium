@@ -72,16 +72,20 @@ class OptionsView: UIView, OptionsProvider, UITableViewDataSource, UITableViewDe
     
     @objc func switchChanged(_ sender: OptionSwitch!) {
         options[sender.key] = .bool(sender.isOn)
-        if sender.key == "boxBlur" && options["gaussianBlur"]!.asBool()! {
+        
+        // prevent both blurs from being applied at the same time
+        // comes with a(n only slightly annoying) fade reload animation
+        if sender.key == "boxBlur" && options.getBool("gaussianBlur") {
             options["gaussianBlur"] = .bool(false)
             let gaussianIndex = options.keys.sorted().firstIndex(of: "gaussianBlur")!
             tableView.reloadRows(at: [IndexPath(row: gaussianIndex, section: 0)], with: .fade)
         }
-        if sender.key == "gaussianBlur" && options["boxBlur"]!.asBool()! {
+        if sender.key == "gaussianBlur" && options.getBool("boxBlur") {
             options["boxBlur"] = .bool(false)
             let boxIndex = options.keys.sorted().firstIndex(of: "boxBlur")!
             tableView.reloadRows(at: [IndexPath(row: boxIndex, section: 0)], with: .fade)
         }
+        
     }
     
     @objc func sliderChanged(_ sender: OptionSlider!) {

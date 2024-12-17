@@ -91,7 +91,7 @@ class Renderer: NSObject, MTKViewDelegate {
             guard let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderPassDescriptor) else { return }
             /// Common render encoder configuration
             renderEncoder.label = "Geometry pass"
-            let shouldWireframe = options["wireframe"]!.asBool()!
+            let shouldWireframe = options.getBool("wireframe")
             renderEncoder.setTriangleFillMode(shouldWireframe ? .lines : .fill)
             renderEncoder.setCullMode(.back)
             renderEncoder.setFrontFacing(.clockwise)
@@ -107,7 +107,7 @@ class Renderer: NSObject, MTKViewDelegate {
                     models.append(instance.modelTransformation())
                 }
                 
-                let shouldSpecular = options["specularHighlights"]!.asBool()!
+                let shouldSpecular = options.getBool("specularHighlights")
                 var fragParams = FragmentParams(
                     cameraPosition: scene.camera.position,
                     specularCoefficient: shouldSpecular ? template.material.specularCoefficient : 0.0,
@@ -118,7 +118,7 @@ class Renderer: NSObject, MTKViewDelegate {
                 renderEncoder.setVertexBuffer(template.vertexBuffer, offset: 0, index: 0)
                 renderEncoder.setVertexBytes(&viewProjection, length: MemoryLayout.size(ofValue: viewProjection), index: 1)
                 renderEncoder.setVertexBytes(models, length: MemoryLayout<ModelTransformation>.stride * models.count, index: 2)
-                let shouldTexture = options["texturing"]!.asBool()!
+                let shouldTexture = options.getBool("texturing")
                 renderEncoder.setFragmentTexture(shouldTexture ? template.material.colorTexture : nil, index: 0)
                 renderEncoder.setFragmentBytes(&fragParams, length: MemoryLayout<FragmentParams>.stride, index: 0)
                 renderEncoder.setFragmentBytes(scene.directionalLights, length: MemoryLayout<DirectionalLight>.stride * Int(fragParams.numDirectionalLights), index: 1)
@@ -130,17 +130,17 @@ class Renderer: NSObject, MTKViewDelegate {
             }
             renderEncoder.endEncoding()
             
-            if options["boxBlur"]!.asBool()! {
+            if options.getBool("boxBlur") {
                 let kernel = ConvolutionKernels.boxBlur(size: 7, device: view.device!)
                 addConvolutionKernelPass(kernel: kernel, commandBuffer: commandBuffer, inTexture: drawable.texture, outTexture: drawable.texture)
             }
             
-            if options["gaussianBlur"]!.asBool()! {
+            if options.getBool("gaussianBlur") {
                 let kernel = ConvolutionKernels.gaussianBlur(size: 7, device: view.device!)
                 addConvolutionKernelPass(kernel: kernel, commandBuffer: commandBuffer, inTexture: drawable.texture, outTexture: drawable.texture)
             }
             
-            if options["invertColors"]!.asBool()! {
+            if options.getBool("invertColors") {
                 addPostProcessPass(pipeline: invertColorPipelineState, commandBuffer: commandBuffer, inTexture: drawable.texture, outTexture: drawable.texture)
             }
             

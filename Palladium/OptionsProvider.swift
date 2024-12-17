@@ -19,6 +19,14 @@ extension RendererOptions {
         "specularHighlights": .bool(true),
         "floatOption": .float(0.5),
     ]
+    
+    func getBool(_ index: String) -> Bool {
+        return self[index]!.asBool()!
+    }
+    
+    func getFloat(_ index: String) -> Float {
+        return self[index]!.asFloat()!
+    }
 }
 
 protocol OptionsProvider {
