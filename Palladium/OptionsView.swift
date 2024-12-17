@@ -20,7 +20,7 @@ class OptionsView: UIView, OptionsProvider {
     }
     
     func setup() {
-        let blurEffect = UIBlurEffect(style: UIBlurEffect.Style.prominent)
+        let blurEffect = UIBlurEffect(style: UIBlurEffect.Style.extraLight)
         let blurEffectView = UIVisualEffectView(effect: blurEffect)
         blurEffectView.frame = self.bounds
         blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]

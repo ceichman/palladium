@@ -86,12 +86,7 @@ class Renderer: NSObject, MTKViewDelegate {
             
             /// Projection and transformation parameters
             let aspectRatio: Float = Float(view.bounds.height / view.bounds.width)
-            let projectionParams = ProjectionParams(
-                aspectRatio: aspectRatio,
-                nearZ: 0.3,
-                farZ: 1000.0
-            )
-            var viewProjection = scene.camera.viewProjection(projectionParams)
+            var viewProjection = scene.camera.viewProjection(aspectRatio: aspectRatio)
             
             guard let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderPassDescriptor) else { return }
             /// Common render encoder configuration

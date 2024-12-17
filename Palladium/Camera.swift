@@ -61,9 +61,14 @@ class Camera {
         return mat.inverse
     }
     
-    func viewProjection(_ params: ProjectionParams) -> ViewProjection {
-        // TODO
-        let proj = projection_matrix(aspectRatio: params.aspectRatio, fovRadians: self.fovRadians, nearZ: params.nearZ, farZ: params.farZ)
+    func viewProjection(aspectRatio: Float) -> ViewProjection {
+        let nearZ: Float = 0.3
+        let farZ: Float = 1000.0
+        let proj = projection_matrix(aspectRatio: aspectRatio,
+                                     fovRadians: self.fovRadians,
+                                     nearZ: nearZ,
+                                     farZ: farZ
+        )
         return ViewProjection(view: self.getViewMatrix(), projection: proj)
     }
 }

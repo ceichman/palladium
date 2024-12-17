@@ -8,13 +8,6 @@
 import Foundation
 import simd
 
-struct ProjectionParams {
-    var aspectRatio: Float
-    var nearZ: Float
-    var farZ: Float
-}
-
-
 // Used to collect info before normals are calculated. Defined as a class
 // to take advantage of pass-by-reference so that multiple Triangle primitives can
 // reuse the same underlying vertex during normal calculation.
