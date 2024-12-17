@@ -71,7 +71,7 @@ class OptionCellFloat: UITableViewCell, OptionCell {
     }()
     
     var slider: OptionSlider = {
-        let slider = OptionSlider(frame: .zero)
+        let slider = OptionSlider()
         slider.minimumValue = 0
         slider.maximumValue = 1
         return slider
@@ -82,6 +82,7 @@ class OptionCellFloat: UITableViewCell, OptionCell {
         self.selectionStyle = .none
         self.isUserInteractionEnabled = true
         label.frame = self.bounds.insetBy(dx: 15, dy: 0)
+        slider.frame = self.bounds.insetBy(dx: 100, dy: 0)
         self.contentView.addSubview(label)
         self.accessoryView = slider
     }

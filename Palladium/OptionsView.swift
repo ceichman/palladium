@@ -12,15 +12,7 @@ class OptionsView: UIView, OptionsProvider, UITableViewDataSource, UITableViewDe
     
     static let animationDuration = 0.3;
     
-    // var options = RendererOptions()
-    var options: [String:OptionType] = [
-        "boxBlur": .bool(false),
-        "gaussianBlur": .bool(false),
-        "invertColors": .bool(false),
-        "texturing": .bool(true),
-        "wireframe": .bool(false),
-        "specularHighlights": .bool(true)
-    ]
+    var options = RendererOptions.defaults
     var blurView: UIVisualEffectView = {
         let blurEffect = UIBlurEffect(style: UIBlurEffect.Style.extraLight)
         let blurEffectView = UIVisualEffectView(effect: blurEffect)
@@ -33,6 +25,7 @@ class OptionsView: UIView, OptionsProvider, UITableViewDataSource, UITableViewDe
         tableView.isOpaque = false
         tableView.backgroundView = nil
         tableView.register(OptionCellBool.self, forCellReuseIdentifier: OptionCellBool.identifier)
+        tableView.register(OptionCellFloat.self, forCellReuseIdentifier: OptionCellFloat.identifier)
         return tableView
     }()
     
@@ -98,14 +91,7 @@ class OptionsView: UIView, OptionsProvider, UITableViewDataSource, UITableViewDe
     }
     
     func getOptions() -> RendererOptions {
-        let opts = RendererOptions()
-        opts.boxBlur = options["boxBlur"]!.asBool()!
-        opts.gaussianBlur = options["gaussianBlur"]!.asBool()!
-        opts.invertColors = options["invertColors"]!.asBool()!
-        opts.texturing = options["texturing"]!.asBool()!
-        opts.wireframe = options["wireframe"]!.asBool()!
-        opts.specularHighlights = options["specularHighlights"]!.asBool()!
-        return opts
+        return self.options
     }
     
 }

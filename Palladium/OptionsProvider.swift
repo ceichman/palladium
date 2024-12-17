@@ -7,16 +7,22 @@
 
 import Foundation
 
+typealias RendererOptions = [String:OptionType]
 
-/// All options that a renderer needs.
-class RendererOptions {
-    var boxBlur: Bool = false
-    var gaussianBlur: Bool = false
-    var invertColors: Bool = false
-    var texturing: Bool = true
-    var wireframe: Bool = false
-    var specularHighlights: Bool = true
-    
+extension RendererOptions {
+    static let defaults: RendererOptions = [
+        "boxBlur": .bool(false),
+        "gaussianBlur": .bool(false),
+        "invertColors": .bool(false),
+        "texturing": .bool(true),
+        "wireframe": .bool(false),
+        "specularHighlights": .bool(true),
+        "floatOption": .float(0.5),
+    ]
+}
+
+protocol OptionsProvider {
+    func getOptions() -> RendererOptions
 }
 
 enum OptionType {
@@ -41,8 +47,4 @@ enum OptionType {
         }
     }
     
-}
-
-protocol OptionsProvider {
-    func getOptions() -> RendererOptions
 }
