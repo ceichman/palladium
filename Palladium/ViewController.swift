@@ -106,35 +106,35 @@ class ViewController: UIViewController {
     }
     
     @IBAction func wireframeSwitchDidChange(_ sender: UISwitch) {
-        optionsView.options.wireframe = sender.isOn
+        optionsView.options["wireframe"] = sender.isOn
     }
     
     @IBAction func boxBlurSwitchDidChange(_ sender: UISwitch) {
-        optionsView.options.boxBlur = sender.isOn
+        optionsView.options["boxBlur"] = sender.isOn
         if sender.isOn {
             gaussianBlurSwitch.setOn(false, animated: true)
-            optionsView.options.gaussianBlur = false
+            optionsView.options["gaussianBlur"] = false
         }
     }
     
     @IBAction func gaussianBlurSwitchDidChange(_ sender: UISwitch) {
-        optionsView.options.gaussianBlur = sender.isOn
+        optionsView.options["gaussianBlur"] = sender.isOn
         if sender.isOn {
             boxBlurSwitch.setOn(false, animated: true)
-            optionsView.options.boxBlur = false
+            optionsView.options["boxBlur"] = false
         }
     }
     
     @IBAction func invertColorsSwitchDidChange(_ sender: UISwitch) {
-        optionsView.options.invertColors = sender.isOn
+        optionsView.options["invertColors"] = sender.isOn
     }
     
     @IBAction func texturingSwitchDidChange(_ sender: UISwitch) {
-        optionsView.options.texturing = sender.isOn
+        optionsView.options["texturing"] = sender.isOn
     }
     
     @IBAction func specularHighlightsSwitchDidChange(_ sender: UISwitch) {
-        optionsView.options.specularHighlights = sender.isOn
+        optionsView.options["specularHighlights"] = sender.isOn
     }
     
 }

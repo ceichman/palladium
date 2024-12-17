@@ -9,7 +9,7 @@ import Foundation
 
 
 /// All options that a renderer needs.
-struct RendererOptions {
+class RendererOptions {
     var boxBlur: Bool = false
     var gaussianBlur: Bool = false
     var invertColors: Bool = false
