@@ -19,6 +19,30 @@ class RendererOptions {
     
 }
 
+enum OptionType {
+    case bool(Bool)
+    case float(Float)
+    
+    func forceBool() -> Bool? {
+        switch self {
+        case .bool(let bool):
+            return bool
+        default:
+            return nil
+        }
+    }
+    
+    func forceFloat() -> Float? {
+        switch self {
+        case .float(let float):
+            return float
+        default:
+            return nil
+        }
+    }
+    
+}
+
 protocol OptionsProvider {
     func getOptions() -> RendererOptions
 }

@@ -13,13 +13,13 @@ class OptionsView: UIView, OptionsProvider, UITableViewDataSource, UITableViewDe
     static let animationDuration = 0.3;
     
     // var options = RendererOptions()
-    var options: [String:Bool] = [
-        "boxBlur": false,
-        "gaussianBlur": false,
-        "invertColors": false,
-        "texturing": true,
-        "wireframe": false,
-        "specularHighlights": true
+    var options: [String:OptionType] = [
+        "boxBlur": .bool(false),
+        "gaussianBlur": .bool(false),
+        "invertColors": .bool(false),
+        "texturing": .bool(true),
+        "wireframe": .bool(false),
+        "specularHighlights": .bool(true)
     ]
     var blurView: UIVisualEffectView = {
         let blurEffect = UIBlurEffect(style: UIBlurEffect.Style.extraLight)
@@ -32,7 +32,7 @@ class OptionsView: UIView, OptionsProvider, UITableViewDataSource, UITableViewDe
         let tableView = UITableView()
         tableView.isOpaque = false
         tableView.backgroundView = nil
-        tableView.register(OptionCell.self, forCellReuseIdentifier: OptionCell.identifier)
+        tableView.register(OptionCellBool.self, forCellReuseIdentifier: OptionCellBool.identifier)
         return tableView
     }()
     
@@ -57,10 +57,10 @@ class OptionsView: UIView, OptionsProvider, UITableViewDataSource, UITableViewDe
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: OptionCell.identifier, for: indexPath) as! OptionCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: OptionCellBool.identifier, for: indexPath) as! OptionCellBool
         let keys: [String] = options.keys.sorted()
         let key = keys[indexPath.row]
-        cell.configure(with: key, enabled: options[key]!)
+        cell.configure(with: key, state: options[key]!)
         cell.toggle.addTarget(self, action: #selector(switchChanged), for: .valueChanged)
         return cell
     }
@@ -70,7 +70,7 @@ class OptionsView: UIView, OptionsProvider, UITableViewDataSource, UITableViewDe
     }
     
     @objc func switchChanged(_ sender: OptionSwitch!) {
-        options[sender.key] = sender.isOn
+        options[sender.key] = .bool(sender.isOn)
     }
     
     func flyIn() {
@@ -91,53 +91,17 @@ class OptionsView: UIView, OptionsProvider, UITableViewDataSource, UITableViewDe
     
     func getOptions() -> RendererOptions {
         let opts = RendererOptions()
-        opts.boxBlur = options["boxBlur"]!
-        opts.gaussianBlur = options["gaussianBlur"]!
-        opts.invertColors = options["invertColors"]!
-        opts.texturing = options["texturing"]!
-        opts.wireframe = options["wireframe"]!
-        opts.specularHighlights = options["specularHighlights"]!
+        opts.boxBlur = options["boxBlur"]!.forceBool()!
+        opts.gaussianBlur = options["gaussianBlur"]!.forceBool()!
+        opts.invertColors = options["invertColors"]!.forceBool()!
+        opts.texturing = options["texturing"]!.forceBool()!
+        opts.wireframe = options["wireframe"]!.forceBool()!
+        opts.specularHighlights = options["specularHighlights"]!.forceBool()!
         return opts
     }
     
 }
 
-class OptionCell: UITableViewCell {
-    
-    static let identifier = "OptionCell"
-    
-    var label: UILabel = {
-        let label = UILabel()
-        label.textColor = .label
-        label.isUserInteractionEnabled = false
-        return label
-    }()
-    
-    var toggle: OptionSwitch = {
-        let toggle = OptionSwitch(frame: .zero)
-        toggle.isUserInteractionEnabled = true
-        // setup switch
-        return toggle
-    }()
-    
-    func setup() {
-        self.backgroundColor = .clear
-        self.selectionStyle = .none
-        self.isUserInteractionEnabled = true
-        label.frame = self.bounds.insetBy(dx: 15, dy: 0)
-        self.contentView.addSubview(label)
-        self.accessoryView = toggle
-    }
-    
-    func configure(with optionName: String, enabled: Bool) {
-        // convert camel case to display string
-        label.text = optionName.replacingOccurrences(of: "([A-Z])", with: " $1", options: .regularExpression).capitalized
-        toggle.key = optionName
-        toggle.isOn = enabled
-        setup()
-    }
-    
-}
 
 class OptionSwitch: UISwitch {
     var key: String = ""

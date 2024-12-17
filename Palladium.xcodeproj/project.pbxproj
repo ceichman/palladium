@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		1B9CEDBB2CE2C4CE0087C604 /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B9CEDBA2CE2C4CE0087C604 /* Renderer.swift */; };
 		D53B50342D11F1A700C91678 /* OptionsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D53B50332D11F1A700C91678 /* OptionsProvider.swift */; };
+		D53B50362D1229FD00C91678 /* OptionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D53B50352D1229FD00C91678 /* OptionCell.swift */; };
 		D5453ED32D0137FA00FA98F9 /* Scene.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5453ED22D0137FA00FA98F9 /* Scene.swift */; };
 		D5559C162CE2E23800019348 /* meshes in Resources */ = {isa = PBXBuildFile; fileRef = D5559C152CE2E23800019348 /* meshes */; };
 		D5694C1A2CF7D1A600E446B0 /* ObjectTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5694C192CF7D1A600E446B0 /* ObjectTemplate.swift */; };
@@ -56,6 +57,7 @@
 /* Begin PBXFileReference section */
 		1B9CEDBA2CE2C4CE0087C604 /* Renderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Renderer.swift; sourceTree = "<group>"; };
 		D53B50332D11F1A700C91678 /* OptionsProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionsProvider.swift; sourceTree = "<group>"; };
+		D53B50352D1229FD00C91678 /* OptionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionCell.swift; sourceTree = "<group>"; };
 		D5453ED22D0137FA00FA98F9 /* Scene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Scene.swift; sourceTree = "<group>"; };
 		D5453ED42D013F8200FA98F9 /* ShaderTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShaderTypes.h; sourceTree = "<group>"; };
 		D5559C152CE2E23800019348 /* meshes */ = {isa = PBXFileReference; lastKnownFileType = folder; path = meshes; sourceTree = "<group>"; };
@@ -116,6 +118,7 @@
 		D5A512DF2CD18CD90050E219 = {
 			isa = PBXGroup;
 			children = (
+				D53B50352D1229FD00C91678 /* OptionCell.swift */,
 				D5A512EA2CD18CD90050E219 /* Palladium */,
 				D5A513012CD18CDA0050E219 /* PalladiumTests */,
 				D5A5130B2CD18CDA0050E219 /* PalladiumUITests */,
@@ -317,6 +320,7 @@
 			files = (
 				D5B094A92CEE62470035A28C /* Camera.swift in Sources */,
 				D5F50ABA2CDAD12F00B27E0D /* LineReader.swift in Sources */,
+				D53B50362D1229FD00C91678 /* OptionCell.swift in Sources */,
 				D5A5131C2CD190310050E219 /* Shaders.metal in Sources */,
 				D591918C2D09039E0034397F /* ObjectInstance.swift in Sources */,
 				D5AEB37A2CD9398600C30959 /* Mesh.swift in Sources */,
