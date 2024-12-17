@@ -192,8 +192,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "20"
             endingLineNumber = "20"
-            landmarkName = "Mesh"
-            landmarkType = "3">
+            landmarkName = "calculateNormals()"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -240,7 +240,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "38"
             endingLineNumber = "38"
-            landmarkName = "init(triangles:vertices:)"
+            landmarkName = "normalizeNormals()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
