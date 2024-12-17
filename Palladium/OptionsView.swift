@@ -72,6 +72,20 @@ class OptionsView: UIView, OptionsProvider, UITableViewDataSource, UITableViewDe
     
     @objc func switchChanged(_ sender: OptionSwitch!) {
         options[sender.key] = .bool(sender.isOn)
+        if sender.key == "boxBlur" && options["gaussianBlur"]!.asBool()! {
+            options["gaussianBlur"] = .bool(false)
+            let gaussianIndex = options.keys.sorted().firstIndex(of: "gaussianBlur")!
+            tableView.reloadRows(at: [IndexPath(row: gaussianIndex, section: 0)], with: .fade)
+        }
+        if sender.key == "gaussianBlur" && options["boxBlur"]!.asBool()! {
+            options["boxBlur"] = .bool(false)
+            let boxIndex = options.keys.sorted().firstIndex(of: "boxBlur")!
+            tableView.reloadRows(at: [IndexPath(row: boxIndex, section: 0)], with: .fade)
+        }
+    }
+    
+    @objc func sliderChanged(_ sender: OptionSlider!) {
+        options[sender.key] = .float(sender.value)
     }
     
     func flyIn() {
