@@ -12,7 +12,7 @@ protocol OptionCell: UITableViewCell {
     
     static var identifier: String { get }
     
-    func configure(with optionName: String, state: OptionType)
+    func configure(with key: OptionKey, state: OptionType)
     
 }
 
@@ -45,10 +45,10 @@ class OptionCellBool: UITableViewCell, OptionCell {
     }
     
 
-    func configure(with optionName: String, state: OptionType) {
+    func configure(with key: OptionKey, state: OptionType) {
         // convert camel case to display string
-        label.text = optionName.replacingOccurrences(of: "([A-Z])", with: " $1", options: .regularExpression).capitalized
-        toggle.key = optionName
+        label.text = key.rawValue
+        toggle.key = key
         let enabled = state.asBool()!
         toggle.isOn = enabled
         setup()
@@ -56,7 +56,7 @@ class OptionCellBool: UITableViewCell, OptionCell {
 }
 
 class OptionSwitch: UISwitch {
-    var key: String = ""
+    var key = OptionKey.none
 }
 
 class OptionCellFloat: UITableViewCell, OptionCell {
@@ -87,10 +87,10 @@ class OptionCellFloat: UITableViewCell, OptionCell {
         self.accessoryView = slider
     }
 
-    func configure(with optionName: String, state: OptionType) {
+    func configure(with key: OptionKey, state: OptionType) {
         // convert camel case to display string
-        label.text = optionName.replacingOccurrences(of: "([A-Z])", with: " $1", options: .regularExpression).capitalized
-        slider.key = optionName
+        label.text = key.rawValue
+        slider.key = key
         slider.value = state.asFloat()!
         setup()
     }
@@ -98,5 +98,5 @@ class OptionCellFloat: UITableViewCell, OptionCell {
 }
 
 class OptionSlider: UISlider {
-    var key: String = ""
+    var key = OptionKey.none
 }
