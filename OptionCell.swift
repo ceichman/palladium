@@ -11,15 +11,12 @@ import UIKit
 protocol OptionCell: UITableViewCell {
     
     static var identifier: String { get }
-    var key: String { get set }
     
     func configure(with optionName: String, state: OptionType)
     
 }
 
 class OptionCellBool: UITableViewCell, OptionCell {
-    
-    var key: String = ""
     
     var label: UILabel = {
          let label = UILabel()
@@ -38,7 +35,7 @@ class OptionCellBool: UITableViewCell, OptionCell {
 
     static let identifier = "OptionCellBool"
     
-    func setup() {
+    private func setup() {
         self.backgroundColor = .clear
         self.selectionStyle = .none
         self.isUserInteractionEnabled = true
@@ -50,29 +47,55 @@ class OptionCellBool: UITableViewCell, OptionCell {
 
     func configure(with optionName: String, state: OptionType) {
         // convert camel case to display string
-        let enabled = state.forceBool()!
         label.text = optionName.replacingOccurrences(of: "([A-Z])", with: " $1", options: .regularExpression).capitalized
         toggle.key = optionName
+        let enabled = state.asBool()!
         toggle.isOn = enabled
         setup()
     }
 }
 
+class OptionSwitch: UISwitch {
+    var key: String = ""
+}
+
 class OptionCellFloat: UITableViewCell, OptionCell {
+    
+    static let identifier = "OptionCellFloat"
     
     var label: UILabel = {
          let label = UILabel()
          label.textColor = .label
          label.isUserInteractionEnabled = false
          return label
-     }()
+    }()
     
-    static let identifier = "OptionCellFloat"
+    var slider: OptionSlider = {
+        let slider = OptionSlider(frame: .zero)
+        slider.minimumValue = 0
+        slider.maximumValue = 1
+        return slider
+    }()
     
-    var key: String = ""
-    
-    func configure(with optionName: String, state: OptionType) {
-        
+    private func setup() {
+        self.backgroundColor = .clear
+        self.selectionStyle = .none
+        self.isUserInteractionEnabled = true
+        label.frame = self.bounds.insetBy(dx: 15, dy: 0)
+        self.contentView.addSubview(label)
+        self.accessoryView = slider
     }
 
+    func configure(with optionName: String, state: OptionType) {
+        // convert camel case to display string
+        label.text = optionName.replacingOccurrences(of: "([A-Z])", with: " $1", options: .regularExpression).capitalized
+        slider.key = optionName
+        slider.value = state.asFloat()!
+        setup()
+    }
+
+}
+
+class OptionSlider: UISlider {
+    var key: String = ""
 }

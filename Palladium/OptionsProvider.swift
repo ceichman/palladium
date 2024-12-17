@@ -23,7 +23,7 @@ enum OptionType {
     case bool(Bool)
     case float(Float)
     
-    func forceBool() -> Bool? {
+    func asBool() -> Bool? {
         switch self {
         case .bool(let bool):
             return bool
@@ -32,7 +32,7 @@ enum OptionType {
         }
     }
     
-    func forceFloat() -> Float? {
+    func asFloat() -> Float? {
         switch self {
         case .float(let float):
             return float

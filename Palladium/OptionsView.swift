@@ -57,12 +57,20 @@ class OptionsView: UIView, OptionsProvider, UITableViewDataSource, UITableViewDe
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: OptionCellBool.identifier, for: indexPath) as! OptionCellBool
         let keys: [String] = options.keys.sorted()
         let key = keys[indexPath.row]
-        cell.configure(with: key, state: options[key]!)
-        cell.toggle.addTarget(self, action: #selector(switchChanged), for: .valueChanged)
-        return cell
+        let state = options[key]!
+        switch state {
+        case .bool(_):
+            let cell = tableView.dequeueReusableCell(withIdentifier: OptionCellBool.identifier, for: indexPath) as! OptionCellBool
+            cell.toggle.addTarget(self, action: #selector(switchChanged), for: .valueChanged)
+            cell.configure(with: key, state: state)
+            return cell
+        case .float(_):
+            let cell = tableView.dequeueReusableCell(withIdentifier: OptionCellFloat.identifier, for: indexPath) as! OptionCellFloat
+            cell.configure(with: key, state: state)
+            return cell
+        }
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -91,18 +99,14 @@ class OptionsView: UIView, OptionsProvider, UITableViewDataSource, UITableViewDe
     
     func getOptions() -> RendererOptions {
         let opts = RendererOptions()
-        opts.boxBlur = options["boxBlur"]!.forceBool()!
-        opts.gaussianBlur = options["gaussianBlur"]!.forceBool()!
-        opts.invertColors = options["invertColors"]!.forceBool()!
-        opts.texturing = options["texturing"]!.forceBool()!
-        opts.wireframe = options["wireframe"]!.forceBool()!
-        opts.specularHighlights = options["specularHighlights"]!.forceBool()!
+        opts.boxBlur = options["boxBlur"]!.asBool()!
+        opts.gaussianBlur = options["gaussianBlur"]!.asBool()!
+        opts.invertColors = options["invertColors"]!.asBool()!
+        opts.texturing = options["texturing"]!.asBool()!
+        opts.wireframe = options["wireframe"]!.asBool()!
+        opts.specularHighlights = options["specularHighlights"]!.asBool()!
         return opts
     }
     
 }
 
-
-class OptionSwitch: UISwitch {
-    var key: String = ""
-}
