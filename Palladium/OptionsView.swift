@@ -8,9 +8,16 @@
 import Foundation
 import UIKit
 
-class OptionsView: UIView {
+class OptionsView: UIView, OptionsProvider {
     
-    static let duration = 0.3;
+    static let animationDuration = 0.3;
+    
+    var options = RendererOptions()
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        setup()
+    }
     
     func setup() {
         let blurEffect = UIBlurEffect(style: UIBlurEffect.Style.prominent)
@@ -22,17 +29,21 @@ class OptionsView: UIView {
     }
         
     func flyIn() {
-        UIView.animate(withDuration: Self.duration, animations: {
+        UIView.animate(withDuration: Self.animationDuration, animations: {
             let moveLeft = CGAffineTransform(translationX: -(self.bounds.width), y: 0)
             self.transform = moveLeft
         })
     }
     
     func flyOut() {
-        UIView.animate(withDuration: Self.duration, animations: {
+        UIView.animate(withDuration: Self.animationDuration, animations: {
             let zero = CGAffineTransform(translationX: 0, y: 0)
             self.transform = zero
         })
     }
     
+    func getOptions() -> RendererOptions {
+        return options
+    }
+
 }

@@ -10,7 +10,6 @@ import simd
 
 struct ProjectionParams {
     var aspectRatio: Float
-    var fovRadians: Float
     var nearZ: Float
     var farZ: Float
 }

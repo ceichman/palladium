@@ -10,7 +10,6 @@ import simd
 
 class Camera {
     
-
     var position: simd_float3
     var yaw = Double.pi / 2.0  // radians, 0 == +z
     var pitch = 0.0  // radians, 0 == +z
@@ -39,6 +38,8 @@ class Camera {
         }
     }
     
+    var fovRadians: Float = 40.0 * Float.pi / 180.0
+
     init(position: simd_float3) {
         self.position = position
     }
@@ -62,7 +63,7 @@ class Camera {
     
     func viewProjection(_ params: ProjectionParams) -> ViewProjection {
         // TODO
-        let proj = projection_matrix(aspectRatio: params.aspectRatio, fovRadians: params.fovRadians, nearZ: params.nearZ, farZ: params.farZ)
+        let proj = projection_matrix(aspectRatio: params.aspectRatio, fovRadians: self.fovRadians, nearZ: params.nearZ, farZ: params.farZ)
         return ViewProjection(view: self.getViewMatrix(), projection: proj)
     }
 }

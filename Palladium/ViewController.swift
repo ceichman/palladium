@@ -28,7 +28,7 @@ class ViewController: UIViewController {
         let device = MTLCreateSystemDefaultDevice()!
         metalView.device = device
         
-        renderer = Renderer(view: metalView)
+        renderer = Renderer(view: metalView, optionsProvider: optionsView)
         self.scene = renderer.scene
         
         /// Set up device and metalView
@@ -101,41 +101,41 @@ class ViewController: UIViewController {
     }
     
     @IBAction func didPinch(_ sender: UIPinchGestureRecognizer) {
-        let newFov = renderer.options.fovDegrees / sender.scale
-        renderer.options.fovDegrees = newFov.clamped(to: 15...85)
+        let newFov = scene.camera.fovRadians / Float(sender.scale)
+        scene.camera.fovRadians = newFov.clamped(to: 15...85)
         sender.scale = 1.0
     }
     
     @IBAction func wireframeSwitchDidChange(_ sender: UISwitch) {
-        renderer.options.wireframe = sender.isOn
+        optionsView.options.wireframe = sender.isOn
     }
     
     @IBAction func boxBlurSwitchDidChange(_ sender: UISwitch) {
-        renderer.options.boxBlur = sender.isOn
+        optionsView.options.boxBlur = sender.isOn
         if sender.isOn {
             gaussianBlurSwitch.setOn(false, animated: true)
-            renderer.options.gaussianBlur = false
+            optionsView.options.gaussianBlur = false
         }
     }
     
     @IBAction func gaussianBlurSwitchDidChange(_ sender: UISwitch) {
-        renderer.options.gaussianBlur = sender.isOn
+        optionsView.options.gaussianBlur = sender.isOn
         if sender.isOn {
             boxBlurSwitch.setOn(false, animated: true)
-            renderer.options.boxBlur = false
+            optionsView.options.boxBlur = false
         }
     }
     
     @IBAction func invertColorsSwitchDidChange(_ sender: UISwitch) {
-        renderer.options.invertColors = sender.isOn
+        optionsView.options.invertColors = sender.isOn
     }
     
     @IBAction func texturingSwitchDidChange(_ sender: UISwitch) {
-        renderer.options.texturing = sender.isOn
+        optionsView.options.texturing = sender.isOn
     }
     
     @IBAction func specularHighlightsSwitchDidChange(_ sender: UISwitch) {
-        renderer.options.specularHighlights = sender.isOn
+        optionsView.options.specularHighlights = sender.isOn
     }
     
 }

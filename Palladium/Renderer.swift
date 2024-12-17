@@ -2,24 +2,13 @@ import Metal
 import MetalKit
 import simd
 
-/// A struct used to expose configurable renderer parameters.
-struct RendererOptions {
-    var fovDegrees: Double
-    var boxBlur: Bool
-    var gaussianBlur: Bool
-    var invertColors: Bool
-    var texturing: Bool
-    var wireframe: Bool
-    var specularHighlights: Bool
-}
-
 /// This class focuses solely on rendering logic.
 
 class Renderer: NSObject, MTKViewDelegate {
     
     var view: MTKView
     var scene: Scene
-    var options: RendererOptions
+    var optionsProvider: OptionsProvider
     private var vertexBuffer: MTLBuffer!                // buffer used to store vertex data
     private var pipelineState: MTLRenderPipelineState!  // how to process vertex and fragment shaders during rendering
     private var depthStencilState: MTLDepthStencilState!
@@ -35,10 +24,11 @@ class Renderer: NSObject, MTKViewDelegate {
     private var currentFrameTime = CACurrentMediaTime()
 
     /// Initializes the Renderer object and calls setup() routine
-    init(view: MTKView, scene: Scene = Scene.defaultScene) {
+    init(view: MTKView, scene: Scene = Scene.defaultScene, optionsProvider: OptionsProvider) {
         self.view = view
-        self.options = RendererOptions(fovDegrees: 40.0, boxBlur: false, gaussianBlur: false, invertColors: false, texturing: true, wireframe: false, specularHighlights: true)
+        // self.options = RendererOptions(fovDegrees: 40.0, boxBlur: false, gaussianBlur: false, invertColors: false, texturing: true, wireframe: false, specularHighlights: true)
         self.scene = scene
+        self.optionsProvider = optionsProvider
         super.init()
         setup()
     }
@@ -80,6 +70,7 @@ class Renderer: NSObject, MTKViewDelegate {
             
             scene.preRenderUpdate(deltaTime)
             guard let drawable = view.currentDrawable else { return }
+            let options = optionsProvider.getOptions()
             
             /// Render pass descriptor defines how rendering should occur (textures, color, etc.)
             guard let renderPassDescriptor = view.currentRenderPassDescriptor else { return }
@@ -97,7 +88,6 @@ class Renderer: NSObject, MTKViewDelegate {
             let aspectRatio: Float = Float(view.bounds.height / view.bounds.width)
             let projectionParams = ProjectionParams(
                 aspectRatio: aspectRatio,
-                fovRadians: Float(options.fovDegrees / 180.0 * Double.pi),
                 nearZ: 0.3,
                 farZ: 1000.0
             )
