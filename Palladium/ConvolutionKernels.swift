@@ -46,4 +46,13 @@ class ConvolutionKernels {
         return kernelTexture
     }
     
+    // Returns a kernel size based on a normalized float value (0..<1).
+    static func scaleKernelSize(_ value: Float) -> Int {
+        let maxKernelSize = 19
+        let maxEvenKernelSize = Float(maxKernelSize - 1)
+        let remainderAfterScale = (value * maxEvenKernelSize).truncatingRemainder(dividingBy: 2)
+        let kernelSize = Int((value * maxEvenKernelSize) - remainderAfterScale) + 1
+        return kernelSize
+    }
+    
 }

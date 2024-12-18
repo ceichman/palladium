@@ -9,6 +9,17 @@ import Foundation
 
 typealias RendererOptions = [OptionKey:OptionType]
 
+enum OptionKey: String {
+    case boxBlur = "Box Blur"
+    case gaussianBlur = "Gaussian Blur"
+    case invertColors = "Invert Colors"
+    case texturing = "Texturing"
+    case wireframe = "Wireframe"
+    case specularHighlights = "Specular Highlights"
+    case blurSize = "Blur Size"
+    case none = "none"
+}
+
 extension RendererOptions {
     static let defaults: RendererOptions = [
         .boxBlur: .bool(false),
@@ -17,7 +28,7 @@ extension RendererOptions {
         .texturing: .bool(true),
         .wireframe: .bool(false),
         .specularHighlights: .bool(true),
-        .floatOption: .float(0.5),
+        .blurSize: .float(0.5),
     ]
     
     func getBool(_ index: OptionKey) -> Bool {
@@ -35,17 +46,6 @@ extension Dictionary<OptionKey, OptionType>.Keys {
     func sortedOptions() -> [OptionKey] {
         return self.sorted(by: {(a, b) in a.rawValue < b.rawValue })
     }
-}
-
-enum OptionKey: String {
-    case boxBlur = "Box Blur"
-    case gaussianBlur = "Gaussian Blur"
-    case invertColors = "Invert Colors"
-    case texturing = "Texturing"
-    case wireframe = "Wireframe"
-    case specularHighlights = "Specular Highlights"
-    case floatOption = "Float option haha"
-    case none = "none"
 }
 
 protocol OptionsProvider {

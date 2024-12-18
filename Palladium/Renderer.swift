@@ -131,12 +131,22 @@ class Renderer: NSObject, MTKViewDelegate {
             renderEncoder.endEncoding()
             
             if options.getBool(.boxBlur) {
-                let kernel = ConvolutionKernels.boxBlur(size: 7, device: view.device!)
+                // handle special case
+                // blur size should be odd between 3 and 19
+                // slider value goes from zero to one
+                let sliderValue = options.getFloat(.blurSize)
+                let blurSize = ConvolutionKernels.scaleKernelSize(sliderValue)
+                let kernel = ConvolutionKernels.boxBlur(size: blurSize, device: view.device!)
                 addConvolutionKernelPass(kernel: kernel, commandBuffer: commandBuffer, inTexture: drawable.texture, outTexture: drawable.texture)
             }
             
             if options.getBool(.gaussianBlur) {
-                let kernel = ConvolutionKernels.gaussianBlur(size: 7, device: view.device!)
+                // handle special case
+                // blur size should be odd between 3 and 19
+                // slider value goes from zero to one
+                let sliderValue = options.getFloat(.blurSize)
+                let blurSize = ConvolutionKernels.scaleKernelSize(sliderValue)
+                let kernel = ConvolutionKernels.gaussianBlur(size: blurSize, device: view.device!)
                 addConvolutionKernelPass(kernel: kernel, commandBuffer: commandBuffer, inTexture: drawable.texture, outTexture: drawable.texture)
             }
             

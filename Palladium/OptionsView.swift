@@ -61,6 +61,7 @@ class OptionsView: UIView, OptionsProvider, UITableViewDataSource, UITableViewDe
             return cell
         case .float(_):
             let cell = tableView.dequeueReusableCell(withIdentifier: OptionCellFloat.identifier, for: indexPath) as! OptionCellFloat
+            cell.slider.addTarget(self, action: #selector(sliderChanged), for: .valueChanged)
             cell.configure(with: key, state: state)
             return cell
         }
