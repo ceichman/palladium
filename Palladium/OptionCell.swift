@@ -55,6 +55,7 @@ class OptionCellBool: UITableViewCell, OptionCell {
     }
 }
 
+// for passing the associated OptionKey with the sender argument during valueChanged event
 class OptionSwitch: UISwitch {
     var key = OptionKey.none
 }
@@ -97,6 +98,7 @@ class OptionCellFloat: UITableViewCell, OptionCell {
 
 }
 
+// for passing the associated OptionKey with the sender argument during valueChanged event
 class OptionSlider: UISlider {
     var key = OptionKey.none
 }
