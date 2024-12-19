@@ -1,5 +1,6 @@
 import Metal
 import MetalKit
+import MetalPerformanceShaders
 import simd
 
 /// This class focuses solely on rendering logic.
@@ -155,15 +156,23 @@ class Renderer: NSObject, MTKViewDelegate {
             if options.getBool(.boxBlur) {
                 let sliderValue = options.getFloat(.blurSize)  // [0, 1)
                 let blurSize = ConvolutionKernels.scaleKernelSize(sliderValue)
-                let kernel = ConvolutionKernels.boxBlur(size: blurSize, device: view.device!)
-                addConvolutionKernelPass(kernel: kernel, commandBuffer: commandBuffer)
+                // let kernel = ConvolutionKernels.boxBlur(size: blurSize, device: view.device!)
+                // addConvolutionKernelPass(kernel: kernel, commandBuffer: commandBuffer)
+                
+                swapSourceDestTexture()
+                let filter = MPSImageBox(device: view.device!, kernelWidth: blurSize, kernelHeight: blurSize)
+                filter.encode(commandBuffer: commandBuffer, sourceTexture: sourceTexture, destinationTexture: destTexture)
             }
             
             if options.getBool(.gaussianBlur) {
                 let sliderValue = options.getFloat(.blurSize)  // [0, 1)
-                let blurSize = ConvolutionKernels.scaleKernelSize(sliderValue)
-                let kernel = ConvolutionKernels.gaussianBlur(size: blurSize, device: view.device!)
-                addConvolutionKernelPass(kernel: kernel, commandBuffer: commandBuffer)
+                let maxSigma: Float = 6.0
+                // let blurSize = ConvolutionKernels.scaleKernelSize(sliderValue)
+                // let kernel = ConvolutionKernels.gaussianBlur(size: blurSize, device: view.device!)
+                
+                swapSourceDestTexture()
+                let filter = MPSImageGaussianBlur(device: view.device!, sigma: sliderValue * maxSigma)
+                filter.encode(commandBuffer: commandBuffer, sourceTexture: sourceTexture, destinationTexture: destTexture)
             }
             
             if options.getBool(.invertColors) {
@@ -182,11 +191,8 @@ class Renderer: NSObject, MTKViewDelegate {
     
     func addPostProcessPass(pipeline: MTLComputePipelineState, commandBuffer: MTLCommandBuffer) {
         
-        // swap source and dest textures
-        let temp = sourceTexture
-        sourceTexture = destTexture
-        destTexture = temp
-
+        swapSourceDestTexture()
+        
         guard let encoder = commandBuffer.makeComputeCommandEncoder() else { return }
         encoder.label = "Post-processing pass: \(pipeline.description)"
         encoder.setComputePipelineState(pipeline)
@@ -212,10 +218,7 @@ class Renderer: NSObject, MTKViewDelegate {
     
     func addConvolutionKernelPass(kernel: MTLTexture, commandBuffer: MTLCommandBuffer) {
         
-        // swap source and dest textures
-        let temp = sourceTexture
-        sourceTexture = destTexture
-        destTexture = temp
+        swapSourceDestTexture()
         
         guard let encoder = commandBuffer.makeComputeCommandEncoder() else { return }
         encoder.label = "Convolution kernel post-processing pass"
@@ -246,5 +249,10 @@ class Renderer: NSObject, MTKViewDelegate {
         return try! view.device!.makeComputePipelineState(function: shaderFunction)
     }
 
+    private func swapSourceDestTexture() {
+        let temp = sourceTexture
+        sourceTexture = destTexture
+        destTexture = temp
+    }
     
 }

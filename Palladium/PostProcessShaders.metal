@@ -28,13 +28,13 @@ kernel void convolve_kernel(uint2 gid [[thread_position_in_grid]],
                        texture2d<float, access::read> kern [[ texture(2) ]])
 {
     // Kernel is full of float weights
-    int size = kern.get_width();
-    int radius = size / 2;
+    int width = kern.get_width();
+    int height = kern.get_height();
     float weightAccumulator = 0.0;
     half4 colorAccumulator = half4(0, 0, 0, 0);
-    for (int row = 0; row < size; ++row) {
-        for (int col = 0; col < size; ++col) {
-            uint2 pixelOffset = uint2(row - radius, col - radius);
+    for (int row = 0; row < height; ++row) {
+        for (int col = 0; col < width; ++col) {
+            uint2 pixelOffset = uint2(row - height / 2, col - width / 2);
             uint2 pixelCoord = gid + pixelOffset;
             // if (!check_bounds(pixelCoord, inColor.get_width(), inColor.get_height())) continue;
             uint2 kernelCoord = uint2(row, col);
