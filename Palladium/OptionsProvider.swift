@@ -8,6 +8,7 @@
 import Foundation
 
 typealias RendererOptions = [OptionKey:OptionType]
+typealias KernelRenderPassCount = Int
 
 enum OptionKey: String {
     case boxBlur = "Box Blur"
@@ -49,7 +50,7 @@ extension Dictionary<OptionKey, OptionType>.Keys {
 }
 
 protocol OptionsProvider {
-    func getOptions() -> RendererOptions
+    func getOptions() -> (RendererOptions, KernelRenderPassCount)
 }
 
 enum OptionType {
