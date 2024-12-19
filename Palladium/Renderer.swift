@@ -85,6 +85,7 @@ class Renderer: NSObject, MTKViewDelegate {
             let (options, numConvKernelPasses) = optionsProvider.getOptions()
             guard let drawable = view.currentDrawable else { return }
             
+            // kernel passes can't have the same source and destination texture because of cross-threadgroup desync
             // final convolution kernel pass should write to the drawable (A), so we should find
             // out which texture to write to first using the total number of kernel passes
             // geometry -> A -> B -> A, or

@@ -18,7 +18,6 @@ kernel void invert_color(uint2 gid [[thread_position_in_grid]],
                        texture2d<half, access::read> inColor [[texture(0)]],
                        texture2d<half, access::write> outColor [[texture(1)]])
 {
-    // if (!check_bounds(gid, inColor.get_width(), inColor.get_height())) return;
     // Invert the pixel's color by subtracting it from 1.0.
     outColor.write(1.0 - inColor.read(gid), gid);
 }
@@ -44,6 +43,5 @@ kernel void convolve_kernel(uint2 gid [[thread_position_in_grid]],
             colorAccumulator += inColor.read(pixelCoord) * weight.r;
         }
     }
-    // outColor.write(half4(colorAccumulator.rgb, 1.0), gid);
     outColor.write(half4(colorAccumulator.rgb / weightAccumulator, 1.0), gid);
 }
