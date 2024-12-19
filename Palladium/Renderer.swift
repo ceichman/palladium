@@ -24,7 +24,9 @@ class Renderer: NSObject, MTKViewDelegate {
     lazy private var convolutionKernelShader = setupComputePipelineState(shader: "convolve_kernel")
 
     private var currentFrameTime = CACurrentMediaTime()
-
+    static private let maxBlurKernelSize = 35
+    static private let maxBlurSigma = Float(maxBlurKernelSize) / 3.0  // pretty sure MPS uses a kernel size three times the given sigma
+    
     /// Initializes the Renderer object and calls setup() routine
     init(view: MTKView, scene: Scene = Scene.defaultScene, optionsProvider: OptionsProvider) {
         self.view = view
@@ -155,10 +157,7 @@ class Renderer: NSObject, MTKViewDelegate {
             
             if options.getBool(.boxBlur) {
                 let sliderValue = options.getFloat(.blurSize)  // [0, 1)
-                let blurSize = ConvolutionKernels.scaleKernelSize(sliderValue)
-                // let kernel = ConvolutionKernels.boxBlur(size: blurSize, device: view.device!)
-                // addConvolutionKernelPass(kernel: kernel, commandBuffer: commandBuffer)
-                
+                let blurSize = ConvolutionKernels.scaleKernelSize(sliderValue, maxKernelSize: Self.maxBlurKernelSize)
                 swapSourceDestTexture()
                 let filter = MPSImageBox(device: view.device!, kernelWidth: blurSize, kernelHeight: blurSize)
                 filter.encode(commandBuffer: commandBuffer, sourceTexture: sourceTexture, destinationTexture: destTexture)
@@ -166,12 +165,8 @@ class Renderer: NSObject, MTKViewDelegate {
             
             if options.getBool(.gaussianBlur) {
                 let sliderValue = options.getFloat(.blurSize)  // [0, 1)
-                let maxSigma: Float = 6.0
-                // let blurSize = ConvolutionKernels.scaleKernelSize(sliderValue)
-                // let kernel = ConvolutionKernels.gaussianBlur(size: blurSize, device: view.device!)
-                
                 swapSourceDestTexture()
-                let filter = MPSImageGaussianBlur(device: view.device!, sigma: sliderValue * maxSigma)
+                let filter = MPSImageGaussianBlur(device: view.device!, sigma: sliderValue * Self.maxBlurSigma)
                 filter.encode(commandBuffer: commandBuffer, sourceTexture: sourceTexture, destinationTexture: destTexture)
             }
             
@@ -205,34 +200,6 @@ class Renderer: NSObject, MTKViewDelegate {
         
         let w = pipeline.threadExecutionWidth
         let h = pipeline.maxTotalThreadsPerThreadgroup / w
-        let threadsPerThreadgroup = MTLSizeMake(w, h, 1)
-        
-        // add one for rounding error
-        let threadgroupsPerGrid = MTLSizeMake(threadsPerGrid.width / threadsPerThreadgroup.width + 1,
-                                              threadsPerGrid.height / threadsPerThreadgroup.height + 1,
-                                              1)
-
-        encoder.dispatchThreadgroups(threadgroupsPerGrid, threadsPerThreadgroup: threadsPerThreadgroup)
-        encoder.endEncoding()
-    }
-    
-    func addConvolutionKernelPass(kernel: MTLTexture, commandBuffer: MTLCommandBuffer) {
-        
-        swapSourceDestTexture()
-        
-        guard let encoder = commandBuffer.makeComputeCommandEncoder() else { return }
-        encoder.label = "Convolution kernel post-processing pass"
-        encoder.setComputePipelineState(convolutionKernelShader)
-        encoder.setTexture(sourceTexture, index: 0)
-        encoder.setTexture(destTexture, index: 1)
-        encoder.setTexture(kernel, index: 2)
-        
-        let threadsPerGrid = MTLSize(width: sourceTexture.width,
-                                     height: sourceTexture.height,
-                                     depth: 1)
-        
-        let w = convolutionKernelShader.threadExecutionWidth
-        let h = convolutionKernelShader.maxTotalThreadsPerThreadgroup / w
         let threadsPerThreadgroup = MTLSizeMake(w, h, 1)
         
         // add one for rounding error
