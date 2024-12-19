@@ -16,9 +16,6 @@ class Renderer: NSObject, MTKViewDelegate {
     private var defaultLibrary: MTLLibrary!
     private var intermediateRenderTarget: MTLTexture!  // used for flip-flopping source/dest textures during conv. kernel passes
     
-    private var sourceTexture: MTLTexture!
-    private var destTexture: MTLTexture!
-    
     // has to be a var (not static let) because setupComputePipelineState requires access to view.device
     lazy private var invertColorPipelineState = setupComputePipelineState(shader: "invert_color")
     lazy private var convolutionKernelShader = setupComputePipelineState(shader: "convolve_kernel")
@@ -87,19 +84,11 @@ class Renderer: NSObject, MTKViewDelegate {
             scene.preRenderUpdate(deltaTime)
             let (options, numConvKernelPasses) = optionsProvider.getOptions()
             guard let drawable = view.currentDrawable else { return }
-            
-            // kernel passes can't have the same source and destination texture because of cross-threadgroup desync
-            // final convolution kernel pass should write to the drawable (A), so we should find
-            // out which texture to write to first using the total number of kernel passes
-            // geometry -> A -> B -> A, or
-            // geometry -> B -> A -> B -> A
-            
-            sourceTexture = numConvKernelPasses % 2 == 0 ? intermediateRenderTarget : drawable.texture
-            destTexture = numConvKernelPasses % 2 == 0 ? drawable.texture : intermediateRenderTarget
+            var renderTarget = drawable.texture  // "var" used so &renderTarget can be passed as inout
             
             // setup geometry pass
             guard let renderPassDescriptor = view.currentRenderPassDescriptor else { return }
-            renderPassDescriptor.colorAttachments[0].texture = destTexture
+            renderPassDescriptor.colorAttachments[0].texture = renderTarget
             renderPassDescriptor.colorAttachments[0].loadAction = .clear
             renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColor(
                 red: 0,
@@ -158,20 +147,18 @@ class Renderer: NSObject, MTKViewDelegate {
             if options.getBool(.boxBlur) {
                 let sliderValue = options.getFloat(.blurSize)  // [0, 1)
                 let blurSize = ConvolutionKernels.scaleKernelSize(sliderValue, maxKernelSize: Self.maxBlurKernelSize)
-                swapSourceDestTexture()
                 let filter = MPSImageBox(device: view.device!, kernelWidth: blurSize, kernelHeight: blurSize)
-                filter.encode(commandBuffer: commandBuffer, sourceTexture: sourceTexture, destinationTexture: destTexture)
+                filter.encode(commandBuffer: commandBuffer, inPlaceTexture: &renderTarget)
             }
             
             if options.getBool(.gaussianBlur) {
                 let sliderValue = options.getFloat(.blurSize)  // [0, 1)
-                swapSourceDestTexture()
                 let filter = MPSImageGaussianBlur(device: view.device!, sigma: sliderValue * Self.maxBlurSigma)
-                filter.encode(commandBuffer: commandBuffer, sourceTexture: sourceTexture, destinationTexture: destTexture)
+                filter.encode(commandBuffer: commandBuffer, inPlaceTexture: &renderTarget)
             }
             
             if options.getBool(.invertColors) {
-                addPostProcessPass(pipeline: invertColorPipelineState, commandBuffer: commandBuffer)
+                addPostProcessPass(pipeline: invertColorPipelineState, commandBuffer: commandBuffer, renderTarget: renderTarget)
             }
             
             commandBuffer.present(drawable) // render to scene color (output)
@@ -184,18 +171,17 @@ class Renderer: NSObject, MTKViewDelegate {
         //
     }
     
-    func addPostProcessPass(pipeline: MTLComputePipelineState, commandBuffer: MTLCommandBuffer) {
-        
-        swapSourceDestTexture()
+    // should only be used for one-to-one post-process effects (don't read pixels other than gid)
+    func addPostProcessPass(pipeline: MTLComputePipelineState, commandBuffer: MTLCommandBuffer, renderTarget: MTLTexture) {
         
         guard let encoder = commandBuffer.makeComputeCommandEncoder() else { return }
         encoder.label = "Post-processing pass: \(pipeline.description)"
         encoder.setComputePipelineState(pipeline)
-        encoder.setTexture(sourceTexture, index: 0)
-        encoder.setTexture(destTexture, index: 1)
+        encoder.setTexture(renderTarget, index: 0)
+        encoder.setTexture(renderTarget, index: 1)
 
-        let threadsPerGrid = MTLSize(width: destTexture.width,
-                                     height: destTexture.height,
+        let threadsPerGrid = MTLSize(width: renderTarget.width,
+                                     height: renderTarget.height,
                                      depth: 1)
         
         let w = pipeline.threadExecutionWidth
@@ -216,10 +202,4 @@ class Renderer: NSObject, MTKViewDelegate {
         return try! view.device!.makeComputePipelineState(function: shaderFunction)
     }
 
-    private func swapSourceDestTexture() {
-        let temp = sourceTexture
-        sourceTexture = destTexture
-        destTexture = temp
-    }
-    
 }

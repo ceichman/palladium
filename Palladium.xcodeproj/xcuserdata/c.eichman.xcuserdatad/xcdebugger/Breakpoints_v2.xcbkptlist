@@ -334,9 +334,9 @@
             filePath = "Palladium/Renderer.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "210"
-            endingLineNumber = "210"
-            landmarkName = "addPostProcessPass(pipeline:commandBuffer:)"
+            startingLineNumber = "196"
+            endingLineNumber = "196"
+            landmarkName = "addPostProcessPass(pipeline:commandBuffer:renderTarget:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -350,8 +350,8 @@
             filePath = "Palladium/Renderer.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "187"
-            endingLineNumber = "187"
+            startingLineNumber = "174"
+            endingLineNumber = "174"
             landmarkName = "Renderer"
             landmarkType = "3">
          </BreakpointContent>
@@ -382,10 +382,10 @@
             filePath = "Palladium/Renderer.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "27"
-            endingLineNumber = "27"
-            landmarkName = "Renderer"
-            landmarkType = "3">
+            startingLineNumber = "24"
+            endingLineNumber = "24"
+            landmarkName = "currentFrameTime"
+            landmarkType = "24">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -430,10 +430,10 @@
             filePath = "Palladium/Renderer.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "78"
-            endingLineNumber = "78"
-            landmarkName = "draw(in:)"
-            landmarkType = "7">
+            startingLineNumber = "75"
+            endingLineNumber = "75"
+            landmarkName = "Renderer"
+            landmarkType = "3">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -462,8 +462,8 @@
             filePath = "Palladium/Renderer.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "149"
-            endingLineNumber = "149"
+            startingLineNumber = "138"
+            endingLineNumber = "138"
             landmarkName = "draw(in:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -478,8 +478,8 @@
             filePath = "Palladium/Renderer.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "148"
-            endingLineNumber = "148"
+            startingLineNumber = "137"
+            endingLineNumber = "137"
             landmarkName = "draw(in:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -494,8 +494,8 @@
             filePath = "Palladium/Renderer.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "146"
-            endingLineNumber = "146"
+            startingLineNumber = "135"
+            endingLineNumber = "135"
             landmarkName = "draw(in:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -510,8 +510,8 @@
             filePath = "Palladium/Renderer.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "126"
-            endingLineNumber = "126"
+            startingLineNumber = "115"
+            endingLineNumber = "115"
             landmarkName = "draw(in:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -526,8 +526,8 @@
             filePath = "Palladium/Renderer.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "128"
-            endingLineNumber = "128"
+            startingLineNumber = "117"
+            endingLineNumber = "117"
             landmarkName = "draw(in:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -542,8 +542,8 @@
             filePath = "Palladium/Renderer.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "127"
-            endingLineNumber = "127"
+            startingLineNumber = "116"
+            endingLineNumber = "116"
             landmarkName = "draw(in:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -574,9 +574,9 @@
             filePath = "Palladium/Renderer.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "197"
-            endingLineNumber = "197"
-            landmarkName = "addPostProcessPass(pipeline:commandBuffer:)"
+            startingLineNumber = "183"
+            endingLineNumber = "183"
+            landmarkName = "addPostProcessPass(pipeline:commandBuffer:renderTarget:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -609,38 +609,6 @@
             startingLineNumber = "43"
             endingLineNumber = "43"
             landmarkName = "scaleKernelSize(_:maxKernelSize:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "45EA3206-0300-4A6E-911D-6C2FFA7D5F3D"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Palladium/Renderer.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "98"
-            endingLineNumber = "98"
-            landmarkName = "draw(in:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "D399C818-1BED-4421-8F01-A425B254304C"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Palladium/Renderer.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "97"
-            endingLineNumber = "97"
-            landmarkName = "draw(in:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
