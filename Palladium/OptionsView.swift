@@ -29,24 +29,66 @@ class OptionsView: UIView, OptionsProvider, UITableViewDataSource, UITableViewDe
         return tableView
     }()
     
+    var titleView: UIView = {
+        let titleView = UIView()
+        titleView.backgroundColor = .systemBackground
+        return titleView
+    }()
+    
+    var titleLabel: UILabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 23, weight: .medium)
+        label.text = "Options"
+        label.textAlignment = .center
+        return label
+    }()
+    
+    var closeButton: UIButton = {
+        let button = UIButton()
+        let image = UIImage(systemName: "xmark")!
+        button.setImage(image, for: .normal)
+        button.setPreferredSymbolConfiguration(.init(scale: .large), forImageIn: .normal)
+        return button
+    }()
+    
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         setup()
     }
     
     func setup() {
+        
+        let titleViewHeight = 60.0
+        let titleViewFrame = CGRect(x: bounds.minX,
+                                     y: bounds.minY,
+                                     width: bounds.width,
+                                     height: titleViewHeight)
+        titleView.frame = titleViewFrame
+        titleLabel.frame = titleViewFrame
+        titleView.addSubview(titleLabel)
+        self.addSubview(titleView)
+        
+        let buttonFrame = CGRect(x: bounds.minX,
+                                 y: bounds.minY,
+                                 width: titleViewHeight,
+                                 height: titleViewHeight)
+        closeButton.frame = buttonFrame
+        closeButton.imageView?.contentMode = .scaleAspectFit
+        closeButton.addTarget(self, action: #selector(shouldCloseOptions), for: .touchUpInside)
+        titleView.addSubview(closeButton)
+
         tableView.dataSource = self
         tableView.delegate = self
-        let tableViewBounds = CGRect(x: bounds.minX,
-                                     y: bounds.minY + 60,
+        let tableViewFrame = CGRect(x: bounds.minX,
+                                     y: bounds.minY + titleViewHeight,
                                      width: bounds.width,
-                                     height: bounds.height - 60)
-        tableView.frame = tableViewBounds
-        
+                                     height: bounds.height - titleViewHeight)
+        tableView.frame = tableViewFrame
         self.addSubview(tableView)
         
         blurView.frame = self.bounds
         tableView.backgroundView = blurView
+        
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -93,6 +135,10 @@ class OptionsView: UIView, OptionsProvider, UITableViewDataSource, UITableViewDe
         options[sender.key] = .float(sender.value)
     }
     
+    @IBAction func shouldCloseOptions(_ sender: Any) {
+        self.flyOut()
+    }
+
     func flyIn() {
         // not sure why this has to go here
         tableView.backgroundColor = .clear

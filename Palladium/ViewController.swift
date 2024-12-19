@@ -42,12 +42,8 @@ class ViewController: UIViewController {
         metalView.addGestureRecognizer(pinchRecognizer)
     }
     
-    @IBAction func shouldShowOptions(_ sender: Any) {
+    @IBAction func shouldShowOptions(_ sender: UIButton) {
         optionsView.flyIn()
-    }
-    
-    @IBAction func shouldCloseOptions(_ sender: Any) {
-        optionsView.flyOut()
     }
     
     @IBAction func upButtonPressed(_ sender: UIButton) {
