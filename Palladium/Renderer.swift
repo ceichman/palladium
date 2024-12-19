@@ -18,7 +18,6 @@ class Renderer: NSObject, MTKViewDelegate {
     
     // has to be a var (not static let) because setupComputePipelineState requires access to view.device
     lazy private var invertColorPipelineState = setupComputePipelineState(shader: "invert_color")
-    lazy private var convolutionKernelShader = setupComputePipelineState(shader: "convolve_kernel")
 
     private var currentFrameTime = CACurrentMediaTime()
     static private let maxBlurKernelSize = 35
@@ -157,9 +156,25 @@ class Renderer: NSObject, MTKViewDelegate {
                 filter.encode(commandBuffer: commandBuffer, inPlaceTexture: &renderTarget)
             }
             
+            let sharpenSlider = options.getFloat(.sharpen)
+            if sharpenSlider > 0 {
+                let maxSharpen: Float = 20
+                let kernelSize = ConvolutionKernels.scaleKernelSize(sharpenSlider, maxKernelSize: 20)
+                let (size, weights) = ConvolutionKernels.sharpen(size: kernelSize)
+                // let (size, weights) = ConvolutionKernels.boxBlur(size: 11)
+                let filter = MPSImageConvolution(
+                    device: view.device!,
+                    kernelWidth: 3,
+                    kernelHeight: 3,
+                    weights: weights
+                )
+                filter.encode(commandBuffer: commandBuffer, inPlaceTexture: &renderTarget)
+            }
+
             if options.getBool(.invertColors) {
                 addPostProcessPass(pipeline: invertColorPipelineState, commandBuffer: commandBuffer, renderTarget: renderTarget)
             }
+            
             
             commandBuffer.present(drawable) // render to scene color (output)
             commandBuffer.commit()

@@ -8,7 +8,8 @@
 import Foundation
 import Metal
 
-typealias ConvolutionKernel = [Float]
+typealias KernelSize = Int
+typealias ConvolutionKernel = (KernelSize, [Float])
 
 class ConvolutionKernels {
     
@@ -16,7 +17,7 @@ class ConvolutionKernels {
     
     static func boxBlur(size: Int) -> ConvolutionKernel {
         let weights = [Float](repeating: 1 / Float(size * size), count: size * size)
-        return weights
+        return (size, weights)
     }
     
     // broken
@@ -32,7 +33,16 @@ class ConvolutionKernels {
                 weights.append(coeff * exp(numerator / denominator))
             }
         }
-        return weights
+        return (size, weights)
+    }
+    
+    static func sharpen(size: Int) -> ConvolutionKernel {
+        let weights: [Float] = [
+            0,     -1 / 4,     0,
+            -1 / 4, 5 / 4, -1 / 4,
+            0,     -1 / 4,     0
+        ]
+        return (3, weights)
     }
     
     // Returns a kernel size based on a normalized float value (0..<1).
