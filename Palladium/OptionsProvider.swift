@@ -31,7 +31,7 @@ extension RendererOptions {
         .wireframe: .bool(false),
         .specularHighlights: .bool(true),
         .blurSize: .float(0.5),
-        .sharpen: .float(0)
+        .sharpen: .bool(false)
     ]
     
     func getBool(_ index: OptionKey) -> Bool {
@@ -52,7 +52,7 @@ extension Dictionary<OptionKey, OptionType>.Keys {
 }
 
 protocol OptionsProvider {
-    func getOptions() -> (RendererOptions, KernelRenderPassCount)
+    func getOptions() -> RendererOptions
 }
 
 enum OptionType {

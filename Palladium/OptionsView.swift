@@ -155,14 +155,8 @@ class OptionsView: UIView, OptionsProvider, UITableViewDataSource, UITableViewDe
         })
     }
     
-    func getOptions() -> (RendererOptions, KernelRenderPassCount) {
-        // count convolution kernel passes for dependency tracking
-        // avoids having to copy the output texture at the end of the render pipeline
-        var kernelRenderPassCount = 0
-        kernelRenderPassCount = self.options.getBool(.boxBlur) ? kernelRenderPassCount + 1 : kernelRenderPassCount
-        kernelRenderPassCount = self.options.getBool(.gaussianBlur) ? kernelRenderPassCount + 1 : kernelRenderPassCount
-        kernelRenderPassCount = self.options.getBool(.invertColors) ? kernelRenderPassCount + 1 : kernelRenderPassCount
-        return (self.options, kernelRenderPassCount)
+    func getOptions() -> RendererOptions {
+        return self.options
     }
     
 }

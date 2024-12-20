@@ -21,3 +21,10 @@ kernel void invert_color(uint2 gid [[thread_position_in_grid]],
     // Invert the pixel's color by subtracting it from 1.0.
     outColor.write(1.0 - inColor.read(gid), gid);
 }
+
+kernel void copy(uint2 gid [[thread_position_in_grid]],
+                       texture2d<half, access::read> inColor [[texture(0)]],
+                       texture2d<half, access::write> outColor [[texture(1)]])
+{
+    outColor.write(inColor.read(gid), gid);
+}

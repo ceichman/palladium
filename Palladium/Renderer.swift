@@ -18,6 +18,7 @@ class Renderer: NSObject, MTKViewDelegate {
     
     // has to be a var (not static let) because setupComputePipelineState requires access to view.device
     lazy private var invertColorPipelineState = setupComputePipelineState(shader: "invert_color")
+    lazy private var copyPipelineState = setupComputePipelineState(shader: "copy")
 
     private var currentFrameTime = CACurrentMediaTime()
     static private let maxBlurKernelSize = 35
@@ -81,7 +82,7 @@ class Renderer: NSObject, MTKViewDelegate {
             // let the scene update what it wants before things are drawn
             // should be moved off the render thread eventually
             scene.preRenderUpdate(deltaTime)
-            let (options, numConvKernelPasses) = optionsProvider.getOptions()
+            let options = optionsProvider.getOptions()
             guard let drawable = view.currentDrawable else { return }
             var renderTarget = drawable.texture  // "var" used so &renderTarget can be passed as inout
             
@@ -156,25 +157,21 @@ class Renderer: NSObject, MTKViewDelegate {
                 filter.encode(commandBuffer: commandBuffer, inPlaceTexture: &renderTarget)
             }
             
-            let sharpenSlider = options.getFloat(.sharpen)
-            if sharpenSlider > 0 {
-                let maxSharpen: Float = 20
-                let kernelSize = ConvolutionKernels.scaleKernelSize(sharpenSlider, maxKernelSize: 20)
-                let (size, weights) = ConvolutionKernels.sharpen(size: kernelSize)
-                // let (size, weights) = ConvolutionKernels.boxBlur(size: 11)
+            if options.getBool(.sharpen) {
+                let (size, weights) = ConvolutionKernels.sharpen()
                 let filter = MPSImageConvolution(
                     device: view.device!,
-                    kernelWidth: 3,
-                    kernelHeight: 3,
+                    kernelWidth: size,
+                    kernelHeight: size,
                     weights: weights
                 )
-                filter.encode(commandBuffer: commandBuffer, inPlaceTexture: &renderTarget)
+                filter.encode(commandBuffer: commandBuffer, sourceTexture: renderTarget, destinationTexture: intermediateRenderTarget)
+                addCopyPass(commandBuffer: commandBuffer, from: intermediateRenderTarget, to: renderTarget)
             }
 
             if options.getBool(.invertColors) {
                 addPostProcessPass(pipeline: invertColorPipelineState, commandBuffer: commandBuffer, renderTarget: renderTarget)
             }
-            
             
             commandBuffer.present(drawable) // render to scene color (output)
             commandBuffer.commit()
@@ -187,16 +184,16 @@ class Renderer: NSObject, MTKViewDelegate {
     }
     
     // should only be used for one-to-one post-process effects (don't read pixels other than gid)
-    func addPostProcessPass(pipeline: MTLComputePipelineState, commandBuffer: MTLCommandBuffer, renderTarget: MTLTexture) {
+    func addPostProcessPass(pipeline: MTLComputePipelineState, commandBuffer: MTLCommandBuffer, inTexture: MTLTexture, outTexture: MTLTexture) {
         
         guard let encoder = commandBuffer.makeComputeCommandEncoder() else { return }
         encoder.label = "Post-processing pass: \(pipeline.description)"
         encoder.setComputePipelineState(pipeline)
-        encoder.setTexture(renderTarget, index: 0)
-        encoder.setTexture(renderTarget, index: 1)
+        encoder.setTexture(inTexture, index: 0)
+        encoder.setTexture(outTexture, index: 1)
 
-        let threadsPerGrid = MTLSize(width: renderTarget.width,
-                                     height: renderTarget.height,
+        let threadsPerGrid = MTLSize(width: inTexture.width,
+                                     height: inTexture.height,
                                      depth: 1)
         
         let w = pipeline.threadExecutionWidth
@@ -210,6 +207,14 @@ class Renderer: NSObject, MTKViewDelegate {
 
         encoder.dispatchThreadgroups(threadgroupsPerGrid, threadsPerThreadgroup: threadsPerThreadgroup)
         encoder.endEncoding()
+    }
+    
+    func addPostProcessPass(pipeline: MTLComputePipelineState, commandBuffer: MTLCommandBuffer, renderTarget: MTLTexture) {
+        addPostProcessPass(pipeline: pipeline, commandBuffer: commandBuffer, inTexture: renderTarget, outTexture: renderTarget)
+    }
+    
+    func addCopyPass(commandBuffer: MTLCommandBuffer, from: MTLTexture, to: MTLTexture) {
+        addPostProcessPass(pipeline: copyPipelineState, commandBuffer: commandBuffer, inTexture: from, outTexture: to)
     }
     
     private func setupComputePipelineState(shader: String) -> MTLComputePipelineState {
