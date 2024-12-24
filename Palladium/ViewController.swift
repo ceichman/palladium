@@ -77,7 +77,7 @@ class ViewController: UIViewController {
     }
     
     var lastLocation = CGPoint()
-    let sensitivity: Double = 0.02
+    let sensitivity: Double = 0.01
     @IBAction func didPan(_ sender: UIPanGestureRecognizer) {
         switch sender.state {
         case .began:
@@ -97,7 +97,7 @@ class ViewController: UIViewController {
     
     @IBAction func didPinch(_ sender: UIPinchGestureRecognizer) {
         let newFov = scene.camera.fovRadians / Float(sender.scale)
-        scene.camera.fovRadians = newFov.clamped(to: 15...85)
+        scene.camera.fovRadians = newFov.clamped(to: scene.camera.minFovRadians...scene.camera.maxFovRadians)
         sender.scale = 1.0
     }
     

@@ -114,3 +114,9 @@ extension Comparable {
         return min(max(self, limits.lowerBound), limits.upperBound)
     }
 }
+
+extension FloatingPoint {
+    func toRadians() -> Self {
+        return self * Self.pi / 180
+    }
+}

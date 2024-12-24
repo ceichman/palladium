@@ -39,6 +39,8 @@ class Camera {
     }
     
     var fovRadians: Float = 40.0 * Float.pi / 180.0
+    let minFovRadians = Float(15.0.toRadians())
+    let maxFovRadians = Float(85.0.toRadians())
 
     init(position: simd_float3) {
         self.position = position
