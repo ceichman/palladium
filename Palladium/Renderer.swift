@@ -15,11 +15,16 @@ class Renderer: NSObject, MTKViewDelegate {
     private var commandQueue: MTLCommandQueue!          // commands for the GPU
     private var defaultLibrary: MTLLibrary!
     private var intermediateRenderTarget: MTLTexture!  // used for flip-flopping source/dest textures during conv. kernel passes
+    private var motionVectorTexture: MTLTexture!
+    private var previousModelTransformations: [ObjectInstance] = []  // instances only hold their position data
+    private var previousViewProjection: ViewProjection?
     
     // has to be a var (not static let) because setupComputePipelineState requires access to view.device
     lazy private var invertColorPipelineState = setupComputePipelineState(shader: "invert_color")
     lazy private var copyPipelineState = setupComputePipelineState(shader: "copy")
-
+    lazy private var clearPipelineState = setupComputePipelineState(shader: "clear")
+    lazy private var motionBlurPipelineState = setupComputePipelineState(shader: "motion_blur")
+    
     private var currentFrameTime = CACurrentMediaTime()
     static private let maxBlurKernelSize = 35
     static private let maxBlurSigma = Float(maxBlurKernelSize) / 3.0  // pretty sure MPS uses a kernel size three times the given sigma
@@ -70,6 +75,15 @@ class Renderer: NSObject, MTKViewDelegate {
         intermediateTextureDescriptor.textureType = .type2D
         intermediateRenderTarget = device.makeTexture(descriptor: intermediateTextureDescriptor)
         
+        let motionVectorTextureDescriptor = MTLTextureDescriptor.texture2DDescriptor(
+            pixelFormat: .rg16Float,  // only use bg channels
+                width: Int(view.drawableSize.width),
+                height: Int(view.drawableSize.height),
+                mipmapped: false)
+        motionVectorTextureDescriptor.usage = [.renderTarget, .shaderRead, .shaderWrite]
+        motionVectorTextureDescriptor.textureType = .type2D
+        motionVectorTexture = device.makeTexture(descriptor: motionVectorTextureDescriptor)
+        
     }
     
     func draw(in view: MTKView) {
@@ -101,6 +115,9 @@ class Renderer: NSObject, MTKViewDelegate {
             /// Projection and transformation parameters
             let aspectRatio: Float = Float(view.bounds.height / view.bounds.width)
             var viewProjection = scene.camera.viewProjection(aspectRatio: aspectRatio)
+            if (previousViewProjection == nil) {
+                previousViewProjection = viewProjection
+            }
             
             guard let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderPassDescriptor) else { return }
             /// Common render encoder configuration
@@ -112,13 +129,17 @@ class Renderer: NSObject, MTKViewDelegate {
             renderEncoder.setRenderPipelineState(pipelineState)
             renderEncoder.setDepthStencilState(depthStencilState)
             
+            let shouldMotionBlur = options.getBool(.motionBlur)
+            
             for template in scene.objects {
                 let instances = template.instances
                 guard instances.count > 0 else { continue }
                 
                 var models = [ModelTransformation]()
+                var previousModels = [ModelTransformation]()
                 for instance in instances {
                     models.append(instance.modelTransformation())
+                    previousModels.append(instance.previousModelTransformation())
                 }
                 
                 let shouldSpecular = options.getBool(.specularHighlights)
@@ -132,12 +153,14 @@ class Renderer: NSObject, MTKViewDelegate {
                 renderEncoder.setVertexBuffer(template.vertexBuffer, offset: 0, index: 0)
                 renderEncoder.setVertexBytes(&viewProjection, length: MemoryLayout.size(ofValue: viewProjection), index: 1)
                 renderEncoder.setVertexBytes(models, length: MemoryLayout<ModelTransformation>.stride * models.count, index: 2)
+                renderEncoder.setVertexBytes(&previousViewProjection, length: MemoryLayout.size(ofValue: previousViewProjection), index: 3)
+                renderEncoder.setVertexBytes(previousModels, length: MemoryLayout<ModelTransformation>.stride * previousModels.count, index: 4)
                 let shouldTexture = options.getBool(.texturing)
                 renderEncoder.setFragmentTexture(shouldTexture ? template.material.colorTexture : nil, index: 0)
+                renderEncoder.setFragmentTexture(shouldMotionBlur ? motionVectorTexture : nil, index: 1)
                 renderEncoder.setFragmentBytes(&fragParams, length: MemoryLayout<FragmentParams>.stride, index: 0)
                 renderEncoder.setFragmentBytes(scene.directionalLights, length: MemoryLayout<DirectionalLight>.stride * Int(fragParams.numDirectionalLights), index: 1)
                 renderEncoder.setFragmentBytes(scene.pointLights, length: MemoryLayout<PointLight>.stride * Int(fragParams.numPointLights), index: 2)
-                renderEncoder.setFragmentBytes(&scene.camera.position, length: MemoryLayout.size(ofValue: scene.camera.position), index: 3)
                 // interpret vertexCount vertices as instanceCount instances of type .triangle
                 renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: template.mesh.triangles.count * 3, instanceCount: instances.count)
 
@@ -168,6 +191,10 @@ class Renderer: NSObject, MTKViewDelegate {
                 filter.encode(commandBuffer: commandBuffer, sourceTexture: renderTarget, destinationTexture: intermediateRenderTarget)
                 addCopyPass(commandBuffer: commandBuffer, from: intermediateRenderTarget, to: renderTarget)
             }
+            
+            if shouldMotionBlur {
+                // addMotionBlurPass(pipeline: motionBlurPipelineState , commandBuffer: commandBuffer, renderTarget: renderTarget, velocityTexture: motionVectorTexture)
+            }
 
             if options.getBool(.invertColors) {
                 addPostProcessPass(pipeline: invertColorPipelineState, commandBuffer: commandBuffer, renderTarget: renderTarget)
@@ -175,6 +202,11 @@ class Renderer: NSObject, MTKViewDelegate {
             
             commandBuffer.present(drawable) // render to scene color (output)
             commandBuffer.commit()
+            
+            // reset previous scene and view projection for next frame
+            previousViewProjection = viewProjection
+            scene.snapshotPrevious()
+            
         }
     }
     
@@ -211,6 +243,35 @@ class Renderer: NSObject, MTKViewDelegate {
     
     func addPostProcessPass(pipeline: MTLComputePipelineState, commandBuffer: MTLCommandBuffer, renderTarget: MTLTexture) {
         addPostProcessPass(pipeline: pipeline, commandBuffer: commandBuffer, inTexture: renderTarget, outTexture: renderTarget)
+    }
+    
+    func addMotionBlurPass(pipeline: MTLComputePipelineState, commandBuffer: MTLCommandBuffer, renderTarget: MTLTexture, velocityTexture: MTLTexture) {
+        
+        guard let encoder = commandBuffer.makeComputeCommandEncoder() else { return }
+        encoder.label = "Motion blur pass"
+        encoder.setComputePipelineState(pipeline)
+        encoder.setTexture(renderTarget, index: 0)
+        encoder.setTexture(renderTarget, index: 1)
+        encoder.setTexture(velocityTexture, index: 2)
+
+        let threadsPerGrid = MTLSize(width: renderTarget.width,
+                                     height: renderTarget.height,
+                                     depth: 1)
+        
+        let w = pipeline.threadExecutionWidth
+        let h = pipeline.maxTotalThreadsPerThreadgroup / w
+        let threadsPerThreadgroup = MTLSizeMake(w, h, 1)
+        
+        // add one for rounding error
+        let threadgroupsPerGrid = MTLSizeMake(threadsPerGrid.width / threadsPerThreadgroup.width + 1,
+                                              threadsPerGrid.height / threadsPerThreadgroup.height + 1,
+                                              1)
+
+        encoder.dispatchThreadgroups(threadgroupsPerGrid, threadsPerThreadgroup: threadsPerThreadgroup)
+        encoder.endEncoding()
+        
+        // clear out motion vectors
+        addPostProcessPass(pipeline: clearPipelineState, commandBuffer: commandBuffer, renderTarget: velocityTexture)
     }
     
     func addCopyPass(commandBuffer: MTLCommandBuffer, from: MTLTexture, to: MTLTexture) {

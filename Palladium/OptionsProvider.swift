@@ -19,6 +19,7 @@ enum OptionKey: String {
     case specularHighlights = "Specular Highlights"
     case blurSize = "Blur Size"
     case sharpen = "Sharpen"
+    case motionBlur = "Motion Blur"
     case none = "none"
 }
 
@@ -31,7 +32,8 @@ extension RendererOptions {
         .wireframe: .bool(false),
         .specularHighlights: .bool(true),
         .blurSize: .float(0.5),
-        .sharpen: .bool(false)
+        .sharpen: .bool(false),
+        .motionBlur: .bool(true)
     ]
     
     func getBool(_ index: OptionKey) -> Bool {

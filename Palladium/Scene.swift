@@ -19,6 +19,12 @@ class Scene {
         self.camera = camera
     }
     
+    func snapshotPrevious() -> Void {
+        for object in objects {
+            object.snapshotPrevious()
+        }
+    }
+    
 }
 
 extension Scene {

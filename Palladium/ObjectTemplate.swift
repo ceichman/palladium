@@ -55,9 +55,17 @@ class ObjectTemplate {
     }
     
     func newInstance() -> ObjectInstance {
-        let instance = ObjectInstance()
+        let instance = ObjectInstance(
+            position: simd_float3.zero, rotation: simd_float3.one, scale: simd_float3.one
+        )
         instances.append(instance)
         return instance
+    }
+    
+    func snapshotPrevious() -> Void {
+        for instance in instances {
+            instance.snapshotPrevious()
+        }
     }
     
 }
