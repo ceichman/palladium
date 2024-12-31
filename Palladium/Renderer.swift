@@ -193,7 +193,8 @@ class Renderer: NSObject, MTKViewDelegate {
             }
             
             if shouldMotionBlur {
-                // addMotionBlurPass(pipeline: motionBlurPipelineState , commandBuffer: commandBuffer, renderTarget: renderTarget, velocityTexture: motionVectorTexture)
+                addMotionBlurPass(pipeline: motionBlurPipelineState , commandBuffer: commandBuffer, inTexture: renderTarget, outTexture: intermediateRenderTarget, velocityTexture: motionVectorTexture)
+                addCopyPass(commandBuffer: commandBuffer, from: intermediateRenderTarget, to: renderTarget)
             }
 
             if options.getBool(.invertColors) {
@@ -245,17 +246,17 @@ class Renderer: NSObject, MTKViewDelegate {
         addPostProcessPass(pipeline: pipeline, commandBuffer: commandBuffer, inTexture: renderTarget, outTexture: renderTarget)
     }
     
-    func addMotionBlurPass(pipeline: MTLComputePipelineState, commandBuffer: MTLCommandBuffer, renderTarget: MTLTexture, velocityTexture: MTLTexture) {
+    func addMotionBlurPass(pipeline: MTLComputePipelineState, commandBuffer: MTLCommandBuffer, inTexture: MTLTexture, outTexture: MTLTexture, velocityTexture: MTLTexture) {
         
         guard let encoder = commandBuffer.makeComputeCommandEncoder() else { return }
         encoder.label = "Motion blur pass"
         encoder.setComputePipelineState(pipeline)
-        encoder.setTexture(renderTarget, index: 0)
-        encoder.setTexture(renderTarget, index: 1)
+        encoder.setTexture(inTexture, index: 0)
+        encoder.setTexture(outTexture, index: 1)
         encoder.setTexture(velocityTexture, index: 2)
 
-        let threadsPerGrid = MTLSize(width: renderTarget.width,
-                                     height: renderTarget.height,
+        let threadsPerGrid = MTLSize(width: inTexture.width,
+                                     height: inTexture.height,
                                      depth: 1)
         
         let w = pipeline.threadExecutionWidth
@@ -271,11 +272,15 @@ class Renderer: NSObject, MTKViewDelegate {
         encoder.endEncoding()
         
         // clear out motion vectors
-        addPostProcessPass(pipeline: clearPipelineState, commandBuffer: commandBuffer, renderTarget: velocityTexture)
+        addClearPass(commandBuffer: commandBuffer, target: velocityTexture)
     }
     
     func addCopyPass(commandBuffer: MTLCommandBuffer, from: MTLTexture, to: MTLTexture) {
         addPostProcessPass(pipeline: copyPipelineState, commandBuffer: commandBuffer, inTexture: from, outTexture: to)
+    }
+    
+    func addClearPass(commandBuffer: MTLCommandBuffer, target: MTLTexture) {
+        addPostProcessPass(pipeline: clearPipelineState, commandBuffer: commandBuffer, renderTarget: target)
     }
     
     private func setupComputePipelineState(shader: String) -> MTLComputePipelineState {

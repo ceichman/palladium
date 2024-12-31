@@ -34,12 +34,6 @@ vertex ProjectedVertex project_vertex(
     float4x4 prevModelMatrix = prevModel.translation * prevModel.scaling * prevModel.rotation;
     float4 prevProjectedPosition = prevViewProj.projection * prevViewProj.view * prevModelMatrix * vert;
     
-    if (prevProjectedPosition.w != 0.0) {
-        prevProjectedPosition.x /= prevProjectedPosition.w;
-        prevProjectedPosition.y /= prevProjectedPosition.w;
-        prevProjectedPosition.z /= prevProjectedPosition.w;
-    }
-    
     return {
         .position = projectedPosition,
         .prevPosition = prevProjectedPosition,
@@ -63,6 +57,7 @@ fragment half4 basic_fragment(ProjectedVertex vert [[stage_in]],
                               constant DirectionalLight *directionalLights [[ buffer(1) ]],
                               constant PointLight *pointLights [[ buffer(2) ]])
 {
+    
     half4 flatColor;
     // compute diffuse color using either vertex color or object color texture
     if (is_null_texture(colorTexture)) {
@@ -76,15 +71,20 @@ fragment half4 basic_fragment(ProjectedVertex vert [[stage_in]],
     // populate screen-space velocity vector texture
     if (!is_null_texture(velocityTexture)) {
         uint2 viewportSize = uint2(velocityTexture.get_width(), velocityTexture.get_height());
-        // prevPosition between
+        // first normalize prev position in w, like [[ position ]] during raster
+        if (vert.prevPosition.w != 0.0) {
+            vert.prevPosition.x /= vert.prevPosition.w;
+            vert.prevPosition.y /= vert.prevPosition.w;
+            vert.prevPosition.z /= vert.prevPosition.w;
+        }
+        // now prevPosition is on [-1, 1] x [-1, 1]
         float2 interpolated = (vert.prevPosition.xy + 1) / 2.0;
+        // scale into view dimensions
         float2 prevNormalized = float2(interpolated.x * viewportSize.x, interpolated.y * viewportSize.y);
-        // position in [-1, 1]
-        // (position + 1) / 2 interpolates into [0, 1]
-        // half4 velocity4 = half4(velocity.x, velocity.y, 0, 0);
+        // flip y axis (??)
+        prevNormalized.y = velocityTexture.get_height() - prevNormalized.y;
         half4 velocity4 = half4(vert.position.x - prevNormalized.x, vert.position.y - prevNormalized.y, 0, 0);
         velocityTexture.write(velocity4, uint2(vert.position.xy));
-        return velocity4;
     }
     
     float ambient = 0.1;

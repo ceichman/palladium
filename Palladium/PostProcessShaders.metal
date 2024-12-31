@@ -27,10 +27,10 @@ kernel void motion_blur(uint2 gid [[ thread_position_in_grid ]],
                         texture2d<half, access::write> outColor [[ texture(1) ]],
                         texture2d<half, access::read> velocityTexture [[ texture(2) ]])
 {
-    int numSamples = 32;  // put an option for this later
+    int numSamples = 40;  // put an option for this later
     int samplesTaken = 1;
     half2 coord = half2(gid);
-    half2 velocity = velocityTexture.read(gid).xy;
+    half2 velocity = velocityTexture.read(gid).xy / 50;
     half4 color = inColor.read(gid);
     for (int i = 0; i < numSamples; ++i) {
         coord += velocity;
