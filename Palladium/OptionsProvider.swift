@@ -21,7 +21,7 @@ enum OptionKey: String {
     case sharpen = "Sharpen"
     case motionBlur = "Motion Blur"
     case bloom = "Bloom"
-    case bloomStrength = "Bloom Strength"
+    case bloomStrength = "Bloom Power"
     case bloomRadius = "Bloom Radius"
     case none = "none"
 }

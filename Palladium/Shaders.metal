@@ -120,11 +120,10 @@ fragment FragmentOut basic_fragment(ProjectedVertex vert [[stage_in]],
 
     // bright-pass filter into mask
     float luminance = 0.299 * color.r + 0.587 * color.g + 0.114 * color.b;
-    float lumThreshold = 0.6;
     
     return {
         sceneColor,
-        (luminance > lumThreshold) ? sceneColor : float4(0, 0, 0, 0)
+        (luminance > params.bloomThreshold) ? sceneColor : float4(0, 0, 0, 0)
     };
 }
                         

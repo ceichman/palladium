@@ -40,6 +40,7 @@ struct PointLight {
 struct FragmentParams {
     var cameraPosition: simd_float3
     var specularCoefficient: Float
+    var bloomThreshold: Float
     var numDirectionalLights: CInt
     var numPointLights: CInt
 }

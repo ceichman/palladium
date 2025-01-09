@@ -152,6 +152,7 @@ class Renderer: NSObject, MTKViewDelegate {
                 var fragParams = FragmentParams(
                     cameraPosition: scene.camera.position,
                     specularCoefficient: shouldSpecular ? template.material.specularCoefficient : 0.0,
+                    bloomThreshold: 1.0 - options.getFloat(.bloomStrength),
                     numDirectionalLights: CInt(scene.directionalLights.count),
                     numPointLights: CInt(scene.pointLights.count)
                 )
