@@ -21,6 +21,8 @@ enum OptionKey: String {
     case sharpen = "Sharpen"
     case motionBlur = "Motion Blur"
     case bloom = "Bloom"
+    case bloomStrength = "Bloom Strength"
+    case bloomRadius = "Bloom Radius"
     case none = "none"
 }
 
@@ -35,7 +37,9 @@ extension RendererOptions {
         .blurSize: .float(0.5),
         .sharpen: .bool(false),
         .motionBlur: .bool(true),
-        .bloom: .bool(true)
+        .bloom: .bool(true),
+        .bloomStrength: .float(0.5),
+        .bloomRadius: .float(0.5)
     ]
     
     func getBool(_ index: OptionKey) -> Bool {

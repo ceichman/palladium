@@ -175,8 +175,10 @@ class Renderer: NSObject, MTKViewDelegate {
             
             // must come first so mask texture in intermediateRT isn't overwritten
             if options.getBool(.bloom) {
+                // remap bloom radius slider [0.0, 20.0]
+                let sigma = options.getFloat(.bloomRadius) * 20.0
                 // first blur the hpf texture
-                let blur = MPSImageGaussianBlur(device: view.device!, sigma: 10.0) // play with sigma?
+                let blur = MPSImageGaussianBlur(device: view.device!, sigma: sigma) // play with sigma?
                 blur.encode(commandBuffer: commandBuffer, inPlaceTexture: &intermediateRenderTarget)
                 // then composite it onto frame
                 addCompositePass(commandBuffer: commandBuffer, inA: renderTarget, inB: intermediateRenderTarget, out: renderTarget)
