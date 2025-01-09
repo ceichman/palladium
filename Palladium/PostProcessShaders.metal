@@ -58,3 +58,12 @@ kernel void clear(uint2 gid [[thread_position_in_grid]],
 {
     outColor.write(half4(0, 0, 0, 0), gid);
 }
+
+
+kernel void composite_unweighted(uint2 gid [[thread_position_in_grid]],
+                       texture2d<half, access::read> inColorA [[texture(0)]],
+                       texture2d<half, access::read> inColorB [[texture(1)]],
+                       texture2d<half, access::write> outColor [[texture(2)]])
+{
+    outColor.write(saturate(inColorA.read(gid) + inColorB.read(gid)), gid);
+}

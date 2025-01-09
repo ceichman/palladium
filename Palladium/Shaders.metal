@@ -50,7 +50,7 @@ vertex ProjectedVertex project_vertex(
 constexpr sampler textureSampler (mag_filter::linear,
                                   min_filter::linear);
 
-fragment half4 basic_fragment(ProjectedVertex vert [[stage_in]],
+fragment FragmentOut basic_fragment(ProjectedVertex vert [[stage_in]],
                               texture2d<half> colorTexture [[ texture(0)]],
                               texture2d<half, access::write> velocityTexture [[ texture(1) ]],
                               constant FragmentParams &params [[ buffer(0) ]],
@@ -116,7 +116,16 @@ fragment half4 basic_fragment(ProjectedVertex vert [[stage_in]],
     }
     
     color = saturate(color);
-    return half4(half3(color), 1.0);
+    float4 sceneColor = float4(float3(color), 1.0);
+
+    // bright-pass filter into mask
+    float luminance = 0.299 * color.r + 0.587 * color.g + 0.114 * color.b;
+    float lumThreshold = 0.6;
+    
+    return {
+        sceneColor,
+        (luminance > lumThreshold) ? sceneColor : float4(0, 0, 0, 0)
+    };
 }
                         
                            

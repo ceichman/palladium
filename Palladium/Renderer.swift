@@ -23,6 +23,7 @@ class Renderer: NSObject, MTKViewDelegate {
     lazy private var invertColorPipelineState = setupComputePipelineState(shader: "invert_color")
     lazy private var copyPipelineState = setupComputePipelineState(shader: "copy")
     lazy private var clearPipelineState = setupComputePipelineState(shader: "clear")
+    lazy private var compositePipelineState = setupComputePipelineState(shader: "composite_unweighted")
     lazy private var motionBlurPipelineState = setupComputePipelineState(shader: "motion_blur")
     
     private var currentFrameTime = CACurrentMediaTime()
@@ -52,7 +53,8 @@ class Renderer: NSObject, MTKViewDelegate {
         pipelineStateDescriptor.fragmentFunction = fragmentShader
         pipelineStateDescriptor.depthAttachmentPixelFormat = .depth32Float
         pipelineStateDescriptor.colorAttachments[0].pixelFormat = .bgra8Unorm
-        
+        pipelineStateDescriptor.colorAttachments[1].pixelFormat = .bgra8Unorm
+
         pipelineState = try! device.makeRenderPipelineState(descriptor: pipelineStateDescriptor)
 
         commandQueue = device.makeCommandQueue()
@@ -101,15 +103,19 @@ class Renderer: NSObject, MTKViewDelegate {
             var renderTarget = drawable.texture  // "var" used so &renderTarget can be passed as inout
             
             // setup geometry pass
+            let black = MTLClearColor( red: 0, green: 0, blue: 0, alpha: 0 )
+
             guard let renderPassDescriptor = view.currentRenderPassDescriptor else { return }
+            // two color attachments (FragmentOut), one for scene color (renderTarget)
+            // and one for bloom mask (intermediateRT)
             renderPassDescriptor.colorAttachments[0].texture = renderTarget
             renderPassDescriptor.colorAttachments[0].loadAction = .clear
-            renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColor(
-                red: 0,
-                green: 0,
-                blue: 0,
-                alpha: 0
-            )
+            renderPassDescriptor.colorAttachments[0].clearColor = black
+            
+            renderPassDescriptor.colorAttachments[1].texture = intermediateRenderTarget
+            renderPassDescriptor.colorAttachments[1].loadAction = .clear
+            renderPassDescriptor.colorAttachments[1].clearColor = black
+            
             let commandBuffer = commandQueue.makeCommandBuffer()!
             
             /// Projection and transformation parameters
@@ -166,6 +172,15 @@ class Renderer: NSObject, MTKViewDelegate {
 
             }
             renderEncoder.endEncoding()
+            
+            // must come first so mask texture in intermediateRT isn't overwritten
+            if options.getBool(.bloom) {
+                // first blur the hpf texture
+                let blur = MPSImageGaussianBlur(device: view.device!, sigma: 10.0) // play with sigma?
+                blur.encode(commandBuffer: commandBuffer, inPlaceTexture: &intermediateRenderTarget)
+                // then composite it onto frame
+                addCompositePass(commandBuffer: commandBuffer, inA: renderTarget, inB: intermediateRenderTarget, out: renderTarget)
+            }
             
             if options.getBool(.boxBlur) {
                 let sliderValue = options.getFloat(.blurSize)  // [0, 1)
@@ -281,6 +296,32 @@ class Renderer: NSObject, MTKViewDelegate {
     
     func addClearPass(commandBuffer: MTLCommandBuffer, target: MTLTexture) {
         addPostProcessPass(pipeline: clearPipelineState, commandBuffer: commandBuffer, renderTarget: target)
+    }
+    
+    func addCompositePass(commandBuffer: MTLCommandBuffer, inA: MTLTexture, inB: MTLTexture, out: MTLTexture) {
+        
+        guard let encoder = commandBuffer.makeComputeCommandEncoder() else { return }
+        encoder.label = "Motion blur pass"
+        encoder.setComputePipelineState(compositePipelineState)
+        encoder.setTexture(inA, index: 0)
+        encoder.setTexture(inB, index: 1)
+        encoder.setTexture(out, index: 2)
+
+        let threadsPerGrid = MTLSize(width: inA.width,
+                                     height: inA.height,
+                                     depth: 1)
+        
+        let w = compositePipelineState.threadExecutionWidth
+        let h = compositePipelineState.maxTotalThreadsPerThreadgroup / w
+        let threadsPerThreadgroup = MTLSizeMake(w, h, 1)
+        
+        // add one for rounding error
+        let threadgroupsPerGrid = MTLSizeMake(threadsPerGrid.width / threadsPerThreadgroup.width + 1,
+                                              threadsPerGrid.height / threadsPerThreadgroup.height + 1,
+                                              1)
+
+        encoder.dispatchThreadgroups(threadgroupsPerGrid, threadsPerThreadgroup: threadsPerThreadgroup)
+        encoder.endEncoding()
     }
     
     private func setupComputePipelineState(shader: String) -> MTLComputePipelineState {
