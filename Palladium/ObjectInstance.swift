@@ -46,7 +46,7 @@ class ObjectInstance {
         return ModelTransformation(translation: translation, rotation: rotation, scaling: scaling)
     }
     
-    func snapshotPrevious() -> Void {
+    func saveCurrentAsPrevious() -> Void {
         previousPosition = position
         previousRotation = rotation
         previousScale = scale

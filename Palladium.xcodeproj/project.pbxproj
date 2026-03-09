@@ -3,15 +3,13 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		1B9CEDBB2CE2C4CE0087C604 /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B9CEDBA2CE2C4CE0087C604 /* Renderer.swift */; };
-		D53B50342D11F1A700C91678 /* OptionsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D53B50332D11F1A700C91678 /* OptionsProvider.swift */; };
-		D53B50362D1229FD00C91678 /* OptionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D53B50352D1229FD00C91678 /* OptionCell.swift */; };
 		D5453ED32D0137FA00FA98F9 /* Scene.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5453ED22D0137FA00FA98F9 /* Scene.swift */; };
-		D5559C162CE2E23800019348 /* meshes in Resources */ = {isa = PBXBuildFile; fileRef = D5559C152CE2E23800019348 /* meshes */; };
+		D5559C162CE2E23800019348 /* Meshes in Resources */ = {isa = PBXBuildFile; fileRef = D5559C152CE2E23800019348 /* Meshes */; };
 		D5694C1A2CF7D1A600E446B0 /* ObjectTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5694C192CF7D1A600E446B0 /* ObjectTemplate.swift */; };
 		D590E2712D0B84BB00B0069A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D590E2702D0B84BB00B0069A /* AppDelegate.swift */; };
 		D59191882D08E20D0034397F /* Material.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59191872D08E20D0034397F /* Material.swift */; };
@@ -27,13 +25,10 @@
 		D5A5131C2CD190310050E219 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = D5A5131B2CD190310050E219 /* Shaders.metal */; };
 		D5AEB37A2CD9398600C30959 /* Mesh.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5AEB3792CD9398600C30959 /* Mesh.swift */; };
 		D5AEB37C2CD939EE00C30959 /* GeometryTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5AEB37B2CD939EE00C30959 /* GeometryTypes.swift */; };
-		D5AEB3822CD996D200C30959 /* OBJParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5AEB3812CD996D200C30959 /* OBJParser.swift */; };
 		D5B094A92CEE62470035A28C /* Camera.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5B094A82CEE62470035A28C /* Camera.swift */; };
 		D5B094AB2CEE628E0035A28C /* MatrixUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5B094AA2CEE628E0035A28C /* MatrixUtils.swift */; };
 		D5B75BEA2D0CD5820009C7A9 /* ShaderTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5B75BE92D0CD5820009C7A9 /* ShaderTypes.swift */; };
 		D5B75BEC2D0CF8D50009C7A9 /* ConvolutionKernels.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5B75BEB2D0CF8D50009C7A9 /* ConvolutionKernels.swift */; };
-		D5C573A42D0FA19E0025736D /* OptionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5C573A32D0FA19E0025736D /* OptionsView.swift */; };
-		D5F50ABA2CDAD12F00B27E0D /* LineReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5F50AB92CDAD12F00B27E0D /* LineReader.swift */; };
 		D5F71ECF2CF5196100DFE2AE /* PostProcessShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = D5F71ECE2CF5196100DFE2AE /* PostProcessShaders.metal */; };
 /* End PBXBuildFile section */
 
@@ -56,11 +51,9 @@
 
 /* Begin PBXFileReference section */
 		1B9CEDBA2CE2C4CE0087C604 /* Renderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Renderer.swift; sourceTree = "<group>"; };
-		D53B50332D11F1A700C91678 /* OptionsProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionsProvider.swift; sourceTree = "<group>"; };
-		D53B50352D1229FD00C91678 /* OptionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionCell.swift; sourceTree = "<group>"; };
 		D5453ED22D0137FA00FA98F9 /* Scene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Scene.swift; sourceTree = "<group>"; };
 		D5453ED42D013F8200FA98F9 /* ShaderTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShaderTypes.h; sourceTree = "<group>"; };
-		D5559C152CE2E23800019348 /* meshes */ = {isa = PBXFileReference; lastKnownFileType = folder; path = meshes; sourceTree = "<group>"; };
+		D5559C152CE2E23800019348 /* Meshes */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Meshes; sourceTree = "<group>"; };
 		D5694C192CF7D1A600E446B0 /* ObjectTemplate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectTemplate.swift; sourceTree = "<group>"; };
 		D590E2702D0B84BB00B0069A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		D59191872D08E20D0034397F /* Material.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Material.swift; sourceTree = "<group>"; };
@@ -80,15 +73,17 @@
 		D5A5131B2CD190310050E219 /* Shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
 		D5AEB3792CD9398600C30959 /* Mesh.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mesh.swift; sourceTree = "<group>"; };
 		D5AEB37B2CD939EE00C30959 /* GeometryTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeometryTypes.swift; sourceTree = "<group>"; };
-		D5AEB3812CD996D200C30959 /* OBJParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OBJParser.swift; sourceTree = "<group>"; };
 		D5B094A82CEE62470035A28C /* Camera.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Camera.swift; sourceTree = "<group>"; };
 		D5B094AA2CEE628E0035A28C /* MatrixUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatrixUtils.swift; sourceTree = "<group>"; };
 		D5B75BE92D0CD5820009C7A9 /* ShaderTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShaderTypes.swift; sourceTree = "<group>"; };
 		D5B75BEB2D0CF8D50009C7A9 /* ConvolutionKernels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConvolutionKernels.swift; sourceTree = "<group>"; };
-		D5C573A32D0FA19E0025736D /* OptionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionsView.swift; sourceTree = "<group>"; };
-		D5F50AB92CDAD12F00B27E0D /* LineReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineReader.swift; sourceTree = "<group>"; };
 		D5F71ECE2CF5196100DFE2AE /* PostProcessShaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = PostProcessShaders.metal; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		3F1CFE822F5F6F1400A3E6C6 /* Parsing */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Parsing; sourceTree = "<group>"; };
+		3F1CFE832F5F6F6200A3E6C6 /* Options */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Options; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		D5A512E52CD18CD90050E219 /* Frameworks */ = {
@@ -138,17 +133,14 @@
 		D5A512EA2CD18CD90050E219 /* Palladium */ = {
 			isa = PBXGroup;
 			children = (
-				D5559C152CE2E23800019348 /* meshes */,
+				D5559C152CE2E23800019348 /* Meshes */,
 				D590E2702D0B84BB00B0069A /* AppDelegate.swift */,
 				D5A512ED2CD18CD90050E219 /* SceneDelegate.swift */,
 				D5A512EF2CD18CD90050E219 /* ViewController.swift */,
-				D5AEB3812CD996D200C30959 /* OBJParser.swift */,
-				D5F50AB92CDAD12F00B27E0D /* LineReader.swift */,
+				3F1CFE822F5F6F1400A3E6C6 /* Parsing */,
 				D5B094AA2CEE628E0035A28C /* MatrixUtils.swift */,
 				1B9CEDBA2CE2C4CE0087C604 /* Renderer.swift */,
-				D53B50332D11F1A700C91678 /* OptionsProvider.swift */,
-				D5C573A32D0FA19E0025736D /* OptionsView.swift */,
-				D53B50352D1229FD00C91678 /* OptionCell.swift */,
+				3F1CFE832F5F6F6200A3E6C6 /* Options */,
 				D5B094A82CEE62470035A28C /* Camera.swift */,
 				D5B75BEB2D0CF8D50009C7A9 /* ConvolutionKernels.swift */,
 				D5453ED22D0137FA00FA98F9 /* Scene.swift */,
@@ -200,6 +192,10 @@
 			buildRules = (
 			);
 			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				3F1CFE822F5F6F1400A3E6C6 /* Parsing */,
+				3F1CFE832F5F6F6200A3E6C6 /* Options */,
 			);
 			name = Palladium;
 			productName = Palladium;
@@ -293,7 +289,7 @@
 				D5A512F52CD18CDA0050E219 /* Assets.xcassets in Resources */,
 				D5A512F82CD18CDA0050E219 /* Base in Resources */,
 				D5A512F32CD18CD90050E219 /* Base in Resources */,
-				D5559C162CE2E23800019348 /* meshes in Resources */,
+				D5559C162CE2E23800019348 /* Meshes in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -319,8 +315,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				D5B094A92CEE62470035A28C /* Camera.swift in Sources */,
-				D5F50ABA2CDAD12F00B27E0D /* LineReader.swift in Sources */,
-				D53B50362D1229FD00C91678 /* OptionCell.swift in Sources */,
 				D5A5131C2CD190310050E219 /* Shaders.metal in Sources */,
 				D591918C2D09039E0034397F /* ObjectInstance.swift in Sources */,
 				D5AEB37A2CD9398600C30959 /* Mesh.swift in Sources */,
@@ -330,15 +324,12 @@
 				D5F71ECF2CF5196100DFE2AE /* PostProcessShaders.metal in Sources */,
 				D5453ED32D0137FA00FA98F9 /* Scene.swift in Sources */,
 				D59191882D08E20D0034397F /* Material.swift in Sources */,
-				D53B50342D11F1A700C91678 /* OptionsProvider.swift in Sources */,
 				D5AEB37C2CD939EE00C30959 /* GeometryTypes.swift in Sources */,
-				D5C573A42D0FA19E0025736D /* OptionsView.swift in Sources */,
 				D5694C1A2CF7D1A600E446B0 /* ObjectTemplate.swift in Sources */,
 				D5A512EE2CD18CD90050E219 /* SceneDelegate.swift in Sources */,
 				D5B094AB2CEE628E0035A28C /* MatrixUtils.swift in Sources */,
 				D590E2712D0B84BB00B0069A /* AppDelegate.swift in Sources */,
 				D5B75BEC2D0CF8D50009C7A9 /* ConvolutionKernels.swift in Sources */,
-				D5AEB3822CD996D200C30959 /* OBJParser.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -2,6 +2,8 @@
 //  LineReader.swift
 //  Palladium
 //
+//  Helper class for progressive per-line text parsing.
+//
 
 import Foundation
 

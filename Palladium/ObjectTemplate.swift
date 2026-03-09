@@ -33,7 +33,7 @@ class ObjectTemplate {
     }
     
     convenience init(meshName: String) {
-        let meshURL = Self.mainBundle.url(forResource: meshName, withExtension: "obj", subdirectory: "meshes")!
+        let meshURL = Self.mainBundle.url(forResource: meshName, withExtension: "obj", subdirectory: "Meshes")!
         self.init(mesh: Mesh.fromOBJ(url: meshURL, calculateOrigin: true))
     }
 
@@ -64,7 +64,7 @@ class ObjectTemplate {
     
     func snapshotPrevious() -> Void {
         for instance in instances {
-            instance.snapshotPrevious()
+            instance.saveCurrentAsPrevious()
         }
     }
     

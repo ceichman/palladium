@@ -1,5 +1,5 @@
 //
-//  LoadVertices.swift
+//  Mesh.swift
 //  Palladium
 //
 //  Created by Eichman, Charlotte on 11/4/24.
@@ -9,6 +9,7 @@ import Foundation
 import Metal
 import simd
 
+// A single mesh obejct in the scene.
 class Mesh {
     var triangles: [Triangle]!
     var vertices: [ApplicationVertex]!
@@ -30,11 +31,13 @@ class Mesh {
         normalizeNormals()
     }
     
+    // Initialize this instance using an array of triangles and an array of vertices.
     private init(triangles: [Triangle], vertices: [ApplicationVertex]) {
         self.triangles = triangles
         self.vertices = vertices
     }
     
+    // Normalize this mesh's normals, in-place.
     func normalizeNormals() {
         for i in vertices.indices {
             if vertices[i].normal == simd_float3.zero { continue }
@@ -53,6 +56,7 @@ class Mesh {
         return (result, result.count * MemoryLayout<Vertex>.stride)
     }
     
+    // Creates and returns a Mesh object by parsing a .obj text file.
     static func fromOBJ(url: URL, calculateOrigin: Bool = false) -> Mesh {
         
         let reader = LineReader(url: url)!
