@@ -9,16 +9,16 @@ import Foundation
 import Metal
 import simd
 
-// A single mesh obejct in the scene.
+/// A single mesh, owned by an ObjectTemplate.
 class Mesh {
     
     var triangles: [Triangle]!
     var vertices: [ApplicationVertex]!
     
-    // Calculates the normal vectors for an array of triangles, updating values in-place.
-    // Each triangle in self.triangles should be made up of elements of vertices: [Vertex].
-    // Each vertex in each triangle should be a member of vertices.
-    // Only needed upon loading new vertex data.
+    /// Calculates the normal vectors for an array of triangles, updating values in-place.
+    /// Each triangle in self.triangles should be made up of elements of vertices: [Vertex].
+    /// Each vertex in each triangle should be a member of vertices.
+    /// Only needed upon loading new vertex data.
     func calculateNormals() {
         for i in self.triangles.indices {
             let vertA = self.vertices[self.triangles[i].a]
@@ -35,13 +35,13 @@ class Mesh {
         normalizeNormals()
     }
     
-    // Initialize this instance using an array of triangles and an array of vertices.
+    /// Initialize this instance using an array of triangles and an array of vertices.
     private init(triangles: [Triangle], vertices: [ApplicationVertex]) {
         self.triangles = triangles
         self.vertices = vertices
     }
     
-    // Normalize this mesh's normals, in-place.
+    /// Normalize this mesh's normals, in-place.
     func normalizeNormals() {
         for i in vertices.indices {
             if vertices[i].normal == simd_float3.zero { continue }
@@ -49,17 +49,7 @@ class Mesh {
         }
     }
     
-    // Returns the array of shader-ready vertices and the size of the resulting buffer.
-    func vertexArray() -> ([Vertex], Int) {
-        var result: [Vertex] = []
-        for triangle in triangles {
-            result.append(Vertex(vertices[triangle.a]))
-            result.append(Vertex(vertices[triangle.b]))
-            result.append(Vertex(vertices[triangle.c]))
-        }
-        return (result, result.count * MemoryLayout<Vertex>.stride)
-    }
-    
+    /// Returns an MTLBuffer holding the vertices for this mesh.
     func makeVertexBuffer(device: MTLDevice) -> MTLBuffer {
         var array = [Vertex]()
         for appVertex in self.vertices
@@ -70,6 +60,7 @@ class Mesh {
         return device.makeBuffer(bytes: array, length: array.count * MemoryLayout<Vertex>.stride, options: [])!
     }
     
+    /// Returns an MTLBuffer holding the indices for this mesh.
     func makeIndexBuffer(device: MTLDevice) -> MTLBuffer {
         typealias IndexType = UInt16
         var array = [IndexType]()

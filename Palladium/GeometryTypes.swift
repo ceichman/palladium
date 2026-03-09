@@ -8,9 +8,10 @@
 import Foundation
 import simd
 
-// Used to collect info before normals are calculated. Defined as a class
-// to take advantage of pass-by-reference so that multiple Triangle primitives can
-// reuse the same underlying vertex during normal calculation.
+/// Used to collect info before normals are calculated.
+/// Defined as a class to take advantage of pass-by-reference so that multiple Triangle primitives can
+/// reuse the same underlying vertex during normal calculation.
+/// TODO: Deprecate this. We can just as easily index the vertex buffers instead of passing these around by ref.
 class ApplicationVertex {
     var position = simd_float3(0, 0, 0)
     var color = simd_float4(0, 0, 0, 0)
@@ -30,7 +31,7 @@ class ApplicationVertex {
     }
 }
 
-// Used to actually pass vertex data to the GPU after normals are calculated.
+/// Used to actually pass vertex data to the GPU when vertex buffers are generated.
 struct Vertex {
     var position: simd_float3
     var color: simd_float4
@@ -45,7 +46,7 @@ struct Vertex {
     }
 }
 
-// Three indices into a vertex buffer.
+/// Three indices into a vertex buffer.
 struct Triangle {
     var a: Int
     var b: Int
