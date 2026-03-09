@@ -45,12 +45,10 @@ struct Vertex {
     }
 }
 
-// should this be a class instead, so that vertices shared by multiple
-// triangles aren't copied several times?
-// will that cause problems when data is passed to GPU?
+// Three indices into a vertex buffer.
 struct Triangle {
-    var a: ApplicationVertex
-    var b: ApplicationVertex
-    var c: ApplicationVertex
+    var a: Int
+    var b: Int
+    var c: Int
 }
 

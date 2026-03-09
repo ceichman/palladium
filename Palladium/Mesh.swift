@@ -11,6 +11,7 @@ import simd
 
 // A single mesh obejct in the scene.
 class Mesh {
+    
     var triangles: [Triangle]!
     var vertices: [ApplicationVertex]!
     
@@ -20,12 +21,15 @@ class Mesh {
     // Only needed upon loading new vertex data.
     func calculateNormals() {
         for i in self.triangles.indices {
-            let lineA = self.triangles[i].b.position - self.triangles[i].a.position
-            let lineB = self.triangles[i].c.position - self.triangles[i].a.position
-            let cross = cross(lineA, lineB)
-            self.triangles[i].a.normal += cross
-            self.triangles[i].b.normal += cross
-            self.triangles[i].c.normal += cross
+            let vertA = self.vertices[self.triangles[i].a]
+            let vertB = self.vertices[self.triangles[i].b]
+            let vertC = self.vertices[self.triangles[i].c]
+            let lineA = vertB.position - vertA.position
+            let lineB = vertC.position - vertA.position
+            let cross = normalize(cross(lineA, lineB))
+            self.vertices[self.triangles[i].a].normal += cross
+            self.vertices[self.triangles[i].b].normal += cross
+            self.vertices[self.triangles[i].c].normal += cross
         }
         // normalize all vertices
         normalizeNormals()
@@ -49,11 +53,33 @@ class Mesh {
     func vertexArray() -> ([Vertex], Int) {
         var result: [Vertex] = []
         for triangle in triangles {
-            result.append(Vertex(triangle.a))
-            result.append(Vertex(triangle.b))
-            result.append(Vertex(triangle.c))
+            result.append(Vertex(vertices[triangle.a]))
+            result.append(Vertex(vertices[triangle.b]))
+            result.append(Vertex(vertices[triangle.c]))
         }
         return (result, result.count * MemoryLayout<Vertex>.stride)
+    }
+    
+    func makeVertexBuffer(device: MTLDevice) -> MTLBuffer {
+        var array = [Vertex]()
+        for appVertex in self.vertices
+        {
+            // convert to value-type
+            array.append(Vertex(appVertex))
+        }
+        return device.makeBuffer(bytes: array, length: array.count * MemoryLayout<Vertex>.stride, options: [])!
+    }
+    
+    func makeIndexBuffer(device: MTLDevice) -> MTLBuffer {
+        typealias IndexType = UInt16
+        var array = [IndexType]()
+        for triangle in self.triangles
+        {
+            array.append(IndexType(triangle.a))
+            array.append(IndexType(triangle.b))
+            array.append(IndexType(triangle.c))
+        }
+        return device.makeBuffer(bytes: array, length: array.count * MemoryLayout<IndexType>.stride, options: [])!
     }
     
     // Creates and returns a Mesh object by parsing a .obj text file.
@@ -95,7 +121,7 @@ class Mesh {
                 if vertexNormalIndices.count > i { vertices[vertexIndices[i]].normal += normals[vertexNormalIndices[i]] } // accumulate and normalize later
                 if vertexTextureCoordIndices.count > i { vertices[vertexIndices[i]].uvs = uvs[vertexTextureCoordIndices[i]] }
             }
-            triangles.append(Triangle(a: vertices[vertexIndices[0]], b: vertices[vertexIndices[1]], c: vertices[vertexIndices[2]]))
+            triangles.append(Triangle(a: vertexIndices[0], b: vertexIndices[1], c: vertexIndices[2]))
         }
         
         parser.onUnknown = { (line) in } // do nothing

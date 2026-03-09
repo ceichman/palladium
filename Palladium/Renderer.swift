@@ -169,7 +169,8 @@ class Renderer: NSObject, MTKViewDelegate {
                 renderEncoder.setFragmentBytes(scene.directionalLights, length: MemoryLayout<DirectionalLight>.stride * Int(fragParams.numDirectionalLights), index: 1)
                 renderEncoder.setFragmentBytes(scene.pointLights, length: MemoryLayout<PointLight>.stride * Int(fragParams.numPointLights), index: 2)
                 // interpret vertexCount vertices as instanceCount instances of type .triangle
-                renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: template.mesh.triangles.count * 3, instanceCount: instances.count)
+                // renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: template.mesh.triangles.count * 3, instanceCount: instances.count)
+                renderEncoder.drawIndexedPrimitives(type: .triangle, indexCount: template.mesh.triangles.count * 3, indexType: .uint16, indexBuffer: template.indexBuffer, indexBufferOffset: 0)
 
             }
             renderEncoder.endEncoding()

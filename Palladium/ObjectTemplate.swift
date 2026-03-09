@@ -23,8 +23,11 @@ class ObjectTemplate {
     var instances: [ObjectInstance] = []
     
     lazy var vertexBuffer: MTLBuffer = {
-        let (vertexArray, dataSize) = mesh.vertexArray()
-        return Self.device.makeBuffer(bytes: vertexArray, length: dataSize, options: [])!
+        return self.mesh.makeVertexBuffer(device: Self.device)
+    }()
+    
+    lazy var indexBuffer: MTLBuffer = {
+        return self.mesh.makeIndexBuffer(device: Self.device)
     }()
 
     convenience init(meshName: String, textureName: String) {
