@@ -22,14 +22,11 @@
 		D5A513032CD18CDA0050E219 /* PalladiumTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A513022CD18CDA0050E219 /* PalladiumTests.swift */; };
 		D5A5130D2CD18CDA0050E219 /* PalladiumUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A5130C2CD18CDA0050E219 /* PalladiumUITests.swift */; };
 		D5A5130F2CD18CDA0050E219 /* PalladiumUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A5130E2CD18CDA0050E219 /* PalladiumUITestsLaunchTests.swift */; };
-		D5A5131C2CD190310050E219 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = D5A5131B2CD190310050E219 /* Shaders.metal */; };
 		D5AEB37A2CD9398600C30959 /* Mesh.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5AEB3792CD9398600C30959 /* Mesh.swift */; };
 		D5AEB37C2CD939EE00C30959 /* GeometryTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5AEB37B2CD939EE00C30959 /* GeometryTypes.swift */; };
 		D5B094A92CEE62470035A28C /* Camera.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5B094A82CEE62470035A28C /* Camera.swift */; };
 		D5B094AB2CEE628E0035A28C /* MatrixUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5B094AA2CEE628E0035A28C /* MatrixUtils.swift */; };
-		D5B75BEA2D0CD5820009C7A9 /* ShaderTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5B75BE92D0CD5820009C7A9 /* ShaderTypes.swift */; };
 		D5B75BEC2D0CF8D50009C7A9 /* ConvolutionKernels.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5B75BEB2D0CF8D50009C7A9 /* ConvolutionKernels.swift */; };
-		D5F71ECF2CF5196100DFE2AE /* PostProcessShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = D5F71ECE2CF5196100DFE2AE /* PostProcessShaders.metal */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -52,7 +49,6 @@
 /* Begin PBXFileReference section */
 		1B9CEDBA2CE2C4CE0087C604 /* Renderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Renderer.swift; sourceTree = "<group>"; };
 		D5453ED22D0137FA00FA98F9 /* Scene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Scene.swift; sourceTree = "<group>"; };
-		D5453ED42D013F8200FA98F9 /* ShaderTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShaderTypes.h; sourceTree = "<group>"; };
 		D5559C152CE2E23800019348 /* Meshes */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Meshes; sourceTree = "<group>"; };
 		D5694C192CF7D1A600E446B0 /* ObjectTemplate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectTemplate.swift; sourceTree = "<group>"; };
 		D590E2702D0B84BB00B0069A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -70,19 +66,17 @@
 		D5A513082CD18CDA0050E219 /* PalladiumUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PalladiumUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D5A5130C2CD18CDA0050E219 /* PalladiumUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PalladiumUITests.swift; sourceTree = "<group>"; };
 		D5A5130E2CD18CDA0050E219 /* PalladiumUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PalladiumUITestsLaunchTests.swift; sourceTree = "<group>"; };
-		D5A5131B2CD190310050E219 /* Shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
 		D5AEB3792CD9398600C30959 /* Mesh.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mesh.swift; sourceTree = "<group>"; };
 		D5AEB37B2CD939EE00C30959 /* GeometryTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeometryTypes.swift; sourceTree = "<group>"; };
 		D5B094A82CEE62470035A28C /* Camera.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Camera.swift; sourceTree = "<group>"; };
 		D5B094AA2CEE628E0035A28C /* MatrixUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatrixUtils.swift; sourceTree = "<group>"; };
-		D5B75BE92D0CD5820009C7A9 /* ShaderTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShaderTypes.swift; sourceTree = "<group>"; };
 		D5B75BEB2D0CF8D50009C7A9 /* ConvolutionKernels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConvolutionKernels.swift; sourceTree = "<group>"; };
-		D5F71ECE2CF5196100DFE2AE /* PostProcessShaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = PostProcessShaders.metal; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		3F1CFE822F5F6F1400A3E6C6 /* Parsing */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Parsing; sourceTree = "<group>"; };
 		3F1CFE832F5F6F6200A3E6C6 /* Options */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Options; sourceTree = "<group>"; };
+		3F1CFE8E2F626A8700A3E6C6 /* Shaders */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Shaders; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -149,10 +143,7 @@
 				D59191872D08E20D0034397F /* Material.swift */,
 				D591918B2D09039E0034397F /* ObjectInstance.swift */,
 				D5AEB37B2CD939EE00C30959 /* GeometryTypes.swift */,
-				D5B75BE92D0CD5820009C7A9 /* ShaderTypes.swift */,
-				D5A5131B2CD190310050E219 /* Shaders.metal */,
-				D5453ED42D013F8200FA98F9 /* ShaderTypes.h */,
-				D5F71ECE2CF5196100DFE2AE /* PostProcessShaders.metal */,
+				3F1CFE8E2F626A8700A3E6C6 /* Shaders */,
 				D5A512F12CD18CD90050E219 /* Main.storyboard */,
 				D5A512F42CD18CDA0050E219 /* Assets.xcassets */,
 				D5A512F62CD18CDA0050E219 /* LaunchScreen.storyboard */,
@@ -196,6 +187,7 @@
 			fileSystemSynchronizedGroups = (
 				3F1CFE822F5F6F1400A3E6C6 /* Parsing */,
 				3F1CFE832F5F6F6200A3E6C6 /* Options */,
+				3F1CFE8E2F626A8700A3E6C6 /* Shaders */,
 			);
 			name = Palladium;
 			productName = Palladium;
@@ -315,13 +307,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				D5B094A92CEE62470035A28C /* Camera.swift in Sources */,
-				D5A5131C2CD190310050E219 /* Shaders.metal in Sources */,
 				D591918C2D09039E0034397F /* ObjectInstance.swift in Sources */,
 				D5AEB37A2CD9398600C30959 /* Mesh.swift in Sources */,
-				D5B75BEA2D0CD5820009C7A9 /* ShaderTypes.swift in Sources */,
 				D5A512F02CD18CD90050E219 /* ViewController.swift in Sources */,
 				1B9CEDBB2CE2C4CE0087C604 /* Renderer.swift in Sources */,
-				D5F71ECF2CF5196100DFE2AE /* PostProcessShaders.metal in Sources */,
 				D5453ED32D0137FA00FA98F9 /* Scene.swift in Sources */,
 				D59191882D08E20D0034397F /* Material.swift in Sources */,
 				D5AEB37C2CD939EE00C30959 /* GeometryTypes.swift in Sources */,

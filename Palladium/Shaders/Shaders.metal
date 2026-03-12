@@ -127,7 +127,3 @@ fragment FragmentOut basic_fragment(ProjectedVertex vert [[stage_in]],
     };
 }
                         
-                           
-                           
-
-
