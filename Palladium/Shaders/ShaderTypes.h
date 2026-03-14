@@ -5,12 +5,10 @@
 //  Created by Eichman, Charlotte on 12/4/24.
 //
 
+#import <simd/simd.h>
+
 #ifndef ShaderTypes_h
 #define ShaderTypes_h
-
-
-#endif /* ShaderTypes_h */
-
 
 struct ViewProjection {
     simd_float4x4 view;
@@ -65,3 +63,5 @@ struct FragmentOut {
     simd_float4 sceneColor [[ color(0) ]];
     simd_float4 bloomMask  [[ color(1) ]];
 };
+
+#endif /* ShaderTypes_h */
