@@ -4,14 +4,15 @@ import MetalPerformanceShaders
 import simd
 
 /// This class focuses solely on rendering logic.
-
 class Renderer: NSObject, MTKViewDelegate {
     
     var view: MTKView
     var scene: Scene
     var optionsProvider: OptionsProvider
+    lazy private var options = optionsProvider.getOptions()
     private var pipelineState: MTLRenderPipelineState!  // how to process vertex and fragment shaders during rendering
     private var depthStencilState: MTLDepthStencilState!
+    private var skyboxDepthStencilState: MTLDepthStencilState!
     private var commandQueue: MTLCommandQueue!          // commands for the GPU
     private var defaultLibrary: MTLLibrary!
     private var intermediateRenderTarget: MTLTexture!  // used for flip-flopping source/dest textures during conv. kernel passes
@@ -43,7 +44,8 @@ class Renderer: NSObject, MTKViewDelegate {
     private func setup() {
         view.framebufferOnly = false
         guard let device = view.device else { return }
-        /// Set up render pipeline
+        
+        // Set up render pipeline
         defaultLibrary = device.makeDefaultLibrary()
         let fragmentShader = defaultLibrary.makeFunction(name: "basic_fragment")
         let vertexShader = defaultLibrary.makeFunction(name: "project_vertex")
@@ -62,11 +64,15 @@ class Renderer: NSObject, MTKViewDelegate {
         view.depthStencilPixelFormat = .depth32Float
         view.clearDepth = 1.0
 
-    /// Initialize depth stencil state
+        // Initialize depth stencil state
         let depthStencilDescriptor = MTLDepthStencilDescriptor()
         depthStencilDescriptor.depthCompareFunction = .less
         depthStencilDescriptor.isDepthWriteEnabled = true
         depthStencilState = device.makeDepthStencilState(descriptor: depthStencilDescriptor)
+        
+        let skyboxDepthStencilDescriptor = MTLDepthStencilDescriptor()
+        depthStencilDescriptor.isDepthWriteEnabled = false
+        skyboxDepthStencilState = device.makeDepthStencilState(descriptor: skyboxDepthStencilDescriptor)
         
         let intermediateTextureDescriptor = MTLTextureDescriptor.texture2DDescriptor(
             pixelFormat: view.colorPixelFormat,
@@ -98,83 +104,22 @@ class Renderer: NSObject, MTKViewDelegate {
             // let the scene update what it wants before things are drawn
             // should be moved off the render thread eventually
             scene.preRenderUpdate(deltaTime)
-            let options = optionsProvider.getOptions()
+            self.options = optionsProvider.getOptions()
             guard let drawable = view.currentDrawable else { return }
             var renderTarget = drawable.texture  // "var" used so &renderTarget can be passed as inout
             
-            // setup geometry pass
-            let black = MTLClearColor( red: 0, green: 0, blue: 0, alpha: 0 )
-
-            guard let renderPassDescriptor = view.currentRenderPassDescriptor else { return }
-            // two color attachments (FragmentOut), one for scene color (renderTarget)
-            // and one for bloom mask (intermediateRT)
-            renderPassDescriptor.colorAttachments[0].texture = renderTarget
-            renderPassDescriptor.colorAttachments[0].loadAction = .clear
-            renderPassDescriptor.colorAttachments[0].clearColor = black
-            
-            renderPassDescriptor.colorAttachments[1].texture = intermediateRenderTarget
-            renderPassDescriptor.colorAttachments[1].loadAction = .clear
-            renderPassDescriptor.colorAttachments[1].clearColor = black
-            
-            let commandBuffer = commandQueue.makeCommandBuffer()!
-            
-            /// Projection and transformation parameters
+            // Projection and transformation parameters
             let aspectRatio: Float = Float(view.bounds.height / view.bounds.width)
             var viewProjection = scene.camera.viewProjection(aspectRatio: aspectRatio)
             if (previousViewProjection == nil) {
                 previousViewProjection = viewProjection
             }
             
-            guard let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderPassDescriptor) else { return }
-            /// Common render encoder configuration
-            renderEncoder.label = "Geometry pass"
-            let shouldWireframe = options.getBool(.wireframe)
-            renderEncoder.setTriangleFillMode(shouldWireframe ? .lines : .fill)
-            renderEncoder.setCullMode(.back)
-            renderEncoder.setFrontFacing(.clockwise)
-            renderEncoder.setRenderPipelineState(pipelineState)
-            renderEncoder.setDepthStencilState(depthStencilState)
+            // setup geometry pass
+            let commandBuffer = commandQueue.makeCommandBuffer()!
+            addBasePass(commandBuffer: commandBuffer, sceneTexture: renderTarget, viewProjection: &viewProjection)
             
-            let shouldMotionBlur = options.getBool(.motionBlur)
-            
-            for template in scene.objects {
-                let instances = template.instances
-                guard instances.count > 0 else { continue }
-                
-                var models = [ModelTransformation]()
-                var previousModels = [ModelTransformation]()
-                for instance in instances {
-                    models.append(instance.modelTransformation())
-                    previousModels.append(instance.previousModelTransformation())
-                }
-                
-                let shouldSpecular = options.getBool(.specularHighlights)
-                var fragParams = FragmentParams(
-                    cameraPosition: scene.camera.position,
-                    specularCoefficient: shouldSpecular ? template.material.specularCoefficient : 0.0,
-                    bloomThreshold: 1.0 - options.getFloat(.bloomStrength),
-                    numDirectionalLights: CInt(scene.directionalLights.count),
-                    numPointLights: CInt(scene.pointLights.count)
-                )
 
-                renderEncoder.setVertexBuffer(template.vertexBuffer, offset: 0, index: 0)
-                renderEncoder.setVertexBytes(&viewProjection, length: MemoryLayout.size(ofValue: viewProjection), index: 1)
-                renderEncoder.setVertexBytes(models, length: MemoryLayout<ModelTransformation>.stride * models.count, index: 2)
-                renderEncoder.setVertexBytes(&previousViewProjection, length: MemoryLayout.size(ofValue: previousViewProjection), index: 3)
-                renderEncoder.setVertexBytes(previousModels, length: MemoryLayout<ModelTransformation>.stride * previousModels.count, index: 4)
-                let shouldTexture = options.getBool(.texturing)
-                renderEncoder.setFragmentTexture(shouldTexture ? template.material.colorTexture : nil, index: 0)
-                renderEncoder.setFragmentTexture(shouldMotionBlur ? motionVectorTexture : nil, index: 1)
-                renderEncoder.setFragmentBytes(&fragParams, length: MemoryLayout<FragmentParams>.stride, index: 0)
-                renderEncoder.setFragmentBytes(scene.directionalLights, length: MemoryLayout<DirectionalLight>.stride * Int(fragParams.numDirectionalLights), index: 1)
-                renderEncoder.setFragmentBytes(scene.pointLights, length: MemoryLayout<PointLight>.stride * Int(fragParams.numPointLights), index: 2)
-                // interpret vertexCount vertices as instanceCount instances of type .triangle
-                // renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: template.mesh.triangles.count * 3, instanceCount: instances.count)
-                renderEncoder.drawIndexedPrimitives(type: .triangle, indexCount: template.mesh.triangles.count * 3, indexType: .uint16, indexBuffer: template.indexBuffer, indexBufferOffset: 0)
-
-            }
-            renderEncoder.endEncoding()
-            
             // must come first so mask texture in intermediateRT isn't overwritten
             if options.getBool(.bloom) {
                 // remap bloom radius slider [0.0, 20.0]
@@ -211,6 +156,7 @@ class Renderer: NSObject, MTKViewDelegate {
                 addCopyPass(commandBuffer: commandBuffer, from: intermediateRenderTarget, to: renderTarget)
             }
             
+            let shouldMotionBlur = options.getBool(.motionBlur)
             if shouldMotionBlur {
                 addMotionBlurPass(pipeline: motionBlurPipelineState , commandBuffer: commandBuffer, inTexture: renderTarget, outTexture: intermediateRenderTarget, velocityTexture: motionVectorTexture)
                 addCopyPass(commandBuffer: commandBuffer, from: intermediateRenderTarget, to: renderTarget)
@@ -233,6 +179,72 @@ class Renderer: NSObject, MTKViewDelegate {
     // placeholder for now, come back and add dynamic buffer resizing
     func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
         //
+    }
+    
+    func addBasePass(commandBuffer: MTLCommandBuffer, sceneTexture: MTLTexture, viewProjection: inout ViewProjection) {
+        
+        let black = MTLClearColor(red: 0, green: 0, blue: 0, alpha: 0)
+        
+        guard let renderPassDescriptor = view.currentRenderPassDescriptor else { return }
+        // two color attachments (FragmentOut), one for scene color (renderTarget)
+        // and one for bloom mask (intermediateRT)
+        renderPassDescriptor.colorAttachments[0].texture = sceneTexture
+        renderPassDescriptor.colorAttachments[0].loadAction = .clear
+        renderPassDescriptor.colorAttachments[0].clearColor = black
+        
+        renderPassDescriptor.colorAttachments[1].texture = intermediateRenderTarget
+        renderPassDescriptor.colorAttachments[1].loadAction = .clear
+        renderPassDescriptor.colorAttachments[1].clearColor = black
+        
+        guard let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderPassDescriptor) else { return }
+        // Common render encoder configuration
+        renderEncoder.label = "Geometry pass"
+        let shouldWireframe = options.getBool(.wireframe)
+        renderEncoder.setTriangleFillMode(shouldWireframe ? .lines : .fill)
+        renderEncoder.setCullMode(.back)
+        renderEncoder.setFrontFacing(.clockwise)
+        renderEncoder.setRenderPipelineState(pipelineState)
+        renderEncoder.setDepthStencilState(depthStencilState)
+        
+        let shouldMotionBlur = options.getBool(.motionBlur)
+        
+        for template in scene.objects {
+            let instances = template.instances
+            guard instances.count > 0 else { continue }
+            
+            var models = [ModelTransformation]()
+            var previousModels = [ModelTransformation]()
+            for instance in instances {
+                models.append(instance.modelTransformation())
+                previousModels.append(instance.previousModelTransformation())
+            }
+            
+            let shouldSpecular = options.getBool(.specularHighlights)
+            var fragParams = FragmentParams(
+                cameraPosition: scene.camera.position,
+                specularCoefficient: shouldSpecular ? template.material.specularCoefficient : 0.0,
+                bloomThreshold: 1.0 - options.getFloat(.bloomStrength),
+                numDirectionalLights: CInt(scene.directionalLights.count),
+                numPointLights: CInt(scene.pointLights.count)
+            )
+
+            renderEncoder.setVertexBuffer(template.vertexBuffer, offset: 0, index: 0)
+            renderEncoder.setVertexBytes(&viewProjection, length: MemoryLayout.size(ofValue: viewProjection), index: 1)
+            renderEncoder.setVertexBytes(models, length: MemoryLayout<ModelTransformation>.stride * models.count, index: 2)
+            renderEncoder.setVertexBytes(&previousViewProjection, length: MemoryLayout.size(ofValue: previousViewProjection), index: 3)
+            renderEncoder.setVertexBytes(previousModels, length: MemoryLayout<ModelTransformation>.stride * previousModels.count, index: 4)
+            let shouldTexture = options.getBool(.texturing)
+            renderEncoder.setFragmentTexture(shouldTexture ? template.material.colorTexture : nil, index: 0)
+            renderEncoder.setFragmentTexture(shouldMotionBlur ? motionVectorTexture : nil, index: 1)
+            renderEncoder.setFragmentBytes(&fragParams, length: MemoryLayout<FragmentParams>.stride, index: 0)
+            renderEncoder.setFragmentBytes(scene.directionalLights, length: MemoryLayout<DirectionalLight>.stride * Int(fragParams.numDirectionalLights), index: 1)
+            renderEncoder.setFragmentBytes(scene.pointLights, length: MemoryLayout<PointLight>.stride * Int(fragParams.numPointLights), index: 2)
+            // interpret vertexCount vertices as instanceCount instances of type .triangle
+            // renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: template.mesh.triangles.count * 3, instanceCount: instances.count)
+            renderEncoder.drawIndexedPrimitives(type: .triangle, indexCount: template.mesh.triangles.count * 3, indexType: .uint16, indexBuffer: template.indexBuffer, indexBufferOffset: 0)
+
+        }
+        renderEncoder.endEncoding()
     }
     
     // should only be used for one-to-one post-process effects (don't read pixels other than gid)
