@@ -12,6 +12,7 @@ class Renderer: NSObject, MTKViewDelegate {
     lazy private var options = optionsProvider.getOptions()
     private var pipelineState: MTLRenderPipelineState!  // how to process vertex and fragment shaders during rendering
     private var depthStencilState: MTLDepthStencilState!
+    // TODO: Unused. Compute shader deployed instead..
     private var skyboxDepthStencilState: MTLDepthStencilState!
     private var commandQueue: MTLCommandQueue!          // commands for the GPU
     private var defaultLibrary: MTLLibrary!
@@ -21,6 +22,7 @@ class Renderer: NSObject, MTKViewDelegate {
     private var previousViewProjection: ViewProjection?
     
     // has to be a var (not static let) because setupComputePipelineState requires access to view.device
+    lazy private var skyboxPipelineState = setupComputePipelineState(shader: "skybox")
     lazy private var invertColorPipelineState = setupComputePipelineState(shader: "invert_color")
     lazy private var copyPipelineState = setupComputePipelineState(shader: "copy")
     lazy private var clearPipelineState = setupComputePipelineState(shader: "clear")
@@ -56,14 +58,14 @@ class Renderer: NSObject, MTKViewDelegate {
         pipelineStateDescriptor.depthAttachmentPixelFormat = .depth32Float
         pipelineStateDescriptor.colorAttachments[0].pixelFormat = .bgra8Unorm
         pipelineStateDescriptor.colorAttachments[1].pixelFormat = .bgra8Unorm
-
+        
         pipelineState = try! device.makeRenderPipelineState(descriptor: pipelineStateDescriptor)
-
+        
         commandQueue = device.makeCommandQueue()
-
+        
         view.depthStencilPixelFormat = .depth32Float
         view.clearDepth = 1.0
-
+        
         // Initialize depth stencil state
         let depthStencilDescriptor = MTLDepthStencilDescriptor()
         depthStencilDescriptor.depthCompareFunction = .less
@@ -85,9 +87,9 @@ class Renderer: NSObject, MTKViewDelegate {
         
         let motionVectorTextureDescriptor = MTLTextureDescriptor.texture2DDescriptor(
             pixelFormat: .rg16Float,  // only use bg channels
-                width: Int(view.drawableSize.width),
-                height: Int(view.drawableSize.height),
-                mipmapped: false)
+            width: Int(view.drawableSize.width),
+            height: Int(view.drawableSize.height),
+            mipmapped: false)
         motionVectorTextureDescriptor.usage = [.renderTarget, .shaderRead, .shaderWrite]
         motionVectorTextureDescriptor.textureType = .type2D
         motionVectorTexture = device.makeTexture(descriptor: motionVectorTextureDescriptor)
@@ -115,11 +117,13 @@ class Renderer: NSObject, MTKViewDelegate {
                 previousViewProjection = viewProjection
             }
             
-            // setup geometry pass
             let commandBuffer = commandQueue.makeCommandBuffer()!
+            
+            addSkyboxPass(commandBuffer: commandBuffer, outTexture: renderTarget, forwardViewProjection: viewProjection)
+            
+            // setup geometry pass
             addBasePass(commandBuffer: commandBuffer, sceneTexture: renderTarget, viewProjection: &viewProjection)
             
-
             // must come first so mask texture in intermediateRT isn't overwritten
             if options.getBool(.bloom) {
                 // remap bloom radius slider [0.0, 20.0]
@@ -161,7 +165,7 @@ class Renderer: NSObject, MTKViewDelegate {
                 addMotionBlurPass(pipeline: motionBlurPipelineState , commandBuffer: commandBuffer, inTexture: renderTarget, outTexture: intermediateRenderTarget, velocityTexture: motionVectorTexture)
                 addCopyPass(commandBuffer: commandBuffer, from: intermediateRenderTarget, to: renderTarget)
             }
-
+            
             if options.getBool(.invertColors) {
                 addPostProcessPass(pipeline: invertColorPipelineState, commandBuffer: commandBuffer, renderTarget: renderTarget)
             }
@@ -183,18 +187,17 @@ class Renderer: NSObject, MTKViewDelegate {
     
     func addBasePass(commandBuffer: MTLCommandBuffer, sceneTexture: MTLTexture, viewProjection: inout ViewProjection) {
         
-        let black = MTLClearColor(red: 0, green: 0, blue: 0, alpha: 0)
+        // let black = MTLClearColor(red: 0, green: 0, blue: 0, alpha: 0)
         
         guard let renderPassDescriptor = view.currentRenderPassDescriptor else { return }
         // two color attachments (FragmentOut), one for scene color (renderTarget)
         // and one for bloom mask (intermediateRT)
         renderPassDescriptor.colorAttachments[0].texture = sceneTexture
-        renderPassDescriptor.colorAttachments[0].loadAction = .clear
-        renderPassDescriptor.colorAttachments[0].clearColor = black
+        renderPassDescriptor.colorAttachments[0].loadAction = .load
         
         renderPassDescriptor.colorAttachments[1].texture = intermediateRenderTarget
-        renderPassDescriptor.colorAttachments[1].loadAction = .clear
-        renderPassDescriptor.colorAttachments[1].clearColor = black
+        renderPassDescriptor.colorAttachments[1].loadAction = .load
+        // renderPassDescriptor.colorAttachments[1].clearColor = black
         
         guard let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderPassDescriptor) else { return }
         // Common render encoder configuration
@@ -227,7 +230,7 @@ class Renderer: NSObject, MTKViewDelegate {
                 numDirectionalLights: CInt(scene.directionalLights.count),
                 numPointLights: CInt(scene.pointLights.count)
             )
-
+            
             renderEncoder.setVertexBuffer(template.vertexBuffer, offset: 0, index: 0)
             renderEncoder.setVertexBytes(&viewProjection, length: MemoryLayout.size(ofValue: viewProjection), index: 1)
             renderEncoder.setVertexBytes(models, length: MemoryLayout<ModelTransformation>.stride * models.count, index: 2)
@@ -242,9 +245,41 @@ class Renderer: NSObject, MTKViewDelegate {
             // interpret vertexCount vertices as instanceCount instances of type .triangle
             // renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: template.mesh.triangles.count * 3, instanceCount: instances.count)
             renderEncoder.drawIndexedPrimitives(type: .triangle, indexCount: template.mesh.triangles.count * 3, indexType: .uint16, indexBuffer: template.indexBuffer, indexBufferOffset: 0)
-
+            
         }
         renderEncoder.endEncoding()
+    }
+    
+    func addSkyboxPass(commandBuffer: MTLCommandBuffer, outTexture: MTLTexture, forwardViewProjection: ViewProjection)
+    {
+        guard (scene.skyboxTexture != nil) else { return }
+        guard let encoder = commandBuffer.makeComputeCommandEncoder() else { return }
+        encoder.label = "Skybox pass: \(skyboxPipelineState.description)"
+        encoder.setComputePipelineState(skyboxPipelineState)
+        encoder.setTexture(scene.skyboxTexture, index: 0)
+        encoder.setTexture(outTexture, index: 1)
+        
+        let threadsPerGrid = MTLSize(width: outTexture.width,
+                                     height: outTexture.height,
+                                     depth: 1)
+        
+        // TODO: Refactor this common code with addPostProcessPass below into addFullscreenPass.
+        let w = skyboxPipelineState.threadExecutionWidth
+        let h = skyboxPipelineState.maxTotalThreadsPerThreadgroup / w
+        let threadsPerThreadgroup = MTLSizeMake(w, h, 1)
+        
+        // TODO: No check for zero determinant in (projection * view) matrix
+        let inverseViewProjection = (forwardViewProjection.projection * forwardViewProjection.view).inverse
+        var passParams = SkyboxParams(inverseViewProjection: inverseViewProjection)
+        
+        // add one for rounding error
+        let threadgroupsPerGrid = MTLSizeMake(threadsPerGrid.width / threadsPerThreadgroup.width + 1,
+                                              threadsPerGrid.height / threadsPerThreadgroup.height + 1,
+                                              1)
+
+        encoder.setBytes(&passParams, length: MemoryLayout<SkyboxParams>.stride, index: 0)
+        encoder.dispatchThreadgroups(threadgroupsPerGrid, threadsPerThreadgroup: threadsPerThreadgroup)
+        encoder.endEncoding()
     }
     
     // should only be used for one-to-one post-process effects (don't read pixels other than gid)

@@ -64,4 +64,8 @@ struct FragmentOut {
     simd_float4 bloomMask  [[ color(1) ]];
 };
 
+struct SkyboxParams {
+    simd_float4x4 inverseViewProjection;
+};
+
 #endif /* ShaderTypes_h */

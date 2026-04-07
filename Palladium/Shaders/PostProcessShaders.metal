@@ -67,3 +67,21 @@ kernel void composite_unweighted(uint2 gid [[thread_position_in_grid]],
 {
     outColor.write(saturate(inColorA.read(gid) + inColorB.read(gid)), gid);
 }
+
+kernel void skybox(uint2 gid [[thread_position_in_grid]],
+                   texturecube<half> skyboxTexture [[texture(0)]],
+                   texture2d<half, access::write> outColor [[texture(1)]],
+                   constant SkyboxParams &params [[buffer(0)]])
+                
+{
+    constexpr sampler textureSampler (mag_filter::linear,
+                                      min_filter::linear);
+    float4 deviceCoords = float4(  // remap to NDC
+        ((float) gid.x / outColor.get_width() - 0.5) * 2.0,
+        ((float) gid.y / outColor.get_height() - 0.5) * 2.0, 1, 1);
+    float4 deprojected = params.inverseViewProjection * deviceCoords;
+    // deprojected /= deprojected.w;
+    float3 sampleCoord = normalize(deprojected.xyz);
+    half4 color = skyboxTexture.sample(textureSampler, sampleCoord);
+    outColor.write(saturate(color), gid);
+}

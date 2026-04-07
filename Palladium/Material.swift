@@ -10,8 +10,9 @@ import Metal
 import MetalKit
 
 class Material {
+    // TODO: Get the device from the renderer's MTKView and store it somewhere everyone can access it instead of calling CreateSystemDefaultDevice.
     private static let device = MTLCreateSystemDefaultDevice()!
-    private static let textureLoader = MTKTextureLoader(device: device)
+    public static let textureLoader = MTKTextureLoader(device: device)
     private static let mainBundle = Bundle.main
     
     var colorTexture: MTLTexture?

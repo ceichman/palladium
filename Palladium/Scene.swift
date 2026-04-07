@@ -7,12 +7,14 @@
 
 import Foundation
 import simd
+import Metal
 
 class Scene {
     var objects: [ObjectTemplate] = []
     var directionalLights: [DirectionalLight] = []
     var pointLights: [PointLight]  = []
     var camera: Camera
+    var skyboxTexture: MTLTexture?
     var preRenderUpdate: (CFTimeInterval) -> Void = {_ in }
     
     init(camera: Camera) {
@@ -70,6 +72,8 @@ extension Scene {
         pineappleInstance.rotation = simd_float3(2.0 * Float.pi / 5, 5 * Float.pi / 6, Float.pi / 3)
         pineappleInstance.scale = simd_float3.one * 4
         
+        // import cubemap texture
+        let skyboxTexture = try! Material.textureLoader.newTexture(name: "skybox1", scaleFactor: 1.0, bundle: Bundle.main)
         
         let camera = Camera(position: simd_float3(8.5, 3.2, 6.1))
         camera.yaw = -2.8
@@ -108,6 +112,7 @@ extension Scene {
         scene.pointLights = [pointLight]
         scene.preRenderUpdate = preRenderUpdate
         scene.objects = objects
+        scene.skyboxTexture = skyboxTexture
         return scene
     }()
 }
