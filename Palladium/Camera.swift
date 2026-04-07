@@ -73,4 +73,5 @@ class Camera {
         )
         return ViewProjection(view: self.getViewMatrix(), projection: proj)
     }
+    
 }

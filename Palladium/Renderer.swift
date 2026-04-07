@@ -269,7 +269,16 @@ class Renderer: NSObject, MTKViewDelegate {
         let threadsPerThreadgroup = MTLSizeMake(w, h, 1)
         
         // TODO: No check for zero determinant in (projection * view) matrix
-        let inverseViewProjection = (forwardViewProjection.projection * forwardViewProjection.view).inverse
+        var correctedView = forwardViewProjection.view
+        // The view matrix needs to be corrected by using a negated value for pitch to account for NDC transformation during raster stage
+        // Negate the row first, then the column
+        // TODO: Move this logic into an alternative method in the Camera.
+        correctedView[0][1] = -correctedView[0][1]
+        correctedView[1][1] = -correctedView[1][1]
+        correctedView[2][1] = -correctedView[2][1]
+        correctedView[3][1] = -correctedView[3][1]
+        correctedView.columns.1 = -correctedView.columns.1
+        let inverseViewProjection = (forwardViewProjection.projection * correctedView).inverse
         var passParams = SkyboxParams(inverseViewProjection: inverseViewProjection)
         
         // add one for rounding error
