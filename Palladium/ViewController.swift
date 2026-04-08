@@ -87,7 +87,10 @@ class ViewController: UIViewController {
             let location = sender.location(in: metalView)
             let (dx, dy) = (location.x - lastLocation.x, location.y - lastLocation.y)
             lastLocation = location
-            scene.camera.pitch = (scene.camera.pitch - dy * sensitivity).clamped(to: -Double.pi / 2.0...Double.pi / 2.0)
+            // TODO: Do this better
+            let smallNumber = 0.00001
+            let pitchClampRange = ((-Double.pi / 2) + smallNumber)...((Double.pi / 2) - smallNumber)
+            scene.camera.pitch = (scene.camera.pitch - dy * sensitivity).clamped(to: pitchClampRange)
             scene.camera.yaw -= dx * sensitivity
             
         default:

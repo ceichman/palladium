@@ -58,7 +58,7 @@ class Renderer: NSObject, MTKViewDelegate {
         pipelineStateDescriptor.depthAttachmentPixelFormat = .depth32Float
         pipelineStateDescriptor.colorAttachments[0].pixelFormat = .bgra8Unorm
         pipelineStateDescriptor.colorAttachments[1].pixelFormat = .bgra8Unorm
-        
+
         pipelineState = try! device.makeRenderPipelineState(descriptor: pipelineStateDescriptor)
         
         commandQueue = device.makeCommandQueue()
@@ -187,7 +187,7 @@ class Renderer: NSObject, MTKViewDelegate {
     
     func addBasePass(commandBuffer: MTLCommandBuffer, sceneTexture: MTLTexture, viewProjection: inout ViewProjection) {
         
-        // let black = MTLClearColor(red: 0, green: 0, blue: 0, alpha: 0)
+        let black = MTLClearColor(red: 0, green: 0, blue: 0, alpha: 0)
         
         guard let renderPassDescriptor = view.currentRenderPassDescriptor else { return }
         // two color attachments (FragmentOut), one for scene color (renderTarget)
@@ -196,8 +196,8 @@ class Renderer: NSObject, MTKViewDelegate {
         renderPassDescriptor.colorAttachments[0].loadAction = .load
         
         renderPassDescriptor.colorAttachments[1].texture = intermediateRenderTarget
-        renderPassDescriptor.colorAttachments[1].loadAction = .load
-        // renderPassDescriptor.colorAttachments[1].clearColor = black
+        renderPassDescriptor.colorAttachments[1].loadAction = .clear
+        renderPassDescriptor.colorAttachments[1].clearColor = black
         
         guard let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderPassDescriptor) else { return }
         // Common render encoder configuration
