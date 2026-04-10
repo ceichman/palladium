@@ -53,6 +53,7 @@ struct PointLight {
 
 struct FragmentParams {
     simd_float3 cameraPosition;
+    simd_uint2 viewDimensions;
     float specularCoefficient;
     float bloomThreshold;
     int numDirectionalLights;
@@ -62,6 +63,7 @@ struct FragmentParams {
 struct FragmentOut {
     simd_float4 sceneColor [[ color(0) ]];
     simd_float4 bloomMask  [[ color(1) ]];
+    simd_float2 screenSpaceVelocity [[ color(2) ]];
 };
 
 struct SkyboxParams {

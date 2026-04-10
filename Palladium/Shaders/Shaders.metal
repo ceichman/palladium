@@ -51,11 +51,10 @@ constexpr sampler textureSampler (mag_filter::linear,
                                   min_filter::linear);
 
 fragment FragmentOut basic_fragment(ProjectedVertex vert [[stage_in]],
-                              texture2d<half> colorTexture [[ texture(0)]],
-                              texture2d<half, access::write> velocityTexture [[ texture(1) ]],
-                              constant FragmentParams &params [[ buffer(0) ]],
-                              constant DirectionalLight *directionalLights [[ buffer(1) ]],
-                              constant PointLight *pointLights [[ buffer(2) ]])
+                                    texture2d<half> colorTexture [[ texture(0)]],
+                                    constant FragmentParams &params [[ buffer(0) ]],
+                                    constant DirectionalLight *directionalLights [[ buffer(1) ]],
+                                    constant PointLight *pointLights [[ buffer(2) ]])
 {
     
     half4 flatColor;
@@ -68,24 +67,22 @@ fragment FragmentOut basic_fragment(ProjectedVertex vert [[stage_in]],
         flatColor = colorTexture.sample(textureSampler, newUv);
     }
     
-    // populate screen-space velocity vector texture
-    if (!is_null_texture(velocityTexture)) {
-        uint2 viewportSize = uint2(velocityTexture.get_width(), velocityTexture.get_height());
-        // first normalize prev position in w, like [[ position ]] during raster
-        if (vert.prevPosition.w != 0.0) {
-            vert.prevPosition.x /= vert.prevPosition.w;
-            vert.prevPosition.y /= vert.prevPosition.w;
-            vert.prevPosition.z /= vert.prevPosition.w;
-        }
-        // now prevPosition is on [-1, 1] x [-1, 1]
-        float2 interpolated = (vert.prevPosition.xy + 1) / 2.0;
-        // scale into view dimensions
-        float2 prevNormalized = float2(interpolated.x * viewportSize.x, interpolated.y * viewportSize.y);
-        // flip y axis (??)
-        prevNormalized.y = velocityTexture.get_height() - prevNormalized.y;
-        half4 velocity4 = half4(vert.position.x - prevNormalized.x, vert.position.y - prevNormalized.y, 0, 0);
-        velocityTexture.write(velocity4, uint2(vert.position.xy));
+    // calculate screen-space velocity vector
+    uint2 viewportSize = params.viewDimensions;
+    // first normalize prev position in w, like [[ position ]] during raster
+    if (vert.prevPosition.w != 0.0) {
+        vert.prevPosition.x /= vert.prevPosition.w;
+        vert.prevPosition.y /= vert.prevPosition.w;
+        vert.prevPosition.z /= vert.prevPosition.w;
     }
+    // now prevPosition is on [-1, 1] x [-1, 1]
+    float2 interpolated = (vert.prevPosition.xy + 1) / 2.0;
+    // scale into view dimensions
+    float2 prevNormalized = float2(interpolated.x * viewportSize.x, interpolated.y * viewportSize.y);
+    // flip y axis (??)
+    prevNormalized.y = viewportSize.y - prevNormalized.y;
+    float2 screenSpaceVelocity = float2(vert.position.x - prevNormalized.x, vert.position.y - prevNormalized.y);
+    // velocityTexture.write(velocity4, uint2(vert.position.xy));
     
     float ambient = 0.1;
     float3 color = float3(flatColor.xyz) * ambient;
@@ -123,7 +120,8 @@ fragment FragmentOut basic_fragment(ProjectedVertex vert [[stage_in]],
     
     return {
         sceneColor,
-        (luminance > params.bloomThreshold) ? sceneColor : float4(0, 0, 0, 0)
+        (luminance > params.bloomThreshold) ? sceneColor : float4(0, 0, 0, 0),
+        screenSpaceVelocity
     };
 }
                         

@@ -27,16 +27,17 @@ kernel void motion_blur(uint2 gid [[ thread_position_in_grid ]],
                         texture2d<half, access::write> outColor [[ texture(1) ]],
                         texture2d<half, access::read> velocityTexture [[ texture(2) ]])
 {
-    int numSamples = 30;  // put an option for this later
-    int samplesTaken = 1;
+    float numSamples = 20.0;  // put an option for this later
+    float samplesTaken = 1.0;
     half2 coord = half2(gid);
-    half2 velocity = velocityTexture.read(gid).xy / 30;
+    // negate in order to walk towards previous position
+    half2 velocity = -1.0 * velocityTexture.read(gid).xy / numSamples;
     half4 color = inColor.read(gid);
     for (int i = 0; i < numSamples; ++i) {
         coord += velocity;
         uint2 sampleLocation = uint2(coord);
         if (check_bounds(sampleLocation, inColor.get_width(), inColor.get_height())) {
-            samplesTaken += 1;
+            samplesTaken += 1.0;
             color += inColor.read(sampleLocation);
         }
     }

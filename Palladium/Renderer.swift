@@ -47,17 +47,20 @@ class Renderer: NSObject, MTKViewDelegate {
         view.framebufferOnly = false
         guard let device = view.device else { return }
         
-        // Set up render pipeline
+        // Set up base pass
         defaultLibrary = device.makeDefaultLibrary()
         let fragmentShader = defaultLibrary.makeFunction(name: "basic_fragment")
         let vertexShader = defaultLibrary.makeFunction(name: "project_vertex")
+        
+        let motionVectorPixelFormat = MTLPixelFormat.rg32Float
         
         let pipelineStateDescriptor = MTLRenderPipelineDescriptor()
         pipelineStateDescriptor.vertexFunction = vertexShader
         pipelineStateDescriptor.fragmentFunction = fragmentShader
         pipelineStateDescriptor.depthAttachmentPixelFormat = .depth32Float
         pipelineStateDescriptor.colorAttachments[0].pixelFormat = .bgra8Unorm
-        pipelineStateDescriptor.colorAttachments[1].pixelFormat = .bgra8Unorm
+        pipelineStateDescriptor.colorAttachments[1].pixelFormat = .bgra8Unorm  // "intermediate rt" e.g. bloom mask tex
+        pipelineStateDescriptor.colorAttachments[2].pixelFormat = motionVectorPixelFormat
 
         pipelineState = try! device.makeRenderPipelineState(descriptor: pipelineStateDescriptor)
         
@@ -86,11 +89,11 @@ class Renderer: NSObject, MTKViewDelegate {
         intermediateRenderTarget = device.makeTexture(descriptor: intermediateTextureDescriptor)
         
         let motionVectorTextureDescriptor = MTLTextureDescriptor.texture2DDescriptor(
-            pixelFormat: .rg16Float,  // only use bg channels
+            pixelFormat: motionVectorPixelFormat,  // only use bg channels
             width: Int(view.drawableSize.width),
             height: Int(view.drawableSize.height),
             mipmapped: false)
-        motionVectorTextureDescriptor.usage = [.renderTarget, .shaderRead, .shaderWrite]
+        motionVectorTextureDescriptor.usage = [.renderTarget, .shaderRead]
         motionVectorTextureDescriptor.textureType = .type2D
         motionVectorTexture = device.makeTexture(descriptor: motionVectorTextureDescriptor)
         
@@ -188,7 +191,8 @@ class Renderer: NSObject, MTKViewDelegate {
     func addBasePass(commandBuffer: MTLCommandBuffer, sceneTexture: MTLTexture, viewProjection: inout ViewProjection) {
         
         let black = MTLClearColor(red: 0, green: 0, blue: 0, alpha: 0)
-        
+        let shouldMotionBlur = options.getBool(.motionBlur)
+
         guard let renderPassDescriptor = view.currentRenderPassDescriptor else { return }
         // two color attachments (FragmentOut), one for scene color (renderTarget)
         // and one for bloom mask (intermediateRT)
@@ -199,6 +203,10 @@ class Renderer: NSObject, MTKViewDelegate {
         renderPassDescriptor.colorAttachments[1].loadAction = .clear
         renderPassDescriptor.colorAttachments[1].clearColor = black
         
+        renderPassDescriptor.colorAttachments[2].texture = motionVectorTexture
+        renderPassDescriptor.colorAttachments[2].loadAction = .clear
+        renderPassDescriptor.colorAttachments[2].clearColor = black
+
         guard let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderPassDescriptor) else { return }
         // Common render encoder configuration
         renderEncoder.label = "Geometry pass"
@@ -208,8 +216,6 @@ class Renderer: NSObject, MTKViewDelegate {
         renderEncoder.setFrontFacing(.clockwise)
         renderEncoder.setRenderPipelineState(pipelineState)
         renderEncoder.setDepthStencilState(depthStencilState)
-        
-        let shouldMotionBlur = options.getBool(.motionBlur)
         
         for template in scene.objects {
             let instances = template.instances
@@ -225,6 +231,7 @@ class Renderer: NSObject, MTKViewDelegate {
             let shouldSpecular = options.getBool(.specularHighlights)
             var fragParams = FragmentParams(
                 cameraPosition: scene.camera.position,
+                viewDimensions: simd_uint2(UInt32(motionVectorTexture.width), UInt32(motionVectorTexture.height)),  // TODO: No overflow checking
                 specularCoefficient: shouldSpecular ? template.material.specularCoefficient : 0.0,
                 bloomThreshold: 1.0 - options.getFloat(.bloomStrength),
                 numDirectionalLights: CInt(scene.directionalLights.count),
@@ -238,7 +245,7 @@ class Renderer: NSObject, MTKViewDelegate {
             renderEncoder.setVertexBytes(previousModels, length: MemoryLayout<ModelTransformation>.stride * previousModels.count, index: 4)
             let shouldTexture = options.getBool(.texturing)
             renderEncoder.setFragmentTexture(shouldTexture ? template.material.colorTexture : nil, index: 0)
-            renderEncoder.setFragmentTexture(shouldMotionBlur ? motionVectorTexture : nil, index: 1)
+            // renderEncoder.setFragmentTexture(shouldMotionBlur ? motionVectorTexture : nil, index: 1)
             renderEncoder.setFragmentBytes(&fragParams, length: MemoryLayout<FragmentParams>.stride, index: 0)
             renderEncoder.setFragmentBytes(scene.directionalLights, length: MemoryLayout<DirectionalLight>.stride * Int(fragParams.numDirectionalLights), index: 1)
             renderEncoder.setFragmentBytes(scene.pointLights, length: MemoryLayout<PointLight>.stride * Int(fragParams.numPointLights), index: 2)
@@ -347,7 +354,7 @@ class Renderer: NSObject, MTKViewDelegate {
         encoder.endEncoding()
         
         // clear out motion vectors
-        addClearPass(commandBuffer: commandBuffer, target: velocityTexture)
+        // addClearPass(commandBuffer: commandBuffer, target: velocityTexture)
     }
     
     func addCopyPass(commandBuffer: MTLCommandBuffer, from: MTLTexture, to: MTLTexture) {
@@ -361,7 +368,7 @@ class Renderer: NSObject, MTKViewDelegate {
     func addCompositePass(commandBuffer: MTLCommandBuffer, inA: MTLTexture, inB: MTLTexture, out: MTLTexture) {
         
         guard let encoder = commandBuffer.makeComputeCommandEncoder() else { return }
-        encoder.label = "Motion blur pass"
+        encoder.label = "Compositing pass: " + inA.description + " with " + inB.description + " to " + out.description
         encoder.setComputePipelineState(compositePipelineState)
         encoder.setTexture(inA, index: 0)
         encoder.setTexture(inB, index: 1)
