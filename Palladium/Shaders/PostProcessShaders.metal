@@ -10,6 +10,10 @@
 #include "ShaderTypes.h"
 using namespace metal;
 
+// default sampler
+constexpr sampler textureSampler (mag_filter::linear,
+                                  min_filter::linear);
+
 inline bool check_bounds(uint2 gid, uint maxWidth, uint maxHeight) {
     return ((gid.x <= maxWidth) && (gid.y <= maxHeight));
 };
@@ -23,23 +27,26 @@ kernel void invert_color(uint2 gid [[thread_position_in_grid]],
 }
 
 kernel void motion_blur(uint2 gid [[ thread_position_in_grid ]],
-                        texture2d<half, access::read> inColor [[ texture(0) ]],
+                        texture2d<half> inColor [[ texture(0) ]],
                         texture2d<half, access::write> outColor [[ texture(1) ]],
-                        texture2d<half, access::read> velocityTexture [[ texture(2) ]])
+                        texture2d<float, access::read> velocityTexture [[ texture(2) ]])
 {
-    float numSamples = 20.0;  // put an option for this later
+    float numSamples = 30.0;  // put an option for this later
     float samplesTaken = 1.0;
-    half2 coord = half2(gid);
+    float2 coord = float2(gid);
     // negate in order to walk towards previous position
-    half2 velocity = -1.0 * velocityTexture.read(gid).xy / numSamples;
+    float2 velocity = -1.0 * velocityTexture.read(gid).xy / numSamples;
     half4 color = inColor.read(gid);
     for (int i = 0; i < numSamples; ++i) {
         coord += velocity;
-        uint2 sampleLocation = uint2(coord);
-        if (check_bounds(sampleLocation, inColor.get_width(), inColor.get_height())) {
-            samplesTaken += 1.0;
-            color += inColor.read(sampleLocation);
-        }
+        float2 sampleLocation = float2(coord.x / inColor.get_width(), coord.y / inColor.get_height());
+        // uint2 sampleLocation = uint2(coord);
+        // if (check_bounds(sampleLocation, inColor.get_width(), inColor.get_height())) {
+        //     samplesTaken += 1.0;
+        //     color += inColor.read(sampleLocation);
+        // }
+        samplesTaken += 1.0;
+        color += inColor.sample(textureSampler, sampleLocation);
     }
     half4 finalColor = half4(color / samplesTaken);
     outColor.write(finalColor, gid);
