@@ -221,8 +221,8 @@ class Renderer: NSObject, MTKViewDelegate {
             let instances = template.instances
             guard instances.count > 0 else { continue }
             
-            var models = [ModelTransformation]()
-            var previousModels = [ModelTransformation]()
+            var models = [ModelTransform]()
+            var previousModels = [ModelTransform]()
             for instance in instances {
                 models.append(instance.modelTransformation())
                 previousModels.append(instance.previousModelTransformation())
@@ -240,9 +240,9 @@ class Renderer: NSObject, MTKViewDelegate {
             
             renderEncoder.setVertexBuffer(template.vertexBuffer, offset: 0, index: 0)
             renderEncoder.setVertexBytes(&viewProjection, length: MemoryLayout.size(ofValue: viewProjection), index: 1)
-            renderEncoder.setVertexBytes(models, length: MemoryLayout<ModelTransformation>.stride * models.count, index: 2)
+            renderEncoder.setVertexBytes(models, length: MemoryLayout<ModelTransform>.stride * models.count, index: 2)
             renderEncoder.setVertexBytes(&previousViewProjection, length: MemoryLayout.size(ofValue: previousViewProjection), index: 3)
-            renderEncoder.setVertexBytes(previousModels, length: MemoryLayout<ModelTransformation>.stride * previousModels.count, index: 4)
+            renderEncoder.setVertexBytes(previousModels, length: MemoryLayout<ModelTransform>.stride * previousModels.count, index: 4)
             let shouldTexture = options.getBool(.texturing)
             renderEncoder.setFragmentTexture(shouldTexture ? template.material.colorTexture : nil, index: 0)
             // renderEncoder.setFragmentTexture(shouldMotionBlur ? motionVectorTexture : nil, index: 1)

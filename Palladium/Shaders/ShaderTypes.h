@@ -15,7 +15,7 @@ struct ViewProjection {
     simd_float4x4 projection;
 };
 
-struct ModelTransformation {
+struct ModelTransform {
     simd_float4x4 translation;
     simd_float4x4 rotation;
     simd_float4x4 scaling;
@@ -68,6 +68,16 @@ struct FragmentOut {
 
 struct SkyboxParams {
     simd_float4x4 inverseViewProjection;
+};
+
+enum SDFType {
+    Plane = 0,
+    Box = 1
+};
+
+struct SDF {
+    ModelTransform transform;
+    SDFType type;
 };
 
 #endif /* ShaderTypes_h */

@@ -14,16 +14,16 @@ using namespace metal;
 vertex ProjectedVertex project_vertex(
                              const device Vertex* vertex_array [[ buffer(0) ]],
                              constant ViewProjection &viewProj [[ buffer(1) ]],
-                             constant ModelTransformation *models [[ buffer(2) ]],
+                             constant ModelTransform *models [[ buffer(2) ]],
                              constant ViewProjection &prevViewProj [[ buffer(3) ]],
-                             constant ModelTransformation *prevModels [[ buffer(4) ]],
+                             constant ModelTransform *prevModels [[ buffer(4) ]],
                              unsigned int vid [[ vertex_id ]],
                              unsigned int iid [[ instance_id ]])
 {
     Vertex inVertex = vertex_array[vid];
     float4 vert = float4(inVertex.position.xyz, 1.0);
-    ModelTransformation model = models[iid];
-    ModelTransformation prevModel = prevModels[iid];
+    ModelTransform model = models[iid];
+    ModelTransform prevModel = prevModels[iid];
     
     float4x4 modelMatrix = model.translation * model.scaling * model.rotation;
     float4 projectedPosition = viewProj.projection * viewProj.view * modelMatrix * vert;
