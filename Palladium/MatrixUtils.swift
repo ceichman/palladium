@@ -10,7 +10,6 @@ import simd
 
 class MatrixUtils {
     
-    
     static let PITCHAXIS = simd_float3(1, 0, 0)
     static let YAWAXIS = simd_float3(0, 1, 0)
     static let ROLLAXIS = simd_float3(0, 0, 1)

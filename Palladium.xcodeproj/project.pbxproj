@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		1B9CEDBB2CE2C4CE0087C604 /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B9CEDBA2CE2C4CE0087C604 /* Renderer.swift */; };
 		3F53104B2F89DCFC00E4A11D /* SDFUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F53104A2F89DCF800E4A11D /* SDFUtils.swift */; };
+		3F53104D2F89E4BB00E4A11D /* .gitignore in Sources */ = {isa = PBXBuildFile; fileRef = 3F53104C2F89E4B900E4A11D /* .gitignore */; };
 		D5453ED32D0137FA00FA98F9 /* Scene.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5453ED22D0137FA00FA98F9 /* Scene.swift */; };
 		D5559C162CE2E23800019348 /* Meshes in Resources */ = {isa = PBXBuildFile; fileRef = D5559C152CE2E23800019348 /* Meshes */; };
 		D5694C1A2CF7D1A600E446B0 /* ObjectTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5694C192CF7D1A600E446B0 /* ObjectTemplate.swift */; };
@@ -51,6 +52,7 @@
 		1B9CEDBA2CE2C4CE0087C604 /* Renderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Renderer.swift; sourceTree = "<group>"; };
 		3F1CFE8F2F64E9B300A3E6C6 /* Palladium-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Palladium-Bridging-Header.h"; sourceTree = "<group>"; };
 		3F53104A2F89DCF800E4A11D /* SDFUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SDFUtils.swift; sourceTree = "<group>"; };
+		3F53104C2F89E4B900E4A11D /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		D5453ED22D0137FA00FA98F9 /* Scene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Scene.swift; sourceTree = "<group>"; };
 		D5559C152CE2E23800019348 /* Meshes */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Meshes; sourceTree = "<group>"; };
 		D5694C192CF7D1A600E446B0 /* ObjectTemplate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectTemplate.swift; sourceTree = "<group>"; };
@@ -130,6 +132,7 @@
 		D5A512EA2CD18CD90050E219 /* Palladium */ = {
 			isa = PBXGroup;
 			children = (
+				3F53104C2F89E4B900E4A11D /* .gitignore */,
 				D5559C152CE2E23800019348 /* Meshes */,
 				D590E2702D0B84BB00B0069A /* AppDelegate.swift */,
 				D5A512ED2CD18CD90050E219 /* SceneDelegate.swift */,
@@ -324,6 +327,7 @@
 				D5A512EE2CD18CD90050E219 /* SceneDelegate.swift in Sources */,
 				D5B094AB2CEE628E0035A28C /* MatrixUtils.swift in Sources */,
 				D590E2712D0B84BB00B0069A /* AppDelegate.swift in Sources */,
+				3F53104D2F89E4BB00E4A11D /* .gitignore in Sources */,
 				D5B75BEC2D0CF8D50009C7A9 /* ConvolutionKernels.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
