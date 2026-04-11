@@ -224,8 +224,8 @@ class Renderer: NSObject, MTKViewDelegate {
             var models = [ModelTransform]()
             var previousModels = [ModelTransform]()
             for instance in instances {
-                models.append(instance.modelTransformation())
-                previousModels.append(instance.previousModelTransformation())
+                models.append(instance.modelTransform())
+                previousModels.append(instance.previousModelTransform())
             }
             
             let shouldSpecular = options.getBool(.specularHighlights)

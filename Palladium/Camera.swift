@@ -31,9 +31,9 @@ class Camera {
     private var worldVelocity: simd_float3 {
         get {
             let forwardContribution = forwardVelocity * lookDirection
-            let relativeRight = normalize(cross(YAWAXIS, lookDirection))
+            let relativeRight = normalize(cross(MatrixUtils.YAWAXIS, lookDirection))
             let strafeContribution = relativeRight * strafeVelocity
-            let verticalContribution = YAWAXIS * verticalVelocity
+            let verticalContribution = MatrixUtils.YAWAXIS * verticalVelocity
             return forwardContribution + strafeContribution + verticalContribution
         }
     }
@@ -59,14 +59,14 @@ class Camera {
     // Create the view matrix using the current position, target, and up vector
     private func getViewMatrix() -> float4x4 {
         let target = self.position + self.lookDirection
-        let mat = matrixPointAt(pos: position, target: target)
+        let mat = MatrixUtils.matrixPointAt(pos: position, target: target)
         return mat.inverse
     }
     
     func viewProjection(aspectRatio: Float) -> ViewProjection {
         let nearZ: Float = 0.3
         let farZ: Float = 1000.0
-        let proj = projection_matrix(aspectRatio: aspectRatio,
+        let proj = MatrixUtils.projectionMatrix(aspectRatio: aspectRatio,
                                      fovRadians: self.fovRadians,
                                      nearZ: nearZ,
                                      farZ: farZ

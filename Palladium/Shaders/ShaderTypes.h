@@ -76,8 +76,8 @@ enum SDFType {
 };
 
 struct SDF {
-    ModelTransform transform;
-    SDFType type;
+    struct ModelTransform transform;
+    enum SDFType type;
 };
 
 #endif /* ShaderTypes_h */

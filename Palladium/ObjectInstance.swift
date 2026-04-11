@@ -27,23 +27,12 @@ class ObjectInstance {
         self.previousScale = scale
     }
     
-    func modelTransformation() -> ModelTransform {
-        let translation = translation_matrix(t: position)
-        let rotation = rotation_matrix(axis: PITCHAXIS, theta: rotation.x) *
-                       rotation_matrix(axis: YAWAXIS, theta: rotation.y) *
-                       rotation_matrix(axis: ROLLAXIS, theta: rotation.z)
-        let scaling = scaling_matrix(scale: scale)
-        return ModelTransform(translation: translation, rotation: rotation, scaling: scaling)
+    func modelTransform() -> ModelTransform {
+        return MatrixUtils.createModelTransform(position: position, eulerRotation: rotation, scale: scale)
     }
     
-    func previousModelTransformation() -> ModelTransform {
-        let translation = translation_matrix(t: previousPosition)
-        let rotation =
-            rotation_matrix(axis: PITCHAXIS, theta: previousRotation.x) *
-            rotation_matrix(axis: YAWAXIS, theta: previousRotation.y) *
-            rotation_matrix(axis: ROLLAXIS, theta: previousRotation.z)
-        let scaling = scaling_matrix(scale: previousScale)
-        return ModelTransform(translation: translation, rotation: rotation, scaling: scaling)
+    func previousModelTransform() -> ModelTransform {
+        return MatrixUtils.createModelTransform(position: previousPosition, eulerRotation: previousRotation, scale: previousScale)
     }
     
     func saveCurrentAsPrevious() -> Void {
