@@ -14,10 +14,6 @@ using namespace metal;
 constexpr sampler textureSampler (mag_filter::linear,
                                   min_filter::linear);
 
-inline bool check_bounds(uint2 gid, uint maxWidth, uint maxHeight) {
-    return ((gid.x <= maxWidth) && (gid.y <= maxHeight));
-};
-
 kernel void invert_color(uint2 gid [[thread_position_in_grid]],
                        texture2d<half, access::read> inColor [[texture(0)]],
                        texture2d<half, access::write> outColor [[texture(1)]])
@@ -40,11 +36,6 @@ kernel void motion_blur(uint2 gid [[ thread_position_in_grid ]],
     for (int i = 0; i < numSamples; ++i) {
         coord += velocity;
         float2 sampleLocation = float2(coord.x / inColor.get_width(), coord.y / inColor.get_height());
-        // uint2 sampleLocation = uint2(coord);
-        // if (check_bounds(sampleLocation, inColor.get_width(), inColor.get_height())) {
-        //     samplesTaken += 1.0;
-        //     color += inColor.read(sampleLocation);
-        // }
         samplesTaken += 1.0;
         color += inColor.sample(textureSampler, sampleLocation);
     }
