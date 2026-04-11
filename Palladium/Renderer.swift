@@ -23,6 +23,7 @@ class Renderer: NSObject, MTKViewDelegate {
     
     // has to be a var (not static let) because setupComputePipelineState requires access to view.device
     lazy private var skyboxPipelineState = setupComputePipelineState(shader: "skybox")
+    lazy private var sdfPipelineState = setupComputePipelineState(shader: "drawSDFs")
     lazy private var invertColorPipelineState = setupComputePipelineState(shader: "invert_color")
     lazy private var copyPipelineState = setupComputePipelineState(shader: "copy")
     lazy private var clearPipelineState = setupComputePipelineState(shader: "clear")
@@ -123,6 +124,8 @@ class Renderer: NSObject, MTKViewDelegate {
             let commandBuffer = commandQueue.makeCommandBuffer()!
             
             addSkyboxPass(commandBuffer: commandBuffer, outTexture: renderTarget, forwardViewProjection: viewProjection)
+            
+            addSDFPass(commandBuffer: commandBuffer, outTexture: renderTarget)
             
             // setup geometry pass
             addBasePass(commandBuffer: commandBuffer, sceneTexture: renderTarget, viewProjection: &viewProjection)
@@ -297,6 +300,35 @@ class Renderer: NSObject, MTKViewDelegate {
         encoder.dispatchThreadgroups(threadgroupsPerGrid, threadsPerThreadgroup: threadsPerThreadgroup)
         encoder.endEncoding()
     }
+
+    func addSDFPass(commandBuffer: MTLCommandBuffer, outTexture: MTLTexture)
+    {
+        guard let encoder = commandBuffer.makeComputeCommandEncoder() else { return }
+        encoder.label = "SDF pass: \(sdfPipelineState.description)"
+        encoder.setComputePipelineState(sdfPipelineState)
+        encoder.setTexture(outTexture, index: 0)
+        encoder.setBytes(scene.sdfs, length: scene.sdfs.count * MemoryLayout<SDF>.stride, index: 1)
+        
+        var passParams = SDFPassParams(cameraPosition: scene.camera.position, cameraLookDirection: scene.camera.lookDirection, numSDFs: Int32(scene.sdfs.count))
+        encoder.setBytes(&passParams, length: MemoryLayout<SDFPassParams>.stride, index: 0)
+
+        let threadsPerGrid = MTLSize(width: outTexture.width,
+                                     height: outTexture.height,
+                                     depth: 1)
+        
+        // TODO: Refactor this common code with addPostProcessPass below into addFullscreenPass.
+        let w = sdfPipelineState.threadExecutionWidth
+        let h = sdfPipelineState.maxTotalThreadsPerThreadgroup / w
+        let threadsPerThreadgroup = MTLSizeMake(w, h, 1)
+        
+        // add one for rounding error
+        let threadgroupsPerGrid = MTLSizeMake(threadsPerGrid.width / threadsPerThreadgroup.width + 1,
+                                              threadsPerGrid.height / threadsPerThreadgroup.height + 1,
+                                              1)
+
+        encoder.dispatchThreadgroups(threadgroupsPerGrid, threadsPerThreadgroup: threadsPerThreadgroup)
+        encoder.endEncoding()
+    }
     
     // should only be used for one-to-one post-process effects (don't read pixels other than gid)
     func addPostProcessPass(pipeline: MTLComputePipelineState, commandBuffer: MTLCommandBuffer, inTexture: MTLTexture, outTexture: MTLTexture) {
@@ -353,18 +385,19 @@ class Renderer: NSObject, MTKViewDelegate {
         encoder.dispatchThreadgroups(threadgroupsPerGrid, threadsPerThreadgroup: threadsPerThreadgroup)
         encoder.endEncoding()
         
-        // clear out motion vectors
-        // addClearPass(commandBuffer: commandBuffer, target: velocityTexture)
     }
     
+    // TODO: Refactor to blit pass.
     func addCopyPass(commandBuffer: MTLCommandBuffer, from: MTLTexture, to: MTLTexture) {
         addPostProcessPass(pipeline: copyPipelineState, commandBuffer: commandBuffer, inTexture: from, outTexture: to)
     }
     
+    // TODO: Refactor to blit pass.
     func addClearPass(commandBuffer: MTLCommandBuffer, target: MTLTexture) {
         addPostProcessPass(pipeline: clearPipelineState, commandBuffer: commandBuffer, renderTarget: target)
     }
     
+    // TODO: Refactor to blit pass.
     func addCompositePass(commandBuffer: MTLCommandBuffer, inA: MTLTexture, inB: MTLTexture, out: MTLTexture) {
         
         guard let encoder = commandBuffer.makeComputeCommandEncoder() else { return }

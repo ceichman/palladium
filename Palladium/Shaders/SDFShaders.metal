@@ -63,8 +63,8 @@ float map(float4 p, constant SDF *sdfArray, int numSDFs)
 }
 
 kernel void drawSDFs(uint2 gid [[ thread_position_in_grid ]],
-                     constant SDF *sdfArray [[ buffer(0) ]],
-                     constant SDFPassParams &params [[ buffer(1) ]],
+                     constant SDFPassParams &params [[ buffer(0) ]],
+                     constant SDF *sdfArray [[ buffer(1) ]],
                      texture2d<half, access::read_write> outColor [[ texture(0) ]])
 {
     int maxIters = 120;
@@ -82,7 +82,7 @@ kernel void drawSDFs(uint2 gid [[ thread_position_in_grid ]],
         // adaptive precision: scale hit distance based on ray length t
         if (res < 0.001 * t)
         {
-            color = t / 50.;
+            color = half4(1, 0, 1, 1);
             break;
         }
 
@@ -95,4 +95,7 @@ kernel void drawSDFs(uint2 gid [[ thread_position_in_grid ]],
         }
         
     }
+    
+    outColor.write(color, gid);
+    
 }

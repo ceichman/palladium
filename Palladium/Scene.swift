@@ -11,6 +11,7 @@ import Metal
 
 class Scene {
     var objects: [ObjectTemplate] = []
+    var sdfs: [SDF] = []
     var directionalLights: [DirectionalLight] = []
     var pointLights: [PointLight]  = []
     var camera: Camera
@@ -106,12 +107,16 @@ extension Scene {
         var directionalLight = DirectionalLight(direction: simd_float3(0, -1, 0), color: simd_float3(0, 1, 0.2), intensity: 0.8)
         
         var blueHalo = DirectionalLight(direction: simd_float3(-3, 1, 1), color: simd_float3(0.1, 0.2, 1.0), intensity: 0.5);
+        
+        // TODO: Fix enum type bridging header issue for the below magic number.
+        let boxSDF = SDFUtils.createSDF(type: SDFType(rawValue: 1), position: simd_float3(4.0, -2.0, 2.0), eulerRotation: simd_float3.zero, scale: simd_float3.one)
 
         let scene = Scene(camera: camera)
         scene.directionalLights = [directionalLight, blueHalo]
         scene.pointLights = [pointLight]
         scene.preRenderUpdate = preRenderUpdate
         scene.objects = objects
+        scene.sdfs = [boxSDF]
         scene.skyboxTexture = skyboxTexture
         return scene
     }()
