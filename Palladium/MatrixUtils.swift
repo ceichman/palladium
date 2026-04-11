@@ -122,6 +122,10 @@ class MatrixUtils {
         return ModelTransform(translation: translationMatrix, rotation: rotationMatrix, scaling: scalingMatrix)
     }
     
+    static func createInverseModelTransform(position: simd_float3, eulerRotation: simd_float3, scale: simd_float3) -> ModelTransform {
+        return MatrixUtils.createModelTransform(position: -position, eulerRotation: -eulerRotation, scale: 1.0 / scale)
+    }
+        
 }
 
 extension Comparable {

@@ -76,8 +76,14 @@ enum SDFType {
 };
 
 struct SDF {
-    struct ModelTransform transform;
+    struct ModelTransform worldToLocal;  // for transforming a point from world space into SDF-local space
     enum SDFType type;
+};
+
+struct SDFPassParams {
+    simd_float3 cameraPosition;
+    simd_float3 cameraLookDirection;
+    int numSDFs;
 };
 
 #endif /* ShaderTypes_h */

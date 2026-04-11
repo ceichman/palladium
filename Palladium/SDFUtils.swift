@@ -9,9 +9,9 @@ class SDFUtils {
     
     static func createSDF(type: SDFType, position: simd_float3, eulerRotation: simd_float3, scale: simd_float3) -> SDF {
         
-        let transform = MatrixUtils.createModelTransform(position: position, eulerRotation: eulerRotation, scale: scale)
+        let transform = MatrixUtils.createInverseModelTransform(position: position, eulerRotation: eulerRotation, scale: scale)
         
-        return SDF(transform: transform, type: type)
+        return SDF(worldToLocal: transform, type: type)
     }
     
 }
