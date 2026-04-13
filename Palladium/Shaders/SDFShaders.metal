@@ -17,11 +17,11 @@ using namespace metal;
 // Returns a packed vec4 encoding distance sample and local-space normal at p.
 float4 sdgBox(float3 p, float3 b, float r )
 {
-    float3 w = abs(p)-(b-r);
-    float g = max(w.x,max(w.y,w.z));
-    float3  q = max(w,0.0);
+    float3 w = abs(p) - (b - r);
+    float g = max(w.x, max(w.y, w.z));
+    float3  q = max(w, 0.0);
     float l = length(q);
-    float4  f = (g>0.0) ? float4(l, q / l) :
+    float4  f = (g > 0.0) ? float4(l, q / l) :
         float4(g, w.x == g ? 1.0 : 0.0,
                   w.y == g ? 1.0 : 0.0,
                   w.z == g ? 1.0 : 0.0);
@@ -39,10 +39,10 @@ float4 sample(float4 p, SDF sdf)
     switch (sdf.type)
     {
         case Box:
-            sample = sdgBox(p.xyz, float3(1, 2, 3), 0.2);
+            sample = sdgBox(local.xyz, float3(1, 2, 3), 0.2);
             break;
         case Plane:
-            sample = sdgBox(p.xyz, float3(1, 2, 3), 0.2);
+            sample = sdgBox(local.xyz, float3(1, 2, 3), 0.2);
             break;
     }
     return sample;
@@ -53,7 +53,7 @@ float4 sample(float4 p, SDF sdf)
 float map(float4 p, constant SDF *sdfArray, int numSDFs)
 {
     float distance = MAXFLOAT;
-    for (int i = 1; i < numSDFs; i++)
+    for (int i = 0; i < numSDFs; i++)
     {
         SDF sdf = sdfArray[i];
         float4 s = sample(p, sdf);
@@ -67,6 +67,13 @@ kernel void drawSDFs(uint2 gid [[ thread_position_in_grid ]],
                      constant SDF *sdfArray [[ buffer(1) ]],
                      texture2d<half, access::read_write> outColor [[ texture(0) ]])
 {
+    // deproject through the view plane
+    float4 deviceCoords = float4(  // remap to NDC
+        ((float) gid.x / outColor.get_width() - 0.5) * 2.0,
+        ((float) gid.y / outColor.get_height() - 0.5) * 2.0, 1, 1);
+    float4 deprojected = params.inverseViewProjection * deviceCoords;
+    float3 marchDirection = normalize(deprojected.xyz);
+    
     int maxIters = 120;
     float t = 0.; // total distance traveled by ray
     int i;
@@ -75,7 +82,7 @@ kernel void drawSDFs(uint2 gid [[ thread_position_in_grid ]],
     for (i = 0; i < maxIters; ++i)
     {
         // current marched position
-        float4 p = float4(params.cameraPosition + t * params.cameraLookDirection, 1.0);
+        float4 p = float4(params.cameraPosition + t * marchDirection, 1.0);
         
         float res = map(p, sdfArray, params.numSDFs);
 

@@ -81,8 +81,8 @@ struct SDF {
 };
 
 struct SDFPassParams {
+    simd_float4x4 inverseViewProjection;
     simd_float3 cameraPosition;
-    simd_float3 cameraLookDirection;
     int numSDFs;
 };
 

@@ -80,7 +80,6 @@ kernel void skybox(uint2 gid [[thread_position_in_grid]],
         ((float) gid.x / outColor.get_width() - 0.5) * 2.0,
         ((float) gid.y / outColor.get_height() - 0.5) * 2.0, 1, 1);
     float4 deprojected = params.inverseViewProjection * deviceCoords;
-    // deprojected /= deprojected.w;
     float3 sampleCoord = normalize(deprojected.xyz);
     half4 color = skyboxTexture.sample(textureSampler, sampleCoord);
     outColor.write(saturate(color), gid);
