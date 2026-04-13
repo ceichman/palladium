@@ -125,7 +125,7 @@ class Renderer: NSObject, MTKViewDelegate {
             
             addSkyboxPass(commandBuffer: commandBuffer, outTexture: renderTarget, forwardViewProjection: viewProjection)
             
-            addSDFPass(commandBuffer: commandBuffer, outTexture: renderTarget)
+            addSDFPass(commandBuffer: commandBuffer, outTexture: renderTarget, forwardViewProjection: viewProjection)
             
             // setup geometry pass
             addBasePass(commandBuffer: commandBuffer, sceneTexture: renderTarget, viewProjection: &viewProjection)
@@ -301,7 +301,7 @@ class Renderer: NSObject, MTKViewDelegate {
         encoder.endEncoding()
     }
 
-    func addSDFPass(commandBuffer: MTLCommandBuffer, outTexture: MTLTexture)
+    func addSDFPass(commandBuffer: MTLCommandBuffer, outTexture: MTLTexture, forwardViewProjection: ViewProjection)
     {
         guard let encoder = commandBuffer.makeComputeCommandEncoder() else { return }
         encoder.label = "SDF pass: \(sdfPipelineState.description)"
@@ -309,7 +309,17 @@ class Renderer: NSObject, MTKViewDelegate {
         encoder.setTexture(outTexture, index: 0)
         encoder.setBytes(scene.sdfs, length: scene.sdfs.count * MemoryLayout<SDF>.stride, index: 1)
         
-        var passParams = SDFPassParams(cameraPosition: scene.camera.position, cameraLookDirection: scene.camera.lookDirection, numSDFs: Int32(scene.sdfs.count))
+        // TODO: No check for zero determinant in (projection * view) matrix
+        var correctedView = forwardViewProjection.view
+        // The view matrix needs to be corrected by using a negated value for y to account for NDC transformation during raster stage
+        // TODO: Move this logic into an alternative method in the Camera.
+        correctedView[0][1] = -correctedView[0][1]
+        correctedView[1][1] = -correctedView[1][1]
+        correctedView[2][1] = -correctedView[2][1]
+        correctedView[3][1] = -correctedView[3][1]
+        let inverseViewProjection = (forwardViewProjection.projection * correctedView).inverse
+
+        var passParams = SDFPassParams(inverseViewProjection: inverseViewProjection, cameraPosition: scene.camera.position, numSDFs: Int32(scene.sdfs.count))
         encoder.setBytes(&passParams, length: MemoryLayout<SDFPassParams>.stride, index: 0)
 
         let threadsPerGrid = MTLSize(width: outTexture.width,
